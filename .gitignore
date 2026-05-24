@@ -1,6 +1,8 @@
 .idea
 *.iml
 
+.claude/**/10x-*
+
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
