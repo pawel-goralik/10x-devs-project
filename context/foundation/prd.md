@@ -7,8 +7,8 @@ context_type: greenfield
 product_type: web-app
 target_scale:
   users: small
-  qps: "# TODO: qps — see Open Questions"
-  data_volume: "# TODO: data_volume — see Open Questions"
+  qps: low
+  data_volume: small
 timeline_budget:
   mvp_weeks: 3
   hard_deadline: null
@@ -96,9 +96,14 @@ The same archetype shows up in two adjacent framings, both in scope for the MVP 
 - FR-013: At the end of each calendar quarter, every group member receives an email summarising the goals and current progress of every member of every group they belong to. Priority: must-have
   > Socrates: Counter-argument considered: "quarterly is too slow for shorter-cadence goals (e.g. 'one book per month') — three-month silence between digests lets users drift." Resolution: drift accepted as a deliberate tradeoff; the quarterly cadence is one of the three load-bearing pillars of the insight bundle (alongside immutability and closed-circle), and shortening it would walk back the differentiator. The digest is the SOCIAL heartbeat — between-digest progress updates are the user's job. FR-013 stands.
 
+### Account lifecycle
+- FR-014: Authenticated user can delete their own account. On deletion, the user's committed goals and their frozen progress remain visible in every group they belonged to, but the author identity is replaced with "former member" — no name, no email, no way to re-attach the goals to a person. Priority: must-have
+  > Decision (resolved post-shaping): anonymize rather than hard-delete or preserve-with-name. Hard-delete would let a member silently escape a committed promise and leave gaps in group accountability history; preserve-with-name would expose a departed person's identity indefinitely. Anonymization honors the immutability promise to the circle while removing personal identity.
+
 ## Non-Functional Requirements
 
 - **Quarterly digest deliverability.** Each group member's quarterly digest email reaches their inbox within the first week of the following calendar quarter, except for hard refusals by the recipient's mail provider (e.g. mailbox-full bounces, permanent spam blocks). The digest is the system's social heartbeat; deliverability is treated as load-bearing, not best-effort.
+- **Closed-circle confinement.** No goal or its progress is ever exposed to anyone who does not share at least one group with the goal's author — not to other authenticated users, not to unauthenticated visitors, not via any public surface. A request for a goal by a non-group-member returns nothing. This is the boundary the product's trust depends on; it is a hard commitment, not best-effort.
 
 ## Business Logic
 
@@ -109,6 +114,8 @@ The rule consumes three user-facing inputs: the goal itself (a one-line descript
 The rule produces three observable outputs. First, the editability state of every goal: mutable for 24 hours after commit, irrevocably locked thereafter. Second, the visibility scope of every goal: visible to every member of every group the goal's author belongs to, invisible to every other authenticated user and to every unauthenticated visitor. Third, the quarterly digest content: at the end of every calendar quarter, each group member receives a roll-up of every goal and current progress for every member of every group they belong to.
 
 A user encounters the rule whenever they attempt to edit a goal (allowed only within the 24-hour window), view their own goals or any group surface (sees the goals and progress permitted by the visibility scope), or open the quarterly digest email (sees the closed circle's collective accountability fixed to the quarter boundary). The rule is not CRUD because the application — not the user — decides when a goal locks, who sees it, and when the social heartbeat fires.
+
+A locked goal outlives its author's account. When a member deletes their account, their committed goals and frozen progress persist in the group views they belonged to, with the author identity collapsed to an unattributed "former member." This is a direct consequence of the immutability rule: a promise made to a circle is not unmade by leaving — only the identity behind it is shed.
 
 ## Access Control
 
@@ -121,20 +128,25 @@ Authenticated capabilities (the role-to-capability matrix):
 - A user cannot view, modify, or mark progress on goals belonging to a person they share no group with.
 - An unauthenticated visitor reaching a gated route is redirected to the magic-link request screen.
 
+Post-window goal immutability (FR-006) is enforced at the **product surface** for the MVP: no UI affordance, API path, or user role can edit or delete a locked goal. It is **not** cryptographic tamper-proofing — operators retain raw datastore access for legitimate maintenance (bug fixes, support, recovery). Extending immutability to an operator-proof, append-only store is explicitly out of scope for the MVP (see Non-Goals).
+
 ## Non-Goals
 
 - **No notification channels other than email.** No push notifications, no SMS, no in-app banners. The quarterly digest is delivered via email and that is the only product channel. Stated by user in seed.
 - **No user-configurable notification frequency.** Cadence is fixed at calendar-quarter end for every user, every group; no per-user, per-group, or per-goal cadence override. Per-user frequency is the exact failure mode the cadence insight prevents. Stated by user in seed.
 - **No group-shared goals.** The MVP supports one-person-one-goal-with-witnesses; it does not support a goal that the entire group commits to together (no joint targets, no group quotas). A collective-goal model is a different product. Stated by user in seed.
 - **No frequency-style goals.** Goal measures in the MVP are limited to numeric target OR binary yes/no (FR-004). Frequency goals such as "N times per period" (e.g. "run 3× per week") are not supported and would require a recurring-window state model. From FR-004 Socratic resolution.
-- **No third-party progress integrations.** The MVP does not import progress from external systems (fitness wearables, calendar feeds, or any other external source). Progress is recorded manually by the goal author (FR-007). From FR-007 Socratic resolution.
+- **No third-party progress integrations.** The MVP does not import progress from external systems (fitness wearables, calendar feeds, or any other external source). Progress is recorded manually by the goal author (FR-007). From FR-007 Socratic resolution. *Candidate for v2 if manual reporting proves a credibility limitation at real-world scale.*
+- **No operator-proof immutability.** Post-window immutability (FR-006) binds the product surface, not the datastore. The MVP does not build an append-only / cryptographically tamper-evident store; operators retain raw data access for maintenance. Revisit only if regulatory or trust requirements demand provable integrity.
 
 ## Open Questions
 
-1. **v2 — should frequency-style goals be supported?** Owner: user. The MVP defers; whether v2 adds a third measure type (frequency / N times per period) is a real product question driven by real-world goal-shape demand.
-2. **v2 — should third-party progress integrations be added?** Owner: user. The MVP relies on manual progress reporting; whether that becomes a credibility limitation at real-world scale is unanswered and should be re-evaluated post-MVP.
-3. **Privacy confinement at NFR level.** Owner: user. The user considered and declined to elevate privacy confinement to an NFR commitment; it remains at Guardrail level in `## Success Criteria`. Surfaced here so reviewers can weigh in.
-4. **Post-window immutability for operators.** Owner: user. The user considered and declined to extend post-24h immutability to operator-side access as an NFR; the back door at the support layer remains theoretically open.
-5. **Account / data deletion vs. immutability.** Owner: user. What happens when a user with committed (and now-locked) goals deletes their account? Are the goals removed (breaking accountability continuity for groups they belong to), anonymised, or preserved with "former member" labelling? Not asked during shaping; needs a downstream call.
-6. **target_scale.qps ballpark.** Owner: user. The shaping captured `users: small` but did not estimate a request-rate ballpark. Needed before stack selection sizes the runtime.
-7. **target_scale.data_volume ballpark.** Owner: user. The shaping captured `users: small` but did not estimate a data-volume ballpark. Needed before stack selection sizes storage.
+All shaping-stage questions have been resolved. Decisions are recorded in their owning sections:
+
+- *Frequency-style goals* and *third-party progress integrations* — deferred scope, captured in `## Non-Goals` as v2 candidates (not blocking).
+- *Closed-circle privacy* — elevated to an NFR ("Closed-circle confinement" in `## Non-Functional Requirements`).
+- *Operator-side immutability* — scoped out for the MVP (`## Access Control`, `## Non-Goals`); immutability is enforced at the product surface only.
+- *Account deletion vs. immutability* — resolved as anonymize-to-"former member" (FR-014, `## Business Logic`).
+- *qps / data_volume ballparks* — set to `low` / `small` in frontmatter (consistent with `users: small`).
+
+None outstanding. The PRD is ready for the next chain step (tech-stack selection).

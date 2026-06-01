@@ -1,8 +1,8 @@
----
+ ---
 project: "Resolution Circle"
 context_type: greenfield
 created: 2026-05-29
-updated: 2026-05-29
+updated: 2026-06-01
 checkpoint:
   current_phase: 8
   phases_completed: [1, 2, 3, 4, 5, 6, 7]
@@ -21,17 +21,23 @@ checkpoint:
       decision: "goal immutability never circumvented; goals visible only within group(s), never public"
     - topic: "per-user goal cap"
       decision: "no cap; immutability already discourages over-commitment"
-  frs_drafted: 13
+    - topic: "account deletion vs. immutability"
+      decision: "anonymize — locked goals + frozen progress persist in group views as 'former member'; identity shed, promise kept (FR-014)"
+    - topic: "privacy confinement level"
+      decision: "elevated from guardrail to NFR ('closed-circle confinement')"
+    - topic: "operator-side immutability"
+      decision: "user-facing only for MVP; operators retain raw datastore access; operator-proof store out of scope (Non-Goal)"
+  frs_drafted: 14
   quality_check_status: accepted
 product_type: web-app
 target_scale:
   users: small
+  qps: low
+  data_volume: small
 timeline_budget:
   mvp_weeks: 3
   hard_deadline: null
   after_hours_only: true
-  frs_drafted: 0
-  quality_check_status: pending
 ---
 
 # Shape notes — New Year's resolutions accountability tracker
@@ -150,6 +156,10 @@ First user-visible value lands at step 4–5 (goals committed and witnessed by a
 - FR-013: At the end of each calendar quarter, every group member receives an email summarising the goals and current progress of every member of every group they belong to. Priority: must-have
   > Socrates: Counter-argument considered: "quarterly is too slow for shorter-cadence goals (e.g. 'one book per month') — three-month silence between digests lets users drift." Resolution: drift accepted as a deliberate tradeoff; the quarterly cadence is one of the three load-bearing pillars of the insight bundle (alongside immutability and closed-circle), and shortening it would walk back the differentiator. The digest is the SOCIAL heartbeat — between-digest progress updates are the user's job. FR-013 stands.
 
+### Account lifecycle
+- FR-014: Authenticated user can delete their own account. On deletion, the user's committed goals and frozen progress remain visible in every group they belonged to, but the author identity is replaced with "former member." Priority: must-have
+  > Resolved post-shaping: anonymize rather than hard-delete or preserve-with-name. Hard-delete lets a member silently escape a committed promise; preserve-with-name exposes a departed person indefinitely. Anonymization honors immutability while shedding identity.
+
 ## Business Logic
 
 Every committed goal is, after a 24-hour grace window, a fixed promise visible only to a chosen trusted circle, and the application surfaces each circle's collective progress to its members on a fixed quarterly cadence.
@@ -172,17 +182,19 @@ A user encounters the rule whenever they attempt to edit a goal (allowed only wi
 - **No user-configurable notification frequency.** Cadence is fixed at calendar-quarter end for every user, every group; no per-user, per-group, or per-goal cadence override. Per-user frequency is the exact failure mode the cadence insight prevents. Stated by user in seed.
 - **No group-shared goals.** The MVP supports one-person-one-goal-with-witnesses; it does not support a goal that the entire group commits to together (no joint targets, no group quotas). A collective-goal model is a different product. Stated by user in seed.
 - **No frequency-style goals.** Goal measures in the MVP are limited to numeric target OR binary yes/no (FR-004). Frequency goals such as "N times per period" (e.g. "run 3× per week") are not supported and would require a recurring-window state model. From FR-004 Socratic resolution.
-- **No third-party progress integrations.** The MVP does not import progress from Strava, Apple Health, fitness wearables, calendar feeds, or any other external system. Progress is recorded manually by the goal author (FR-007). From FR-007 Socratic resolution.
+- **No third-party progress integrations.** The MVP does not import progress from Strava, Apple Health, fitness wearables, calendar feeds, or any other external system. Progress is recorded manually by the goal author (FR-007). From FR-007 Socratic resolution. *Candidate for v2 if manual reporting proves a credibility limitation.*
+- **No operator-proof immutability.** Post-window immutability (FR-006) binds the product surface only; the MVP does not build an append-only / tamper-evident store, and operators retain raw data access for maintenance. Resolved post-shaping.
 
-## Open Questions (to be surfaced in PRD)
+## Open Questions (resolved post-shaping)
 
-These are unresolved decisions flagged during shaping that `/10x-prd` should mirror into the PRD's `## Open Questions`:
+All five shaping-stage open questions were resolved on 2026-06-01. Recorded here for traceability; nothing remains for `/10x-prd` to surface:
 
-1. **v2 — should frequency-style goals be supported?** Owner: user. The MVP defers; whether v2 adds a third measure type (frequency / N times per period) is a real product question driven by real-world goal-shape demand.
-2. **v2 — should third-party progress integrations be added (Strava, Apple Health, etc.)?** Owner: user. The MVP relies on manual progress reporting; whether that becomes a credibility limitation at real-world scale is unanswered and should be re-evaluated post-MVP.
-3. **Privacy confinement at NFR level.** Owner: user. The user considered and declined to elevate privacy confinement to an NFR commitment; it remains at Guardrail level in `## Success Criteria`. /10x-prd should surface this so reviewers can weigh in.
-4. **Post-window immutability for operators.** Owner: user. The user considered and declined to extend post-24h immutability to operator-side access as an NFR; the back door at the support layer remains theoretically open.
-5. **Account / data deletion vs. immutability.** Owner: user. What happens when a user with committed (and now-locked) goals deletes their account? Are the goals removed (breaking accountability continuity for groups they belong to), anonymised, or preserved with "former member" labelling? Not asked during shaping; needs a downstream call.
+1. **Frequency-style goals (v2)** — folded into `## Non-Goals` as a deferred v2 candidate. Not blocking.
+2. **Third-party progress integrations (v2)** — folded into `## Non-Goals` as a deferred v2 candidate. Not blocking.
+3. **Privacy confinement level** — RESOLVED: elevated from Guardrail to a measurable NFR ("closed-circle confinement").
+4. **Operator-side immutability** — RESOLVED: user-facing only for MVP; operators retain datastore access; operator-proof store added as a Non-Goal.
+5. **Account / data deletion vs. immutability** — RESOLVED: anonymize-to-"former member" (FR-014). Locked goals + frozen progress persist in group views; identity is shed.
+6. **target_scale.qps / data_volume** — RESOLVED: set to `low` / `small` in frontmatter, consistent with `users: small`.
 
 
 
