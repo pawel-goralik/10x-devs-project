@@ -1,7 +1,5 @@
-.idea
-*.iml
-
 .claude/**/10x-*
+.agents/**/10x-*
 
 ### IntelliJ IDEA ###
 out/
@@ -60,4 +58,6 @@ pnpm-debug.log*
 
 # macOS-specific files (additional)
 # jetbrains setting folder
+.idea
 .idea/
+*.iml
