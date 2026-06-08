@@ -56,7 +56,7 @@ scaffolding with occasional manual steps.
 | Signal      | Value                                                        | Severity | Notes                                                        |
 | ----------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
 | npm package | not run                                                      | n/a      | cmd_template starts with `git clone` — npm check skipped    |
-| GitHub repo | not run                                                      | n/a      | `gh` CLI not available on this machine; recency check unavailable |
+| GitHub repo | `przeprogramowani/10x-astro-starter` pushed 2026-05-17       | fresh    | Backfilled 2026-06-08 via curl (gh unauthenticated at original run time) |
 
 ## Scaffold log
 
