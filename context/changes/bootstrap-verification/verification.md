@@ -1,7 +1,7 @@
 ---
-bootstrapped_at: 2026-06-08T17:56:53Z
+bootstrapped_at: 2026-07-19T16:20:00Z
 starter_id: 10x-astro-starter
-starter_name: 10x Astro Starter (Astro + Supabase + Cloudflare)
+starter_name: "10x Astro Starter (Astro + Supabase + Cloudflare)"
 project_name: resolution-circle
 language_family: js
 package_manager: npm
@@ -51,38 +51,36 @@ CI runs on GitHub Actions with auto-deploy on merge — the shape the starter
 ships with. Bootstrapper confidence is first-class, so expect mostly-smooth
 scaffolding with occasional manual steps.
 
+---
+
 ## Pre-scaffold verification
 
-| Signal      | Value                                                        | Severity | Notes                                                        |
-| ----------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
-| npm package | not run                                                      | n/a      | cmd_template starts with `git clone` — npm check skipped    |
-| GitHub repo | `przeprogramowani/10x-astro-starter` pushed 2026-05-17       | fresh    | Backfilled 2026-06-08 via curl (gh unauthenticated at original run time) |
+| Signal      | Value    | Severity | Notes                                                       |
+| ----------- | -------- | -------- | ----------------------------------------------------------- |
+| npm package | not run  | n/a      | `cmd_template` starts with `git clone` — npm check skipped |
+| GitHub repo | not run  | n/a      | `gh` CLI not authenticated; recency check unavailable       |
+
+---
 
 ## Scaffold log
 
 **Resolved invocation**: `git clone https://github.com/przeprogramowani/10x-astro-starter .bootstrap-scaffold && cd .bootstrap-scaffold && npm install`
-**Strategy**: git-clone (cloned starter repo; upstream `.git/` deleted before move-up)
+**Strategy**: clone starter repo without keeping its git history
 **Exit code**: 0
-**Files moved**: 20 top-level items (directories and files)
-**Conflicts (.scaffold siblings)**: `CLAUDE.md` → `CLAUDE.md.scaffold`
-**.gitignore handling**: append-merged — cwd lines preserved in order; scaffold lines de-duped (`.DS_Store` dropped as duplicate) and appended with `# from 10x-astro-starter` separator
+**Files moved**: 0 (all scaffold files conflicted with an already-bootstrapped cwd)
+**Conflicts (.scaffold siblings)**: 46 files — `.env.example`, `.husky/pre-commit`, `.nvmrc`, `.prettierrc.json`, `.vscode/extensions.json`, `.vscode/launch.json`, `.vscode/settings.json`, `CLAUDE.md`, `README.md`, `astro.config.mjs`, `components.json`, `eslint.config.js`, `package-lock.json`, `package.json`, `public/.assetsignore`, `public/favicon.png`, `public/template.png`, `src/components/Banner.astro`, `src/components/Topbar.astro`, `src/components/Welcome.astro`, `src/components/auth/FormField.tsx`, `src/components/auth/PasswordToggle.tsx`, `src/components/auth/ServerError.tsx`, `src/components/auth/SignInForm.tsx`, `src/components/auth/SignUpForm.tsx`, `src/components/auth/SubmitButton.tsx`, `src/components/ui/LibBadge.astro`, `src/components/ui/button.tsx`, `src/env.d.ts`, `src/layouts/Layout.astro`, `src/lib/config-status.ts`, `src/lib/supabase.ts`, `src/lib/utils.ts`, `src/middleware.ts`, `src/pages/api/auth/signin.ts`, `src/pages/api/auth/signout.ts`, `src/pages/api/auth/signup.ts`, `src/pages/auth/confirm-email.astro`, `src/pages/auth/signin.astro`, `src/pages/auth/signup.astro`, `src/pages/dashboard.astro`, `src/pages/index.astro`, `src/styles/global.css`, `supabase/config.toml`, `tsconfig.json`, `wrangler.jsonc`
+**.gitignore handling**: absent in scaffold (no `.gitignore` found in cloned starter)
 **.bootstrap-scaffold cleanup**: deleted
 
-### Conflict matrix details
+> Note: High conflict count reflects a re-run on an already-bootstrapped project. All existing files were preserved; starter originals are available as `.scaffold` siblings for diffing.
 
-| Scaffold path | CWD state  | Resolution                          |
-| ------------- | ---------- | ----------------------------------- |
-| `CLAUDE.md`   | existed    | existing wins; scaffold → `CLAUDE.md.scaffold` |
-| `.gitignore`  | existed    | append-merged                       |
-| `src/`        | existed (empty) | merged — no file-level conflicts |
-| `context/**`  | n/a        | not present in scaffold; nothing dropped |
-| all others    | absent     | moved silently                      |
+---
 
 ## Post-scaffold audit
 
 **Tool**: `npm audit --json`
-**Summary**: 0 CRITICAL, 1 HIGH, 9 MODERATE, 0 LOW
-**Direct vs transitive**: 0/0 CRITICAL/HIGH direct of total 0/1; 2 direct MODERATE of total 9 MODERATE
+**Summary**: 0 CRITICAL, 7 HIGH, 7 MODERATE, 2 LOW
+**Direct vs transitive**: Direct — 0 CRITICAL, 2 HIGH (`astro`, `wrangler`), 1 MODERATE (`supabase`), 0 LOW; Transitive — 0 CRITICAL, 5 HIGH, 6 MODERATE, 2 LOW
 
 #### CRITICAL findings
 
@@ -90,57 +88,70 @@ None.
 
 #### HIGH findings
 
-| Package   | Version     | Advisory                              | CVSS | Fix available |
-| --------- | ----------- | ------------------------------------- | ---- | ------------- |
-| `devalue` | 5.6.3–5.8.0 | GHSA-77vg-94rm-hx3p — DoS via sparse array deserialization | 7.5 (CVSS:3.1/AV:N/AC:L/PR:N/UI:N) | Yes (transitive — update upstream package) |
-
-> **Note**: `devalue` is a transitive dependency (not directly in your `package.json`). Fix is available via `npm audit fix`.
+| Package                   | Direct | Advisory                                                                                | Fix available |
+| ------------------------- | ------ | --------------------------------------------------------------------------------------- | ------------- |
+| `astro`                   | yes    | GHSA-8hv8-536x-4wqp — Reflected XSS via unescaped slot name (range `<6.3.3`)           | yes           |
+| `astro`                   | yes    | GHSA-2pvr-wf23-7pc7 — Host header SSRF in prerendered error page fetch (range `<6.4.6`) | yes          |
+| `wrangler`                | yes    | Inherited HIGH via `esbuild` and `miniflare`/`undici`/`ws` chain                       | yes           |
+| `undici`                  | no     | GHSA-vmh5-mc38-953g — TLS certificate validation bypass via SOCKS5 ProxyAgent (range `>=7.23.0 <7.28.0`) | yes |
+| `undici`                  | no     | GHSA-vxpw-j846-p89q — WebSocket DoS via fragment count bypass (range `>=7.0.0 <7.28.0`) | yes         |
+| `undici`                  | no     | GHSA-hm92-r4w5-c3mj — Cross-origin request routing via SOCKS5 proxy pool reuse (range `>=7.23.0 <7.28.0`) | yes |
+| `vite`                    | no     | GHSA-fx2h-pf6j-xcff — `server.fs.deny` bypass on Windows alternate paths (range `7.0.0 - 7.3.3`) | yes |
+| `ws`                      | no     | GHSA-96hv-2xvq-fx4p — Memory exhaustion DoS from tiny fragments (range `8.0.0 - 8.20.1`) | yes       |
+| `miniflare`               | no     | Inherited HIGH via `undici` + `ws` chain                                                | yes           |
+| `@cloudflare/vite-plugin` | no     | Inherited HIGH via `miniflare`, `wrangler`, `ws` chain                                 | yes           |
 
 #### MODERATE findings
 
-| Package                  | Severity | isDirect | Advisory                                      | Fix available |
-| ------------------------ | -------- | -------- | --------------------------------------------- | ------------- |
-| `@astrojs/check`         | moderate | yes      | via `@astrojs/language-server` → `volar-service-yaml` → `yaml-language-server` → `yaml` | Downgrade to `@astrojs/check@0.9.2` (major) |
-| `wrangler`               | moderate | yes      | via `miniflare` → `ws`                        | Yes           |
-| `@astrojs/language-server` | moderate | no     | via `volar-service-yaml` → `yaml-language-server` → `yaml` | via `@astrojs/check@0.9.2` |
-| `@cloudflare/vite-plugin` | moderate | no      | via `miniflare`/`wrangler`/`ws`               | Yes           |
-| `miniflare`              | moderate | no       | via `ws`                                      | Yes           |
-| `volar-service-yaml`     | moderate | no       | via `yaml-language-server` → `yaml`           | via `@astrojs/check@0.9.2` |
-| `ws`                     | moderate | no       | GHSA-58qx-3vcg-4xpx — uninitialized memory disclosure (CVSS 4.4) | Yes |
-| `yaml`                   | moderate | no       | GHSA-48c2-rrv3-qjmp — Stack Overflow via deeply nested YAML (CVSS 4.3) | via `@astrojs/check@0.9.2` |
-| `yaml-language-server`   | moderate | no       | via `yaml`                                    | via `@astrojs/check@0.9.2` |
+| Package                    | Direct | Advisory                                                                                     | Fix available |
+| -------------------------- | ------ | -------------------------------------------------------------------------------------------- | ------------- |
+| `supabase`                 | yes    | GHSA-vmf3-w455-68vh — node-tar PAX size override file smuggling (range `1.1.6 - 2.98.2`)    | yes           |
+| `js-yaml`                  | no     | GHSA-h67p-54hq-rp68 — Quadratic-complexity DoS in merge key handling (range `4.0.0 - 4.1.1`) | yes          |
+| `tar`                      | no     | GHSA-vmf3-w455-68vh — PAX size override to intermediary headers (range `<=7.5.15`)           | yes           |
+| `undici`                   | no     | GHSA-p88m-4jfj-68fv — HTTP header injection via Set-Cookie percent-decoding (range `>=7.0.0 <7.28.0`) | yes |
+| `undici`                   | no     | GHSA-pr7r-676h-xcf6 — Cross-user information disclosure via shared cache (range `>=7.0.0 <7.28.0`) | yes  |
+| `yaml`                     | no     | GHSA-48c2-rrv3-qjmp — Stack overflow via deeply nested YAML (range `2.0.0 - 2.8.2`)        | yes           |
+| `astro`                    | yes    | GHSA-jrpj-wcv7-9fh9 — XSS via Unescaped Attribute Names in Spread Props (range `<6.4.6`)   | yes           |
+| `volar-service-yaml`       | no     | Inherited MODERATE via `yaml-language-server` → `yaml` chain                                | yes           |
+| `@astrojs/language-server` | no     | Inherited MODERATE via `volar-service-yaml` chain                                           | yes           |
+| `yaml-language-server`     | no     | Inherited MODERATE via `yaml` chain                                                          | yes           |
 
 #### LOW / INFO findings
 
-None.
+| Package       | Direct | Advisory                                                                                    | Fix available |
+| ------------- | ------ | ------------------------------------------------------------------------------------------- | ------------- |
+| `@babel/core` | no     | GHSA-4x5r-pxfx-6jf8 — Arbitrary File Read via sourceMappingURL Comment (range `<=7.29.0`) | yes           |
+| `esbuild`     | no     | GHSA-g7r4-m6w7-qqqr — Arbitrary file read on Windows dev server (range `0.27.3 - 0.28.0`) | yes           |
+
+---
 
 ## Hints recorded but not acted on
 
-These hand-off hints were read and staged into this log. No automated action was taken on them in v1; the future M1L4 skill is the intended consumer.
-
-| Hint                    | Value            |
-| ----------------------- | ---------------- |
-| bootstrapper_confidence | first-class      |
-| quality_override        | false            |
-| path_taken              | standard         |
-| self_check_answers      | null             |
-| team_size               | solo             |
-| deployment_target       | cloudflare-pages |
-| ci_provider             | github-actions   |
+| Hint                    | Value                |
+| ----------------------- | -------------------- |
+| bootstrapper_confidence | first-class          |
+| quality_override        | false                |
+| path_taken              | standard             |
+| self_check_answers      | null                 |
+| team_size               | solo                 |
+| deployment_target       | cloudflare-pages     |
+| ci_provider             | github-actions       |
 | ci_default_flow         | auto-deploy-on-merge |
-| has_auth                | true             |
-| has_payments            | false            |
-| has_realtime            | false            |
-| has_ai                  | false            |
-| has_background_jobs     | true             |
+| has_auth                | true                 |
+| has_payments            | false                |
+| has_realtime            | false                |
+| has_ai                  | false                |
+| has_background_jobs     | true                 |
+
+All hints above were read and preserved in this log. None triggered automated action in bootstrapper v1. A future M1L4 skill ("Memory Architecture") will use these to configure `CLAUDE.md` and `AGENTS.md`.
+
+---
 
 ## Next steps
 
 Next: a future skill will set up agent context (CLAUDE.md, AGENTS.md). For now, your project is scaffolded and verified — happy hacking.
 
 Useful manual steps in the meantime:
-- `git init` (if you have not already) to start your own repo history — note that `.bootstrap-scaffold/.git/` was deleted to prevent the starter's history from leaking into your repo.
-- Review `CLAUDE.md.scaffold` (the starter's AI rules file) — diff it against your existing `CLAUDE.md` to pick up the Astro-specific commands, architecture notes, and conventions.
-- Copy `.env.example` to `.env` for local Node dev, or to `.dev.vars` for Cloudflare local dev; fill in `SUPABASE_URL` and `SUPABASE_KEY`.
-- Run `npx supabase start` (requires Docker) to spin up a local Supabase instance.
-- Address audit findings per your project's risk tolerance — run `npm audit fix` for the automatically fixable issues (HIGH `devalue`, several MODERATE). The `@astrojs/check` chain requires a major-version downgrade to `0.9.2` if you want to resolve those MODERATE findings.
+- Review the 46 `.scaffold` siblings created by the conflict policy. Since this was a re-run on an already-bootstrapped project, the `.scaffold` files are the starter's originals — you can safely delete them if your existing files are intentional customizations (`git diff <file> <file>.scaffold` to compare).
+- Run `npm audit fix` to address the 7 HIGH and 7 MODERATE findings (all have `fixAvailable: true`). The two direct HIGH findings (`astro`, `wrangler`) are the most actionable — upgrading those packages will collapse most of the transitive chain.
+- `git init` if you haven't already started your own repo history (the cloned starter's `.git` history was stripped before file move-up).
