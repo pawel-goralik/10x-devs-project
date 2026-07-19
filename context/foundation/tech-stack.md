@@ -5,7 +5,7 @@ project_name: resolution-circle
 hints:
   language_family: js
   team_size: solo
-  deployment_target: cloudflare-pages
+  deployment_target: cloudflare-workers
   ci_provider: github-actions
   ci_default_flow: auto-deploy-on-merge
   bootstrapper_confidence: first-class
@@ -31,7 +31,8 @@ collapsing the biggest build risks for a short, solo timeline. The quarterly
 digest (FR-013) is scheduled background work, recorded as has_background_jobs;
 the edge runtime constrains long-running tasks, but a quarterly cron writing to
 Supabase is a well-trodden path. Payments, realtime, and AI are out of scope per
-the PRD non-goals. Deployment targets Cloudflare Pages (the starter default) and
+the PRD non-goals. Deployment targets Cloudflare Workers (the installed
+`@astrojs/cloudflare` v13 adapter and `wrangler.jsonc` both target Workers) and
 CI runs on GitHub Actions with auto-deploy on merge — the shape the starter
 ships with. Bootstrapper confidence is first-class, so expect mostly-smooth
 scaffolding with occasional manual steps.

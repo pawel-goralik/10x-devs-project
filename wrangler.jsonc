@@ -3,7 +3,7 @@
   "name": "10x-astro-starter",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-05-08",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "disable_nodejs_process_v2"],
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist",
