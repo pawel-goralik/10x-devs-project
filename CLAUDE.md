@@ -8,12 +8,7 @@ New Year's Goals — an MVP web app where users set annual goals (measured by a 
 
 ## Commands
 
-- `npm run dev` — start dev server (Cloudflare workerd runtime)
-- `npm run build` — production build (SSR via `@astrojs/cloudflare`)
-- `npm run preview` — preview production build
-- `npm run lint` — ESLint with type-checked rules
-- `npm run lint:fix` — auto-fix lint issues
-- `npm run format` — Prettier (includes prettier-plugin-astro + prettier-plugin-tailwindcss)
+See `@README.md#available-scripts` for all dev scripts.
 
 Pre-commit hooks: husky + lint-staged runs `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
 
@@ -35,7 +30,7 @@ Full server-side rendering (`output: "server"` in `astro.config.mjs`). All pages
 ### Key conventions
 
 - **Path alias**: `@/*` maps to `./src/*` (tsconfig paths).
-- **Astro components** for static content/layout; **React components** only when interactivity is needed.
+- **React components** only when the component requires client-side state, DOM event handlers, or browser-only APIs (`window`, `localStorage`). If none of those apply, use an **Astro component**.
 - **Tailwind class merging**: use `cn()` from `@/lib/utils` (clsx + tailwind-merge). Do not concatenate class strings manually.
 - **shadcn/ui**: components live in `src/components/ui/`, "new-york" style. Install new ones with `npx shadcn@latest add [name]`.
 - **API routes**: use uppercase `GET`, `POST` exports; validate input with zod.
@@ -48,8 +43,7 @@ Full server-side rendering (`output: "server"` in `astro.config.mjs`). All pages
 
 - Node.js v22.14.0 (see `.nvmrc`)
 - Env vars: `SUPABASE_URL`, `SUPABASE_KEY` — copy `.env.example` to `.env` for Node dev, or `.dev.vars` for Cloudflare local dev
-- Local Supabase: `npx supabase start` (requires Docker)
-- Deploy: `npx wrangler deploy` (requires Cloudflare account + `wrangler` auth)
+- See `@README.md` for local Supabase setup and deploy steps.
 
 ## CI
 
