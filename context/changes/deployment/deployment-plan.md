@@ -10,9 +10,9 @@ depends_on: context/foundation/infrastructure.md
 
 ## Context
 
-`context/foundation/infrastructure.md` already picked Cloudflare Workers (+ Resend for email) as the MVP platform, and the repo (`@astrojs/cloudflare` v13, `wrangler.jsonc`) is already wired for Workers, not Pages. But nothing has actually been deployed yet: `wrangler`/`gh` aren't authenticated locally, no cloud Supabase project exists, no domain exists for Resend, and the app itself currently only has the auth scaffold (signup/signin/confirm-email/dashboard/signout) — no goals/groups/digest features exist in code yet.
+`context/foundation/infrastructure.md` already picked Cloudflare Workers (+ Brevo for email) as the MVP platform, and the repo (`@astrojs/cloudflare` v13, `wrangler.jsonc`) is already wired for Workers, not Pages. But nothing has actually been deployed yet: `wrangler`/`gh` aren't authenticated locally, no cloud Supabase project exists, and the app itself currently only has the auth scaffold (signup/signin/confirm-email/dashboard/signout) — no goals/groups/digest features exist in code yet. Brevo requires no sending domain (single sender email verification is enough), so real magic-link email can be wired from the start — no domain-acquisition workaround needed.
 
-This plan covers **getting the current auth-only app safely live on Cloudflare Workers now**, with Resend + the quarterly-digest Cron/Queue wiring explicitly **deferred** to a follow-up phase (no domain yet, and no digest logic to trigger regardless). It also fixes two pre-existing repo bugs discovered during research: the CI workflow's branch mismatch (`master` vs. the actual `main`), and the leftover `10x-astro-starter` Worker name.
+This plan covers **getting the current auth-only app safely live on Cloudflare Workers now**, with real magic-link email wired through Brevo from the start. Only the quarterly-digest Cron wiring is explicitly **deferred** to a follow-up phase, since no goals/groups/digest logic exists in code yet. It also fixes two pre-existing repo bugs discovered during research: the CI workflow's branch mismatch (`master` vs. the actual `main`), and the leftover `10x-astro-starter` Worker name.
 
 Steps are grouped into phases with checkboxes. Each step is tagged **[Agent]** (run/editable by the agent), **[Human]** (needs a browser/dashboard/CLI login action), or **[Agent, needs your value]** (agent runs the command, human supplies a secret out of band rather than pasting it into chat).
 
@@ -41,8 +41,13 @@ This file is the canonical, git-tracked, checkbox-driven progress tracker for th
 - [ ] **[Agent runs]** `npx supabase link --project-ref <ref>` from the repo root — links this local repo to the new project so `config push` (Phase 2) and future `db push` migrations target it. `<ref>` is printed by the `projects create` output, or via `npx supabase projects list`.
 - [ ] **[Agent runs, human copies value]** `npx supabase projects api-keys --project-ref <ref>` prints the **Project URL** (`https://<ref>.supabase.co`) and the `anon` public key. Don't paste the actual key into chat — the human runs the `wrangler secret put` command themselves in Phase 3, or supplies it via a local env var the agent reads.
 
-### Edge case: no domain yet for Resend
-Resend needs a verified sending domain to email *arbitrary* recipients — without one it can only send test emails to your own account address. Since no domain exists yet, this deploy uses **Supabase's built-in default email service** instead (works with zero setup, no domain required). Caveat: it's rate-limited to **~2 emails/hour** and is explicitly documented by Supabase as best-effort/non-production only — fine for solo smoke-testing and a small early user base, not a long-term production answer. See Phase 7 for the follow-up.
+### 1c. Set up Brevo (no domain required)
+
+- [ ] **[Human]** Create a free Brevo account (brevo.com) if you don't already have one.
+- [ ] **[Human]** In the Brevo dashboard, verify a single sender email address (Senders, Domains & Dedicated IPs → Senders → Add a sender → 6-digit code, no DNS needed).
+- [ ] **[Human]** Grab an SMTP key (Settings → SMTP & API → SMTP tab) for Phase 2's Supabase Auth SMTP config. The separate REST API key (same page, API Keys tab) is only needed once the digest feature is built (Phase 7) — no need to generate it yet.
+
+Note from `infrastructure.md`'s risk register: without an authenticated domain, Brevo substitutes the visible sender address as a deliverability workaround — cosmetic only, doesn't block sending.
 
 ## Phase 2 — Supabase Auth production configuration
 
@@ -51,7 +56,8 @@ This is the step most likely to be silently skipped and cause confusing failures
 - [ ] **[Agent edits, human confirms the URL]** In `supabase/config.toml`, set `[auth] site_url = "https://<your-worker-url>"` and `additional_redirect_urls = ["https://<your-worker-url>"]` (the actual `*.workers.dev` URL is only known after Phase 4's first deploy — see sequencing note below). A fresh cloud project defaults `site_url` to `http://127.0.0.1:3000` — since `signup.ts` calls `supabase.auth.signUp()` with no explicit `emailRedirectTo`, confirmation links will point at localhost and 404 for real users if this is skipped.
 - [ ] **[Agent runs]** `npx supabase config push` to apply `config.toml` to the linked remote project. Caveat confirmed from Supabase's own CLI issue tracker: `config push` **overwrites** the remote URL config to exactly match `config.toml` — if a staging/preview URL is later added by hand in the dashboard, it'll be silently reverted on the next `config push`. Keep `config.toml` as the single source of truth going forward.
   - Dashboard fallback: Authentication → URL Configuration → set Site URL + add to Redirect URLs manually.
-- [ ] **[Human, optional for first smoke test]** To smoke-test signup/signin without waiting on any email at all, Authentication → Email → toggle **Confirm email** off temporarily (the README already documents this for local dev; same toggle applies to the cloud project). Turn it back on before inviting real users.
+- [ ] **[Human]** In the Supabase dashboard, Authentication → Emails → SMTP Settings: enable **Custom SMTP**, host `smtp-relay.brevo.com`, port `587`, user = your Brevo account email, password = the Brevo SMTP key from Phase 1c. This makes Supabase send real magic-link/confirmation emails through Brevo instead of its rate-limited (~2/hour) built-in service.
+- [ ] **[Human, optional for faster iteration]** To smoke-test signup/signin without waiting on any email at all, Authentication → Email → toggle **Confirm email** off temporarily (the README already documents this for local dev; same toggle applies to the cloud project). Now that Brevo is wired, this is optional — only useful to skip waiting on email during rapid testing. Turn it back on (if used) before inviting real users.
 
 **Sequencing note:** this phase needs the live Worker URL, which only exists after Phase 4's first `wrangler deploy`. Practical order: do Phase 4's deploy once first with a placeholder/localhost Site URL (auth will be broken, but the deploy itself + non-auth pages can be smoke-tested), then immediately loop back and run Phase 2 with the real URL, then re-verify the full auth flow.
 
@@ -62,7 +68,7 @@ This is the step most likely to be silently skipped and cause confusing failures
 ## Phase 4 — First deploy + verification
 
 - [ ] **[Agent]** `npm run build && npx wrangler deploy`
-- [ ] **[Agent]** Smoke-test the live `*.workers.dev` URL end-to-end: signup → confirm-email page → (real email or confirm-email-off) → signin → `/dashboard` shows the signed-in user → signout.
+- [ ] **[Agent]** Smoke-test the live `*.workers.dev` URL end-to-end: signup → confirm-email page → confirmation email arrives via Brevo (check spam folder the first time; sender address may be substituted per the no-domain-auth caveat) → signin → `/dashboard` shows the signed-in user → signout.
   - Explicitly check for `[object Object]` on any SSR page (the astro#15434 regression) — should be clean given the flags in Phase 0, but this is the actual proof, not build success.
   - Confirm `SUPABASE_URL`/`SUPABASE_KEY` resolve at **runtime** in production, not just at build time — `.dev.vars` behavior locally is not a guarantee that `wrangler secret put` values are wired the same way.
   - Confirm cookies set by `@supabase/ssr` work correctly on the `*.workers.dev` origin (it's on the Public Suffix List; host-only cookies — the current code path — are fine, just verify rather than assume).
@@ -78,24 +84,16 @@ This is the step most likely to be silently skipped and cause confusing failures
 
 ## Phase 6 — Finalize the deploy artifact
 
-- [ ] **[Agent]** Update this file with a closing summary: what got deployed, the live URL, which secrets are wired (`SUPABASE_URL`, `SUPABASE_KEY`), that Resend/digest are explicitly deferred (Phase 7), and the rollback command (`npx wrangler deployments list` → `npx wrangler rollback [version-id]`). Flip the frontmatter `status` to `deployed`.
+- [ ] **[Agent]** Update this file with a closing summary: what got deployed, the live URL, which Worker secrets are wired (`SUPABASE_URL`, `SUPABASE_KEY`), that Brevo SMTP is configured in Supabase for magic-link email (not a Worker secret), that the digest feature (and its `BREVO_API_KEY` Worker secret) is explicitly deferred (Phase 7), and the rollback command (`npx wrangler deployments list` → `npx wrangler rollback [version-id]`). Flip the frontmatter `status` to `deployed`.
 
-## Phase 7 — Deferred follow-up (not built now — tracked for later)
+## Phase 7 — Deferred follow-up (digest feature, not built now — tracked for later)
 
-No paid domain required — pick one of two genuinely free paths when ready to move off Supabase's built-in email:
+Magic-link email is already production-ready via Brevo (Phase 1c/2) — no domain-acquisition workaround needed. What's left is purely the quarterly-digest feature, which depends on goals/groups/progress data models that don't exist yet:
 
-- [ ] **Option A — Stay on Supabase's built-in email indefinitely.** Zero extra setup, zero cost. The ~2 emails/hour cap is a real limit for a high-volume product, but for a personal/friend-group goal tracker it may simply never be hit. Revisit only if it's outgrown, or deliverability control Supabase's shared service doesn't give is needed.
-- [ ] **Option B — Get a free subdomain via [is-a.dev](https://is-a.dev)** (e.g. `resolution-circle.is-a.dev`), a free GitHub-PR-based subdomain registry for dev projects. Confirmed requirements and mechanics (from their docs, current as of this research):
-  - **Eligibility (checked before starting):** the linked site must already be live and "somewhat complete," and be either a personal site or a **non-commercial, software-development-related project** — a personal goals-tracker app for a friend group fits. Do this step **after** Phase 4's first deploy, not before — a live URL is needed to link and a screenshot to attach to the PR.
-  - **Registration mechanics:** fork `github.com/is-a-dev/register`; each subdomain (root + each Resend-required record host) is its **own JSON file** under `domains/`, named after the subdomain (dots for nested labels, e.g. `send.resolution-circle.json`; underscore labels like `resend._domainkey.resolution-circle.json` are explicitly valid). One PR can add multiple files together:
-    - `domains/resolution-circle.json` → `{"owner": {"username": "<gh-username>", "email": "<email>"}, "records": {"CNAME": "<worker>.<subdomain>.workers.dev"}, "proxied": true}`
-    - `domains/send.resolution-circle.json` and `domains/resend._domainkey.resolution-circle.json` → filled in with the **exact** MX/TXT values Resend's dashboard gives once the domain is added there (don't invent these — copy them verbatim from Resend).
-    - Optionally `domains/_dmarc.resolution-circle.json` with a `TXT` DMARC policy.
-  - **[Human]** Open the PR personally following their template exactly, with a link + screenshot of the live site in the description — is-a.dev explicitly reserves the right to close PRs that look AI-generated or incomplete, so this is a step to own directly even if the JSON file contents are agent-drafted. Review isn't instant (can take hours); DNS goes live within minutes of merge.
-  - (`eu.org` is a similar free-domain alternative with a slower manual-review process; only worth it if is-a.dev's dev-project restriction is a blocker.)
-  - [ ] Once merged, verify the domain in Resend's dashboard (it re-checks these exact DNS records).
-  - [ ] In Supabase dashboard, flip **Enable Custom SMTP** on (a separate toggle from domain verification) and enter Resend's SMTP host/port + API key, replacing the interim built-in email service.
-- [ ] Once goals/groups/progress data models exist: design the quarterly digest as a Cron Trigger (`triggers.crons` in `wrangler.jsonc`) fanning out to a Cloudflare Queue consumer that sends via the Resend HTTP API (not SMTP — unusable inside workerd), gated by a per-quarter idempotency row in Supabase. Watch Resend's free-tier 100 emails/day cap if the user base grows.
+- [ ] **[Agent, human supplies value]** Once digest logic is being built, generate a Brevo REST API key (Settings → SMTP & API → API Keys tab) and store it as a Worker secret: `npx wrangler secret put BREVO_API_KEY`.
+- [ ] **[Agent]** Wire the quarterly digest as a Cron Trigger (`triggers.crons` in `wrangler.jsonc`) with a single synchronous `scheduled` handler that queries active members from Supabase and sends each email directly via Brevo's REST API (`POST https://api.brevo.com/v3/smtp/email`) using `fetch` — no Cloudflare Queues needed at the current group size (<45 recipients), well under the free plan's 50-external-subrequest-per-invocation cap. Gate the send on a per-quarter idempotency row in Supabase, and expose a protected manual re-fire route in case a transient error kills the invocation partway through (no automatic retry without Queues).
+- [ ] Add Cloudflare Queues only once recipient count approaches ~45 (the free-tier subrequest ceiling, not the CPU limit — see `infrastructure.md`'s Unknown Unknowns).
+- [ ] Watch Brevo's free-tier **300 emails/day** cap if the user base grows; Resend remains a documented fallback (see `infrastructure.md`'s risk register).
 
 ---
 
