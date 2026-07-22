@@ -1,6 +1,6 @@
 ---
 change: cloudflare-first-deployment
-status: in-progress
+status: deployed
 created: 2026-07-20
 project: Resolution Circle
 depends_on: context/foundation/infrastructure.md
@@ -128,9 +128,25 @@ This is the step most likely to be silently skipped and cause confusing failures
 - [x] **[Agent]** Add `.github/workflows/deploy.yml`: triggers on push to `main`, runs `npm ci`, `npx astro sync`, `npm run build` (mirroring `ci.yml`'s existing env-var pattern for `SUPABASE_URL`/`SUPABASE_KEY`), then deploys via `cloudflare/wrangler-action@v3` with `apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}` and `accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}`. Pin `wranglerVersion` to match the installed `wrangler@^4.90.0` to avoid CI/local drift. Done — pinned to `4.112.0` (the actual resolved version per `npm ls wrangler`, not just the `^4.90.0` semver range).
 - [x] **[Agent]** Push a trivial change (or the fixes from this plan) to confirm the workflow fires and deploys successfully. Done — committed `deploy.yml` + Phase 3b/4 doc/config updates (`26652af`), pushed to `main`. Both `CI` (29956253317) and `Deploy` (29956253319) runs completed green. `npx wrangler deployments list` confirms the new version (`9e276cc3-8093-417e-80ed-78e770faa437`, created via the Actions run) is now live, superseding the earlier manual Phase 3a deploy.
 
-## Phase 6 — Finalize the deploy artifact
+## Phase 6 — Finalize the deploy artifact ✅ done
 
-- [ ] **[Agent]** Update this file with a closing summary: what got deployed, the live URL, which Worker secrets are wired (`SUPABASE_URL`, `SUPABASE_KEY`), that Brevo SMTP is configured in Supabase for magic-link email (not a Worker secret), that the digest feature (and its `BREVO_API_KEY` Worker secret) is explicitly deferred (Phase 7), and the rollback command (`npx wrangler deployments list` → `npx wrangler rollback [version-id]`). Flip the frontmatter `status` to `deployed`.
+- [x] **[Agent]** Update this file with a closing summary: what got deployed, the live URL, which Worker secrets are wired (`SUPABASE_URL`, `SUPABASE_KEY`), that Brevo SMTP is configured in Supabase for magic-link email (not a Worker secret), that the digest feature (and its `BREVO_API_KEY` Worker secret) is explicitly deferred (Phase 7), and the rollback command (`npx wrangler deployments list` → `npx wrangler rollback [version-id]`). Flip the frontmatter `status` to `deployed`.
+
+### Closing summary
+
+**Live at**: https://resolution-circle.pawel-goralik.workers.dev — the current auth-only app (signup/signin/confirm-email/dashboard/signout), deployed to Cloudflare Workers, auto-deploying on every push to `main` via GitHub Actions (`.github/workflows/deploy.yml`).
+
+**What's wired:**
+- **Worker secrets** (`npx wrangler secret list`): `SUPABASE_URL`, `SUPABASE_KEY` — both `secret_text`, set by hand in Phase 2, resolved and verified at runtime (not just build time).
+- **Supabase Auth** (cloud project `resolution-circle`, ref `onmirtudxfjmdjwebeio`, `eu-central-1`): `site_url` / `additional_redirect_urls` point at the live Worker URL via `supabase/config.toml` → `supabase config push` (Phase 4) — confirmed end-to-end in Phase 3b, not just configured.
+- **Email**: Brevo Custom SMTP configured in the Supabase dashboard (Authentication → Emails → SMTP Settings) — this is a **Supabase-side setting, not a Worker secret**. Confirmed working in Phase 3b's live smoke test (confirmation email delivered, sender substituted to the `brevosend.com` domain per the no-authenticated-domain caveat — cosmetic only).
+- **CI/CD**: `.github/workflows/ci.yml` (lint + build on push/PR to `main`) and `.github/workflows/deploy.yml` (build + `wrangler-action@v3` deploy on push to `main`), both using repo secrets `CLOUDFLARE_API_TOKEN` (secret) and `CLOUDFLARE_ACCOUNT_ID` (variable). Both workflows verified green end-to-end (runs `29956253317` / `29956253319`).
+
+**Deliberately not yet built** (Phase 7, tracked separately): the quarterly-digest feature and its `BREVO_API_KEY` Worker secret — no goals/groups/progress data model exists in code yet, so there's nothing to send a digest about. Magic-link/confirmation email is already production-ready; only the digest-specific Cron/queue wiring is deferred.
+
+**Rollback**, if a future deploy misbehaves: `npx wrangler deployments list` to find the last-known-good version ID, then `npx wrangler rollback [version-id]`. Note this rolls back the Worker only — it does not revert `supabase/config.toml`/Supabase Auth settings or database migrations, which would need reverting separately if a bad deploy also shipped a config/schema change.
+
+**Known environment quirk**: this network's corporate VPN does DNS/TLS interception on Cloudflare traffic (blocks `*.workers.dev`, breaks `wrangler tail`/API TLS with a self-signed-cert error) — disconnect it before any future CLI/agent work against this deployment from here.
 
 ## Phase 7 — Deferred follow-up (digest feature, not built now — tracked for later)
 
