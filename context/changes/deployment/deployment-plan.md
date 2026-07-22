@@ -94,8 +94,6 @@ Split into two passes because the live `*.workers.dev` URL (needed by Phase 4) o
 - [x] **[Agent]** `npx wrangler tail` briefly to confirm no runtime errors on pages that don't depend on auth redirects. Done — all requests logged `Ok`, no exceptions.
 - Full auth (signup/confirm/signin) is **expected to misbehave** at this point — Supabase's Site URL still points at `http://127.0.0.1:3000` until Phase 4 runs. Not a bug, just not tested yet.
 
-Note: first curl attempts from this environment returned a corporate Cloudflare Zero Trust "DNS Default Deny" block page for `*.workers.dev` — resolved itself on retry (network-level, unrelated to the deploy).
-
 ### 3b. Full auth verification (run after Phase 4)
 
 - [ ] **[Agent]** Smoke-test the live `*.workers.dev` URL end-to-end now that Phase 4 has pointed Supabase at the real URL: signup → confirm-email page → confirmation email arrives via Brevo (check spam folder the first time; sender address may be substituted per the no-domain-auth caveat) → signin → `/dashboard` shows the signed-in user → signout.
