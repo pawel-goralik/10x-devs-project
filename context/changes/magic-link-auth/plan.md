@@ -314,30 +314,30 @@ None required. This is a pre-launch swap of the auth mechanism with no real end 
 
 #### Automated
 
-- [x] 2.1 Lint passes
-- [x] 2.2 Type checking passes
-- [x] 2.3 Build succeeds
+- [x] 2.1 Lint passes — 04b2854
+- [x] 2.2 Type checking passes — 04b2854
+- [x] 2.3 Build succeeds — 04b2854
 
 #### Manual
 
-- [x] 2.4 /auth/signin shows a single email field, no password, no sign-up link
-- [x] 2.5 Valid submission redirects to /auth/check-email with the submitted address shown
-- [x] 2.6 /auth/signup returns 404
-- [x] 2.7 Topbar signed-out state shows exactly one auth link
-- [x] 2.8 /dashboard sign-out still works and re-protects the route
+- [x] 2.4 /auth/signin shows a single email field, no password, no sign-up link — 04b2854
+- [x] 2.5 Valid submission redirects to /auth/check-email with the submitted address shown — 04b2854
+- [x] 2.6 /auth/signup returns 404 — 04b2854
+- [x] 2.7 Topbar signed-out state shows exactly one auth link — 04b2854
+- [x] 2.8 /dashboard sign-out still works and re-protects the route — 04b2854
 
 ### Phase 3: Branded magic-link email template
 
 #### Automated
 
-- [ ] 3.1 supabase start boots with the updated config.toml
+- [x] 3.1 supabase start boots with the updated config.toml
 
 #### Manual
 
-- [ ] 3.2 Local Inbucket email uses the new branded template
-- [ ] 3.3 Live dashboard auth settings manually diffed against config.toml before push
-- [ ] 3.4 Production Dashboard shows the updated template after push
-- [ ] 3.5 Real magic-link request against production authenticates successfully
+- [x] 3.2 Local Inbucket email uses the new branded template
+- [x] 3.3 Live dashboard auth settings manually diffed against config.toml before push
+- [x] 3.4 Production Dashboard shows the updated template after push
+- [x] 3.5 Real magic-link request against production authenticates successfully
 
 ### Phase 4: Docs sync and full verification
 
