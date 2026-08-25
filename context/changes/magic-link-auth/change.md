@@ -3,7 +3,7 @@ change_id: magic-link-auth
 title: Replace password auth with passwordless magic-link auth
 status: implementing
 created: 2026-08-25
-updated: 2026-08-25
+updated: 2026-08-26
 archived_at: null
 ---
 

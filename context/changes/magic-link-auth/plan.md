@@ -330,26 +330,26 @@ None required. This is a pre-launch swap of the auth mechanism with no real end 
 
 #### Automated
 
-- [x] 3.1 supabase start boots with the updated config.toml
+- [x] 3.1 supabase start boots with the updated config.toml — 75500e5
 
 #### Manual
 
-- [x] 3.2 Local Inbucket email uses the new branded template
-- [x] 3.3 Live dashboard auth settings manually diffed against config.toml before push
-- [x] 3.4 Production Dashboard shows the updated template after push
-- [x] 3.5 Real magic-link request against production authenticates successfully
+- [x] 3.2 Local Inbucket email uses the new branded template — 75500e5
+- [x] 3.3 Live dashboard auth settings manually diffed against config.toml before push — 75500e5
+- [x] 3.4 Production Dashboard shows the updated template after push — 75500e5
+- [x] 3.5 Real magic-link request against production authenticates successfully — 75500e5
 
 ### Phase 4: Docs sync and full verification
 
 #### Automated
 
-- [ ] 4.1 Lint passes
-- [ ] 4.2 Type checking passes
-- [ ] 4.3 Build succeeds
-- [ ] 4.4 No stale references to removed routes/components remain
+- [x] 4.1 Lint passes
+- [x] 4.2 Type checking passes
+- [x] 4.3 Build succeeds
+- [x] 4.4 No stale references to removed routes/components remain
 
 #### Manual
 
-- [ ] 4.5 Full click-through: signin → check-email → Inbucket → callback → dashboard
-- [ ] 4.6 Sign-out clears session and re-protects /dashboard
-- [ ] 4.7 Reused/malformed link shows the friendly error on /auth/signin
+- [x] 4.5 Full click-through: signin → check-email → Inbucket → callback → dashboard
+- [x] 4.6 Sign-out clears session and re-protects /dashboard
+- [x] 4.7 Reused/malformed link shows the friendly error on /auth/signin
