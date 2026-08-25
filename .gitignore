@@ -61,3 +61,6 @@ pnpm-debug.log*
 .idea
 .idea/
 *.iml
+
+# supabase CLI local state
+supabase/.temp/
