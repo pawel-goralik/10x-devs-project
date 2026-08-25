@@ -297,34 +297,34 @@ None required. This is a pre-launch swap of the auth mechanism with no real end 
 
 #### Automated
 
-- [x] 1.1 Lint passes
-- [x] 1.2 Type checking passes
-- [x] 1.3 Build succeeds
-- [x] 1.9 config.toml additional_redirect_urls allow-lists localhost + production callback paths (adaptation, see change.md Notes)
+- [x] 1.1 Lint passes — d99fa2d
+- [x] 1.2 Type checking passes — d99fa2d
+- [x] 1.3 Build succeeds — d99fa2d
+- [x] 1.9 config.toml additional_redirect_urls allow-lists localhost + production callback paths (adaptation, see change.md Notes) — d99fa2d
 
 #### Manual
 
-- [x] 1.4 curl to /api/auth/request-link redirects to /auth/check-email
-- [x] 1.5 Magic-link email arrives in local Inbucket
-- [x] 1.6 Clicking the link authenticates via /api/auth/callback and lands on /dashboard
-- [x] 1.7 Invalid email is rejected before calling Supabase
-- [x] 1.8 Rate-limited second request shows the friendly message
+- [x] 1.4 curl to /api/auth/request-link redirects to /auth/check-email — d99fa2d
+- [x] 1.5 Magic-link email arrives in local Inbucket — d99fa2d
+- [x] 1.6 Clicking the link authenticates via /api/auth/callback and lands on /dashboard — d99fa2d
+- [x] 1.7 Invalid email is rejected before calling Supabase — d99fa2d
+- [x] 1.8 Rate-limited second request shows the friendly message — d99fa2d
 
 ### Phase 2: Merged sign-in UI
 
 #### Automated
 
-- [ ] 2.1 Lint passes
-- [ ] 2.2 Type checking passes
-- [ ] 2.3 Build succeeds
+- [x] 2.1 Lint passes
+- [x] 2.2 Type checking passes
+- [x] 2.3 Build succeeds
 
 #### Manual
 
-- [ ] 2.4 /auth/signin shows a single email field, no password, no sign-up link
-- [ ] 2.5 Valid submission redirects to /auth/check-email with the submitted address shown
-- [ ] 2.6 /auth/signup returns 404
-- [ ] 2.7 Topbar signed-out state shows exactly one auth link
-- [ ] 2.8 /dashboard sign-out still works and re-protects the route
+- [x] 2.4 /auth/signin shows a single email field, no password, no sign-up link
+- [x] 2.5 Valid submission redirects to /auth/check-email with the submitted address shown
+- [x] 2.6 /auth/signup returns 404
+- [x] 2.7 Topbar signed-out state shows exactly one auth link
+- [x] 2.8 /dashboard sign-out still works and re-protects the route
 
 ### Phase 3: Branded magic-link email template
 

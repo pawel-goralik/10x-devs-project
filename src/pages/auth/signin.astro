@@ -1,6 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import SignInForm from "@/components/auth/SignInForm";
+import MagicLinkForm from "@/components/auth/MagicLinkForm";
 
 const error = Astro.url.searchParams.get("error");
 ---
@@ -13,10 +13,7 @@ const error = Astro.url.searchParams.get("error");
       >
         Sign in
       </h1>
-      <SignInForm serverError={error} client:load />
-      <p class="mt-4 text-center text-sm text-blue-100/60">
-        Don't have an account? <a href="/auth/signup" class="text-purple-300 hover:underline">Sign up</a>
-      </p>
+      <MagicLinkForm serverError={error} client:load />
     </div>
   </div>
 </Layout>
