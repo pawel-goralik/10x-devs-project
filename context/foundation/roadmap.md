@@ -3,7 +3,7 @@ project: "Resolution Circle"
 version: 1
 status: draft
 created: 2026-08-02
-updated: 2026-08-02
+updated: 2026-08-25
 prd_version: 1
 main_goal: speed
 top_blocker: capacity
@@ -29,7 +29,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 
 | ID   | Change ID                      | Outcome (user can …)                                                            | Prerequisites | PRD refs                          | Status   |
 | ---- | ------------------------------- | -------------------------------------------------------------------------------- | -------------- | ---------------------------------- | -------- |
-| F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | ready    |
+| F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | planning |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | proposed |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01           | US-01, FR-008, FR-009, FR-010, FR-011 | proposed |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
@@ -73,7 +73,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** sequenced first because it replaces, rather than extends, an already-built surface — every other slice's acceptance criteria assume magic-link sign-in, so shipping goal/group work first would mean reworking the auth touchpoints in those slices later.
-- **Status:** ready
+- **Status:** planning
 
 ## Slices
 
