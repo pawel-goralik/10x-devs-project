@@ -343,13 +343,13 @@ None required. This is a pre-launch swap of the auth mechanism with no real end 
 
 #### Automated
 
-- [x] 4.1 Lint passes
-- [x] 4.2 Type checking passes
-- [x] 4.3 Build succeeds
-- [x] 4.4 No stale references to removed routes/components remain
+- [x] 4.1 Lint passes — c28093d
+- [x] 4.2 Type checking passes — c28093d
+- [x] 4.3 Build succeeds — c28093d
+- [x] 4.4 No stale references to removed routes/components remain — c28093d
 
 #### Manual
 
-- [x] 4.5 Full click-through: signin → check-email → Inbucket → callback → dashboard
-- [x] 4.6 Sign-out clears session and re-protects /dashboard
-- [x] 4.7 Reused/malformed link shows the friendly error on /auth/signin
+- [x] 4.5 Full click-through: signin → check-email → Inbucket → callback → dashboard — c28093d
+- [x] 4.6 Sign-out clears session and re-protects /dashboard — c28093d
+- [x] 4.7 Reused/malformed link shows the friendly error on /auth/signin — c28093d
