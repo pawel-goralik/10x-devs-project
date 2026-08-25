@@ -297,17 +297,18 @@ None required. This is a pre-launch swap of the auth mechanism with no real end 
 
 #### Automated
 
-- [ ] 1.1 Lint passes
-- [ ] 1.2 Type checking passes
-- [ ] 1.3 Build succeeds
+- [x] 1.1 Lint passes
+- [x] 1.2 Type checking passes
+- [x] 1.3 Build succeeds
+- [x] 1.9 config.toml additional_redirect_urls allow-lists localhost + production callback paths (adaptation, see change.md Notes)
 
 #### Manual
 
-- [ ] 1.4 curl to /api/auth/request-link redirects to /auth/check-email
-- [ ] 1.5 Magic-link email arrives in local Inbucket
-- [ ] 1.6 Clicking the link authenticates via /api/auth/callback and lands on /dashboard
-- [ ] 1.7 Invalid email is rejected before calling Supabase
-- [ ] 1.8 Rate-limited second request shows the friendly message
+- [x] 1.4 curl to /api/auth/request-link redirects to /auth/check-email
+- [x] 1.5 Magic-link email arrives in local Inbucket
+- [x] 1.6 Clicking the link authenticates via /api/auth/callback and lands on /dashboard
+- [x] 1.7 Invalid email is rejected before calling Supabase
+- [x] 1.8 Rate-limited second request shows the friendly message
 
 ### Phase 2: Merged sign-in UI
 

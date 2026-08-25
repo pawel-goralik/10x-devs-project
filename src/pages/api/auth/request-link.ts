@@ -1,0 +1,37 @@
+import type { APIRoute } from "astro";
+import { z } from "zod";
+import { createClient } from "@/lib/supabase";
+
+export const prerender = false;
+
+const requestLinkSchema = z.object({
+  email: z.email(),
+});
+
+const RATE_LIMIT_MESSAGE = "You've requested a link recently — check your inbox, or wait a bit before trying again.";
+
+export const POST: APIRoute = async (context) => {
+  const form = await context.request.formData();
+  const parsed = requestLinkSchema.safeParse({ email: form.get("email") });
+
+  if (!parsed.success) {
+    return context.redirect(`/auth/signin?error=${encodeURIComponent("Enter a valid email address")}`);
+  }
+
+  const { email } = parsed.data;
+
+  const supabase = createClient(context.request.headers, context.cookies);
+  if (!supabase) {
+    return context.redirect(`/auth/signin?error=${encodeURIComponent("Supabase is not configured")}`);
+  }
+
+  const emailRedirectTo = new URL("/api/auth/callback", context.url.origin).toString();
+  const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } });
+
+  if (error) {
+    const message = error.code === "over_email_send_rate_limit" ? RATE_LIMIT_MESSAGE : error.message;
+    return context.redirect(`/auth/signin?error=${encodeURIComponent(message)}`);
+  }
+
+  return context.redirect(`/auth/check-email?email=${encodeURIComponent(email)}`);
+};
