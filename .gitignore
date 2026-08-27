@@ -1,5 +1,6 @@
 .claude/**/10x-*
 .agents/**/10x-*
+.claude/prompts/
 
 ### IntelliJ IDEA ###
 out/
