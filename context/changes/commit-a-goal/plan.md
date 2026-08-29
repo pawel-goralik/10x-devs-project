@@ -351,23 +351,23 @@ Target scale is small (per PRD frontmatter: `users: small`, `qps: low`, `data_vo
 
 #### Automated
 
-- [x] 2.1 `npx astro check` passes
-- [x] 2.2 `npm run lint` passes
+- [x] 2.1 `npx astro check` passes — 9a3e846
+- [x] 2.2 `npm run lint` passes — 9a3e846
 
 ### Phase 3: API routes
 
 #### Automated
 
-- [ ] 3.1 `npx astro check` passes
-- [ ] 3.2 `npm run lint` passes
-- [ ] 3.3 `npm run build` succeeds
+- [x] 3.1 `npx astro check` passes
+- [x] 3.2 `npm run lint` passes
+- [x] 3.3 `npm run build` succeeds
 
 #### Manual
 
-- [ ] 3.4 3-row bundle submission creates all rows with identical `created_at`
-- [ ] 3.5 Bundle with one invalid row creates nothing and redirects with error
-- [ ] 3.6 Save-all with one backdated goal updates the rest and reports the backdated one skipped
-- [ ] 3.7 Delete of another user's goal is rejected
+- [x] 3.4 3-row bundle submission creates all rows with identical `created_at`
+- [x] 3.5 Bundle with one invalid row creates nothing and redirects with error
+- [x] 3.6 Save-all with one backdated goal updates the rest and reports the backdated one skipped
+- [x] 3.7 Delete of another user's goal is rejected
 
 ### Phase 4: UI
 
