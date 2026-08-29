@@ -373,28 +373,28 @@ Target scale is small (per PRD frontmatter: `users: small`, `qps: low`, `data_vo
 
 #### Automated
 
-- [x] 4.1 `npm run lint` passes
-- [x] 4.2 `npx astro check` passes
-- [x] 4.3 `npm run build` succeeds
+- [x] 4.1 `npm run lint` passes — 029e595
+- [x] 4.2 `npx astro check` passes — 029e595
+- [x] 4.3 `npm run build` succeeds — 029e595
 
 #### Manual
 
-- [x] 4.4 Empty state shown with zero goals
-- [x] 4.5 3-row bundle commit shows all goals + one-time notice
-- [x] 4.6 Add/remove row controls work correctly before submission
-- [x] 4.7 Save-all updates multiple edited rows in one submission
-- [x] 4.8 Per-row delete removes only the targeted goal
-- [x] 4.9 Backdated goal moves to the read-only locked section
-- [x] 4.10 Unauthenticated visitor redirected from `/goals`
+- [x] 4.4 Empty state shown with zero goals — 029e595
+- [x] 4.5 3-row bundle commit shows all goals + one-time notice — 029e595
+- [x] 4.6 Add/remove row controls work correctly before submission — 029e595
+- [x] 4.7 Save-all updates multiple edited rows in one submission — 029e595
+- [x] 4.8 Per-row delete removes only the targeted goal — 029e595
+- [x] 4.9 Backdated goal moves to the read-only locked section — 029e595
+- [x] 4.10 Unauthenticated visitor redirected from `/goals` — 029e595
 
 ### Phase 5: Docs sync + full verification
 
 #### Automated
 
-- [ ] 5.1 `npm run lint` passes
-- [ ] 5.2 `npx astro check` passes
-- [ ] 5.3 `npm run build` succeeds
+- [x] 5.1 `npm run lint` passes
+- [x] 5.2 `npx astro check` passes
+- [x] 5.3 `npm run build` succeeds
 
 #### Manual
 
-- [ ] 5.4 Full end-to-end click-through completed successfully, including a second later bundle
+- [x] 5.4 Full end-to-end click-through completed successfully, including a second later bundle
