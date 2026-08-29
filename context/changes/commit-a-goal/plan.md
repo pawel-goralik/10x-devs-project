@@ -391,10 +391,10 @@ Target scale is small (per PRD frontmatter: `users: small`, `qps: low`, `data_vo
 
 #### Automated
 
-- [x] 5.1 `npm run lint` passes
-- [x] 5.2 `npx astro check` passes
-- [x] 5.3 `npm run build` succeeds
+- [x] 5.1 `npm run lint` passes — 644f596
+- [x] 5.2 `npx astro check` passes — 644f596
+- [x] 5.3 `npm run build` succeeds — 644f596
 
 #### Manual
 
-- [x] 5.4 Full end-to-end click-through completed successfully, including a second later bundle
+- [x] 5.4 Full end-to-end click-through completed successfully, including a second later bundle — 644f596
