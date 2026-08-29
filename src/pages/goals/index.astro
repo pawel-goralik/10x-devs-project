@@ -1,0 +1,134 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import GoalBundleForm from "@/components/goals/GoalBundleForm";
+import { createClient } from "@/lib/supabase";
+import { isEditable, listGoals } from "@/lib/services/goals";
+import type { Goal } from "@/types";
+
+const user = Astro.locals.user;
+const error = Astro.url.searchParams.get("error");
+const created = Astro.url.searchParams.get("created") === "1";
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const goals: Goal[] = supabase && user ? await listGoals(supabase, user.id) : [];
+
+const editableGoals = goals.filter((goal) => isEditable(goal));
+const lockedGoals = goals.filter((goal) => !isEditable(goal));
+
+function measureLabel(goal: Goal): string {
+  return goal.measureType === "numeric" ? `Target: ${goal.targetValue}` : "Yes / no";
+}
+---
+
+<Layout title="My Goals">
+  <div class="bg-cosmic min-h-screen p-4 sm:p-8">
+    <div class="mx-auto max-w-2xl">
+      <Topbar />
+
+      <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+        My Goals
+      </h1>
+
+      {
+        created && (
+          <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
+            Goals committed! They lock in 24 hours — edit or remove them below until then.
+          </div>
+        )
+      }
+
+      {
+        error && (
+          <div class="mb-6 rounded-lg border border-red-500/30 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+            {error}
+          </div>
+        )
+      }
+
+      <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+        <h2 class="mb-4 text-lg font-semibold">Commit new goals</h2>
+        <GoalBundleForm serverError={error} client:load />
+      </div>
+
+      {
+        goals.length === 0 && (
+          <p class="text-blue-100/60">You haven't committed any goals yet. Add your first one above.</p>
+        )
+      }
+
+      {
+        editableGoals.length > 0 && (
+          <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+            <h2 class="mb-4 text-lg font-semibold">Manage goals (editable for 24h)</h2>
+            <form method="POST" action="/api/goals/manage" class="space-y-4">
+              {editableGoals.map((goal) => (
+                <div class="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
+                  <div>
+                    <label class="mb-1 block text-sm text-blue-100/80" for={`edit-${goal.id}-description`}>
+                      Goal
+                    </label>
+                    <input
+                      id={`edit-${goal.id}-description`}
+                      name={`edits.${goal.id}.description`}
+                      type="text"
+                      value={goal.description}
+                      class="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                    />
+                  </div>
+                  <div class="flex items-center justify-between gap-4">
+                    <span class="text-xs text-blue-100/60">
+                      {goal.measureType === "numeric" ? "Numeric" : "Yes / no"}
+                    </span>
+                    {goal.measureType === "numeric" && (
+                      <input
+                        name={`edits.${goal.id}.targetValue`}
+                        type="number"
+                        value={goal.targetValue}
+                        min="0"
+                        step="any"
+                        class="w-28 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                      />
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    name="action"
+                    value={`delete:${goal.id}`}
+                    class="text-sm text-red-300 transition-colors hover:text-red-200 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+              <button
+                type="submit"
+                name="action"
+                value="save-all"
+                class="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
+              >
+                Save changes
+              </button>
+            </form>
+          </div>
+        )
+      }
+
+      {
+        lockedGoals.length > 0 && (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-white/70 backdrop-blur-xl">
+            <h2 class="mb-4 text-lg font-semibold text-white/90">Locked goals</h2>
+            <ul class="space-y-2">
+              {lockedGoals.map((goal) => (
+                <li class="rounded-lg border border-white/10 bg-white/5 px-4 py-3">
+                  <span class="font-medium text-white">{goal.description}</span>
+                  <span class="ml-2 text-sm text-blue-100/50">{measureLabel(goal)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

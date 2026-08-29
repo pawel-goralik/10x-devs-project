@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Mail, Send } from "lucide-react";
-import { FormField } from "@/components/auth/FormField";
-import { SubmitButton } from "@/components/auth/SubmitButton";
-import { ServerError } from "@/components/auth/ServerError";
+import { FormField } from "@/components/shared/FormField";
+import { SubmitButton } from "@/components/shared/SubmitButton";
+import { ServerError } from "@/components/shared/ServerError";
 
 interface Props {
   serverError?: string | null;

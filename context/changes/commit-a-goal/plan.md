@@ -358,34 +358,34 @@ Target scale is small (per PRD frontmatter: `users: small`, `qps: low`, `data_vo
 
 #### Automated
 
-- [x] 3.1 `npx astro check` passes
-- [x] 3.2 `npm run lint` passes
-- [x] 3.3 `npm run build` succeeds
+- [x] 3.1 `npx astro check` passes — a1668f4
+- [x] 3.2 `npm run lint` passes — a1668f4
+- [x] 3.3 `npm run build` succeeds — a1668f4
 
 #### Manual
 
-- [x] 3.4 3-row bundle submission creates all rows with identical `created_at`
-- [x] 3.5 Bundle with one invalid row creates nothing and redirects with error
-- [x] 3.6 Save-all with one backdated goal updates the rest and reports the backdated one skipped
-- [x] 3.7 Delete of another user's goal is rejected
+- [x] 3.4 3-row bundle submission creates all rows with identical `created_at` — a1668f4
+- [x] 3.5 Bundle with one invalid row creates nothing and redirects with error — a1668f4
+- [x] 3.6 Save-all with one backdated goal updates the rest and reports the backdated one skipped — a1668f4
+- [x] 3.7 Delete of another user's goal is rejected — a1668f4
 
 ### Phase 4: UI
 
 #### Automated
 
-- [ ] 4.1 `npm run lint` passes
-- [ ] 4.2 `npx astro check` passes
-- [ ] 4.3 `npm run build` succeeds
+- [x] 4.1 `npm run lint` passes
+- [x] 4.2 `npx astro check` passes
+- [x] 4.3 `npm run build` succeeds
 
 #### Manual
 
-- [ ] 4.4 Empty state shown with zero goals
-- [ ] 4.5 3-row bundle commit shows all goals + one-time notice
-- [ ] 4.6 Add/remove row controls work correctly before submission
-- [ ] 4.7 Save-all updates multiple edited rows in one submission
-- [ ] 4.8 Per-row delete removes only the targeted goal
-- [ ] 4.9 Backdated goal moves to the read-only locked section
-- [ ] 4.10 Unauthenticated visitor redirected from `/goals`
+- [x] 4.4 Empty state shown with zero goals
+- [x] 4.5 3-row bundle commit shows all goals + one-time notice
+- [x] 4.6 Add/remove row controls work correctly before submission
+- [x] 4.7 Save-all updates multiple edited rows in one submission
+- [x] 4.8 Per-row delete removes only the targeted goal
+- [x] 4.9 Backdated goal moves to the read-only locked section
+- [x] 4.10 Unauthenticated visitor redirected from `/goals`
 
 ### Phase 5: Docs sync + full verification
 
