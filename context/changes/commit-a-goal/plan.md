@@ -338,21 +338,21 @@ Target scale is small (per PRD frontmatter: `users: small`, `qps: low`, `data_vo
 
 #### Automated
 
-- [x] 1.1 `npx supabase db reset` applies the new migration cleanly
-- [x] 1.2 `npx astro check` passes
-- [x] 1.3 `npm run lint` passes
+- [x] 1.1 `npx supabase db reset` applies the new migration cleanly — 236396a
+- [x] 1.2 `npx astro check` passes — 236396a
+- [x] 1.3 `npm run lint` passes — 236396a
 
 #### Manual
 
-- [x] 1.4 CHECK constraint rejects a mismatched measure-type row in Studio
-- [x] 1.5 RLS ownership verified (cross-user query returns no rows)
+- [x] 1.4 CHECK constraint rejects a mismatched measure-type row in Studio — 236396a
+- [x] 1.5 RLS ownership verified (cross-user query returns no rows) — 236396a
 
 ### Phase 2: Service layer
 
 #### Automated
 
-- [ ] 2.1 `npx astro check` passes
-- [ ] 2.2 `npm run lint` passes
+- [x] 2.1 `npx astro check` passes
+- [x] 2.2 `npm run lint` passes
 
 ### Phase 3: API routes
 
