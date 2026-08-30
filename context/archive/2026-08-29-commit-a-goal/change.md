@@ -1,10 +1,10 @@
 ---
 change_id: commit-a-goal
 title: Commit a goal
-status: impl_reviewed
+status: archived
 created: 2026-08-29
-updated: 2026-08-29
-archived_at: null
+updated: 2026-08-30
+archived_at: 2026-08-30T08:05:08Z
 ---
 
 ## Notes
