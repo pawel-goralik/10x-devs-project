@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_KEY } from "astro:env/server";
+import { SUPABASE_URL, SUPABASE_KEY, BREVO_API_KEY, BREVO_SENDER_EMAIL } from "astro:env/server";
 
 export interface ConfigStatus {
   name: string;
@@ -15,6 +15,11 @@ export const configStatuses: ConfigStatus[] = [
     message: "Supabase nie jest skonfigurowany — funkcje uwierzytelniania są wyłączone.",
     docsUrl: "https://github.com/przeprogramowani/10x-astro-starter#supabase-configuration",
     docsLabel: "Zobacz instrukcję konfiguracji",
+  },
+  {
+    name: "Brevo",
+    configured: Boolean(BREVO_API_KEY && BREVO_SENDER_EMAIL),
+    message: "Brevo nie jest skonfigurowany — wysyłka e-maili jest wyłączona.",
   },
 ];
 

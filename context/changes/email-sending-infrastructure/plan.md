@@ -163,24 +163,24 @@ None — no schema changes.
 
 #### Automated
 
-- [x] 1.1 `npx wrangler secret list` shows `BREVO_API_KEY` present as `secret_text`
-- [x] 1.2 Lint passes: `npm run lint`
-- [x] 1.3 Build passes: `npm run build`
+- [x] 1.1 `npx wrangler secret list` shows `BREVO_API_KEY` present as `secret_text` — a09af1b
+- [x] 1.2 Lint passes: `npm run lint` — a09af1b
+- [x] 1.3 Build passes: `npm run build` — a09af1b
 
 #### Manual
 
-- [x] 1.4 Confirm the generated key is the REST API key, not the SMTP key
-- [x] 1.5 Confirm `.dev.vars` updated locally
+- [x] 1.4 Confirm the generated key is the REST API key, not the SMTP key — a09af1b
+- [x] 1.5 Confirm `.dev.vars` updated locally — a09af1b
 
 ### Phase 2: `sendEmail` service + branded HTML wrapper
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 Missing-key path logs + returns `{ success: false }` without throwing; banner appears
-- [ ] 2.4 Real send to a disposable inbox arrives with correct branding and plain-text fallback
-- [ ] 2.5 Invalid-key path logs and returns an error result rather than throwing
+- [x] 2.3 Missing-key path logs + returns `{ success: false }` without throwing; banner appears
+- [x] 2.4 Real send to a disposable inbox arrives with correct branding and plain-text fallback
+- [x] 2.5 Invalid-key path logs and returns an error result rather than throwing
