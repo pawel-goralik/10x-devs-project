@@ -30,7 +30,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | ID   | Change ID                      | Outcome (user can …)                                                            | Prerequisites | PRD refs                          | Status   |
 | ---- | ------------------------------- | -------------------------------------------------------------------------------- | -------------- | ---------------------------------- | -------- |
 | F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | done |
-| F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | planning |
+| F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | in-progress |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | proposed |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
@@ -87,7 +87,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** pulled forward from being S-05-only infra because S-02's FR-010 also needs real email delivery, not just an in-app record — provisioning the REST API key and building the send-email utility once, ahead of both consumers, avoids duplicating that setup across two slices.
-- **Status:** planning
+- **Status:** in-progress
 
 ## Slices
 
