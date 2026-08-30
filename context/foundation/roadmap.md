@@ -30,11 +30,12 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | ID   | Change ID                      | Outcome (user can …)                                                            | Prerequisites | PRD refs                          | Status   |
 | ---- | ------------------------------- | -------------------------------------------------------------------------------- | -------------- | ---------------------------------- | -------- |
 | F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | done |
+| F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | planning |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
-| S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01           | US-01, FR-008, FR-009, FR-010, FR-011 | proposed |
+| S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | proposed |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
 | S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | planning |
-| S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, Brevo sender email verified + API key provisioned | FR-013, NFR ("Quarterly digest deliverability") | proposed |
+| S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, F-02     | FR-013, NFR ("Quarterly digest deliverability") | proposed |
 | S-06 | anonymize-on-account-deletion   | delete their account while their locked goals/progress persist as "former member" in group views | S-01, S-02     | FR-014                             | proposed |
 
 ## Streams
@@ -43,9 +44,9 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 | Stream | Theme                        | Chain                              | Note                                                                                  |
 | ------ | ----------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
-| A      | Commitment & witnessing loop | `F-01` → `S-01` → `S-02` → `S-03`  | The core must-have path culminating in the north star; sequenced strictly given the `speed` goal. |
+| A      | Commitment & witnessing loop | `F-01`, `F-02` → `S-01`, `S-02` → `S-03`  | The core must-have path culminating in the north star; sequenced strictly given the `speed` goal. `F-02` (email infra) now gates `S-02` alongside `F-01`, since FR-010's leave notification is a real email. |
 | B      | Progress tracking            | `S-04`                              | Branches off `S-01` in parallel with the rest of Stream A; not a hard prerequisite for `S-03`. |
-| C      | Social heartbeat             | `S-05`                              | Depends on `S-03`'s data/query logic; the quarterly long-tail mechanism, sequenced after the core loop lands. |
+| C      | Social heartbeat             | `S-05`                              | Depends on `S-03`'s data/query logic and `F-02`'s email infra; the quarterly long-tail mechanism, sequenced after the core loop lands. |
 | D      | Account lifecycle            | `S-06`                              | Depends on Stream A's `S-01` + `S-02`; an edge-case departure flow, not part of first-value delivery. |
 
 ## Baseline
@@ -75,6 +76,19 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** sequenced first because it replaces, rather than extends, an already-built surface — every other slice's acceptance criteria assume magic-link sign-in, so shipping goal/group work first would mean reworking the auth touchpoints in those slices later.
 - **Status:** done
 
+### F-02: Email-sending infrastructure
+
+- **Outcome:** (foundation) the application can send app-triggered transactional email via Brevo's REST API — a provisioned `BREVO_API_KEY` Worker secret plus a reusable send-email service other slices call rather than each wiring their own. Brevo's SMTP side (sender verification, magic-link email) is already done as part of `context/changes/deployment/deployment-plan.md` Phase 1c/4 — this item is scoped to the separate REST API key and the code, not account/sender setup.
+- **Change ID:** email-sending-infrastructure
+- **PRD refs:** FR-010 (leave-a-group notification), NFR ("Quarterly digest deliverability")
+- **Unlocks:** S-02 (FR-010's leave-notification email), S-05 (quarterly digest)
+- **Prerequisites:** —
+- **Parallel with:** S-01, S-03, S-04 (any slice that doesn't send email)
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** pulled forward from being S-05-only infra because S-02's FR-010 also needs real email delivery, not just an in-app record — provisioning the REST API key and building the send-email utility once, ahead of both consumers, avoids duplicating that setup across two slices.
+- **Status:** planning
+
 ## Slices
 
 ### S-01: User can commit a goal
@@ -94,11 +108,11 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** authenticated user can create a group (optionally named, defaulting to "[name]'s circle"), invite others via a shareable link/code, accept an invite to join a group, and leave a group they belong to — with departure notifying remaining members.
 - **Change ID:** form-and-manage-a-group
 - **PRD refs:** US-01, FR-008, FR-009, FR-010, FR-011
-- **Prerequisites:** F-01
+- **Prerequisites:** F-01, F-02
 - **Parallel with:** S-01, S-04
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** bundles four FRs (create/invite/accept/leave) into one slice because they share the same groups/group_members schema and form one coherent membership workflow — splitting further would fragment a single vertical outcome without a real granularity benefit.
+- **Risk:** bundles four FRs (create/invite/accept/leave) into one slice because they share the same groups/group_members schema and form one coherent membership workflow — splitting further would fragment a single vertical outcome without a real granularity benefit. Depends on F-02 (not just F-01) because FR-010's departure notification is a real email, not an in-app record.
 - **Status:** proposed
 
 ### S-03: Group member can witness the circle's goals (north star)
@@ -130,7 +144,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** at the end of each calendar quarter, every group member receives an email summarizing the goals and current progress of every member of every group they belong to.
 - **Change ID:** quarterly-digest-email
 - **PRD refs:** FR-013, NFR ("Quarterly digest deliverability")
-- **Prerequisites:** S-03 (reuses its cross-group goal/progress roll-up), Brevo sender email verified + API key provisioned (per `context/foundation/infrastructure.md` Getting Started, step 5)
+- **Prerequisites:** S-03 (reuses its cross-group goal/progress roll-up), F-02 (email-sending infrastructure)
 - **Parallel with:** S-04, S-06
 - **Blockers:** —
 - **Unknowns:** —
@@ -154,11 +168,12 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID                    | Suggested issue title                                            | Ready for `/10x-plan` | Notes |
 | ---------- | ------------------------------ | -------------------------------------------------------------------- | ---------------------- | ----- |
 | F-01       | magic-link-auth               | Replace password auth with passwordless magic-link auth              | yes                    | Run `/10x-plan magic-link-auth` |
+| F-02       | email-sending-infrastructure   | Provision Brevo and add a reusable send-email service                | yes                    | Run `/10x-plan email-sending-infrastructure` |
 | S-01       | commit-a-goal                 | User can commit a goal with a 24h edit/delete window                 | no                     | Needs F-01 first |
-| S-02       | form-and-manage-a-group       | User can create, invite to, join, and leave a group                  | no                     | Needs F-01 first |
+| S-02       | form-and-manage-a-group       | User can create, invite to, join, and leave a group                  | no                     | Needs F-01 and F-02 first |
 | S-03       | witness-the-circles-goals     | Group member can see every member's committed goals and progress     | no                     | Needs S-01 and S-02 first (north star) |
 | S-04       | record-goal-progress          | User can record progress on their own goal                           | no                     | Needs S-01 first |
-| S-05       | quarterly-digest-email        | Group member receives a quarterly digest email                       | no                     | Needs S-03 first, plus Brevo sender verified |
+| S-05       | quarterly-digest-email        | Group member receives a quarterly digest email                       | no                     | Needs S-03 and F-02 first |
 | S-06       | anonymize-on-account-deletion | User can delete their account; goals persist anonymized              | no                     | Needs S-01 and S-02 first |
 
 ## Open Roadmap Questions
