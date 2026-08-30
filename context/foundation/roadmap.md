@@ -3,7 +3,7 @@ project: "Resolution Circle"
 version: 1
 status: draft
 created: 2026-08-02
-updated: 2026-08-25
+updated: 2026-08-29
 prd_version: 1
 main_goal: speed
 top_blocker: capacity
@@ -30,7 +30,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | ID   | Change ID                      | Outcome (user can …)                                                            | Prerequisites | PRD refs                          | Status   |
 | ---- | ------------------------------- | -------------------------------------------------------------------------------- | -------------- | ---------------------------------- | -------- |
 | F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | in-progress |
-| S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | proposed |
+| S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | in-progress |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01           | US-01, FR-008, FR-009, FR-010, FR-011 | proposed |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
 | S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | proposed |
@@ -87,7 +87,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** the smallest fully self-contained vertical slice after auth (single-user, no cross-user visibility yet); sequenced early because S-03 (the north star), S-04, and S-06 all consume a committed goal.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-02: User can form and manage a group
 
