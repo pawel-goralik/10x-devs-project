@@ -176,11 +176,11 @@ None — no schema changes.
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — a6d6bbb
+- [x] 2.2 Build passes: `npm run build` — a6d6bbb
 
 #### Manual
 
-- [x] 2.3 Missing-key path logs + returns `{ success: false }` without throwing; banner appears
-- [x] 2.4 Real send to a disposable inbox arrives with correct branding and plain-text fallback
-- [x] 2.5 Invalid-key path logs and returns an error result rather than throwing
+- [x] 2.3 Missing-key path logs + returns `{ success: false }` without throwing; banner appears — a6d6bbb
+- [x] 2.4 Real send to a disposable inbox arrives with correct branding and plain-text fallback — a6d6bbb
+- [x] 2.5 Invalid-key path logs and returns an error result rather than throwing — a6d6bbb

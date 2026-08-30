@@ -1,7 +1,7 @@
 ---
 change_id: email-sending-infrastructure
 title: Email-sending infrastructure
-status: implementing
+status: implemented
 created: 2026-08-30
 updated: 2026-08-30
 archived_at: null
