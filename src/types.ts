@@ -41,3 +41,11 @@ export interface UpdateGoalCommand {
   description: string;
   targetValue?: number;
 }
+
+/**
+ * One row of a progress submission (see POST /api/goals/progress). The boolean variant
+ * always means "mark done" — there's only one legal direction, so no `isDone` field.
+ */
+export type RecordProgressCommand =
+  | { id: string; measureType: "numeric"; amount: number }
+  | { id: string; measureType: "boolean" };

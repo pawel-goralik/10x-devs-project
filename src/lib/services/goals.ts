@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { CreateGoalCommand, Goal, MeasureType, UpdateGoalCommand } from "@/types";
+import type { CreateGoalCommand, Goal, MeasureType, RecordProgressCommand, UpdateGoalCommand } from "@/types";
 
 const EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -130,6 +130,75 @@ export async function updateGoals(
       skipped.push(edit.id);
     } else {
       updated.push(edit.id);
+    }
+  }
+
+  return { updated, skipped };
+}
+
+export interface RecordProgressResult {
+  updated: string[];
+  /** Ids whose update affected zero rows — wrong measure type, wrong owner, or (boolean) already done. */
+  skipped: string[];
+}
+
+/**
+ * No 24h cutoff — progress can be recorded on any owned goal, locked or not. Numeric
+ * rows are a read-then-add (no atomic increment RPC; see plan's Critical Implementation
+ * Details for why that's an accepted limitation at this scale).
+ */
+export async function recordProgress(
+  supabase: SupabaseClient,
+  userId: string,
+  commands: RecordProgressCommand[],
+): Promise<RecordProgressResult> {
+  const updated: string[] = [];
+  const skipped: string[] = [];
+
+  for (const command of commands) {
+    if (command.measureType === "numeric") {
+      const { data: current, error: readError } = await supabase
+        .from("goals")
+        .select("current_value")
+        .eq("id", command.id)
+        .eq("user_id", userId)
+        .eq("measure_type", "numeric")
+        .maybeSingle<{ current_value: number | null }>();
+
+      if (readError || current?.current_value == null) {
+        skipped.push(command.id);
+        continue;
+      }
+
+      const newValue: number = current.current_value + command.amount;
+      const { data, error } = await supabase
+        .from("goals")
+        .update({ current_value: newValue, updated_at: new Date().toISOString() })
+        .eq("id", command.id)
+        .eq("user_id", userId)
+        .eq("measure_type", "numeric")
+        .select("id");
+
+      if (error || data.length === 0) {
+        skipped.push(command.id);
+      } else {
+        updated.push(command.id);
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("goals")
+        .update({ is_done: true, updated_at: new Date().toISOString() })
+        .eq("id", command.id)
+        .eq("user_id", userId)
+        .eq("measure_type", "boolean")
+        .eq("is_done", false)
+        .select("id");
+
+      if (error || data.length === 0) {
+        skipped.push(command.id);
+      } else {
+        updated.push(command.id);
+      }
     }
   }
 

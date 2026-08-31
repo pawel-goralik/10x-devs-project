@@ -171,14 +171,14 @@ None — no schema or RLS changes in this plan.
 
 #### Automated
 
-- [ ] 1.1 Lint passes: `npm run lint`
-- [ ] 1.2 Build (incl. type-check) passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint`
+- [x] 1.2 Build (incl. type-check) passes: `npm run build`
 
 #### Manual
 
-- [ ] 1.3 POST a valid numeric progress amount for an owned goal and confirm `current_value` increases
-- [ ] 1.4 POST a boolean mark-done for an owned goal and confirm `is_done` flips to `true`
-- [ ] 1.5 Confirm a progress submission for another user's goal id is a no-op
+- [x] 1.3 POST a valid numeric progress amount for an owned goal and confirm `current_value` increases
+- [x] 1.4 POST a boolean mark-done for an owned goal and confirm `is_done` flips to `true`
+- [x] 1.5 Confirm a progress submission for another user's goal id is a no-op
 
 ### Phase 2: UI integration
 
