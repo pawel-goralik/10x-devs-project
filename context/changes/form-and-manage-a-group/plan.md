@@ -15,7 +15,7 @@ Implement FR-008–011 (roadmap S-02): an authenticated user can create a named 
 
 ## Desired End State
 
-An authenticated user can create a group by name, see it listed on `/groups`, open `/groups/[id]` to see its members and a shareable invite link, and leave it. Someone who receives the invite link — whether they already have an account or not — lands on a confirm screen naming the group and its creator, and joining requires an explicit click. When a member leaves, every remaining member receives an email. Renaming is explicitly out of scope (PRD Non-Goals, revised 2026-08-31).
+An authenticated user can create a group by name, see it listed on `/groups`, open `/groups/[id]` to see its members and a shareable invite link, and leave it. Someone who receives the invite link — whether they already have an account or not — sees a confirm screen naming the group and its creator **before** being asked to sign in (revised 2026-08-31 — see Critical Implementation Details), and joining requires an explicit click plus an authenticated identity. When a member leaves, every remaining member receives an email. Renaming is explicitly out of scope (PRD Non-Goals, revised 2026-08-31).
 
 Verify by: creating a group as user A, inviting user B (who has never signed in before) via the link, confirming B lands on the confirm screen after completing magic-link sign-up, B joins, both A and B see each other in the member list, B leaves, and A receives an email about it.
 
@@ -42,7 +42,13 @@ Follow S-01's established layering (migration → types/service → API → UI) 
 
 **State sequencing (RLS self-reference)**: `group_members`' SELECT policy ("a member can see the membership rows of every group they belong to") must NOT be written as a raw subquery against `group_members` itself — Postgres detects the self-reference and raises `infinite recursion detected in policy for relation "group_members"` at query time, not at migration time, making this easy to ship broken and only discover under real multi-member testing. The fix: a `public.is_member_of(p_group_id uuid, p_user_id uuid) returns boolean` function marked `security definer stable`, called from inside the policy. Because the function runs with definer privileges, its internal query against `group_members` bypasses RLS instead of re-triggering the same policy. Reuse the same function in `groups`' SELECT policy for consistency, even though that one isn't self-referential.
 
+**Found during Phase 1 implementation (2026-08-31): `create_group`'s own `RETURNING` clause fails RLS.** `create_group`'s first statement is `insert into groups (...) values (...) returning id into v_group_id`. Postgres re-checks the table's SELECT policy against any row produced by `INSERT ... RETURNING`, and raises `new row violates row-level security policy` (not a silent empty result) if that row isn't visible. At that exact point the caller isn't a `group_members` row yet — that's the function's *second* statement — so `groups_select_member` alone always rejects it, meaning `create_group` would fail on every real call. Fix: a second permissive `groups` SELECT policy, `groups_select_own_created` (`using (auth.uid() = created_by)`), so a creator can always see a group they created regardless of current membership. Multiple permissive policies for the same command combine with `OR` in Postgres RLS, so this doesn't weaken `groups_select_member`, it only adds the one case `create_group` needs. This preserves the plan's original choice to keep `create_group` as invoker-rights (no `SECURITY DEFINER`) rather than switching it to bypass RLS entirely.
+
 **Security model (token-based preview/join)**: `groups` gets no general-purpose "anyone can see a group by token" SELECT policy — RLS can't distinguish "the client happened to filter by token" from "the client is scanning the whole table," and this app's Supabase key is client-visible. Instead, `get_group_preview(p_invite_token uuid)` and `join_group_by_token(p_invite_token uuid)` are `SECURITY DEFINER` functions that look up the *one* row matching the exact token argument and never expose more. `join_group_by_token` re-derives `group_id` from the token server-side and uses `ON CONFLICT (group_id, user_id) DO NOTHING` so re-clicking an already-used invite link is a harmless no-op, not an error.
+
+Both RPC functions get `revoke execute ... from public` before their `grant ... to authenticated` — Postgres grants `EXECUTE` to `PUBLIC` by default on function creation, so without the explicit revoke, `anon` would retain callable access via that default grant regardless of the narrower grant that follows. `is_member_of` and `create_group` get the same revoke-then-grant treatment, restricted to `authenticated` only.
+
+**Revised 2026-08-31 (discussed during Phase 1 implementation): `get_group_preview` is deliberately re-granted to `anon`, not just `authenticated`.** The invite-confirm screen must show the group name and creator's email to whoever holds the exact token *before* asking them to sign in — forcing sign-up before any context is shown is worse UX for a brand-new invitee and works against the product's "witnessed by someone you trust" framing. This is safe: the function only ever returns the one row whose `invite_token` exactly matches the argument (never an enumerable scan), and `already_member` correctly evaluates to `false` for `anon` since `auth.uid()` is null. `join_group_by_token` stays `authenticated`-only — joining requires a real identity, and an anon call to it would additionally fail `group_members.user_id`'s `not null` constraint since `auth.uid()` is null for that role.
 
 **Timing & lifecycle (invite survives sign-up)**: an invite link must work for a visitor with no account yet. This requires threading a `next` path through three files that don't currently know about each other: `signin.astro` reads `?next=`, passes it to `MagicLinkForm`; the form adds it as a hidden field to its existing POST; `request-link.ts` appends it to the `emailRedirectTo` URL passed to `supabase.auth.signInWithOtp` (Supabase preserves that URL's query string, appending its own `code` param); `callback.ts` reads `next` back out after `exchangeCodeForSession` and redirects there instead of the hardcoded `/dashboard`. `src/middleware.ts`'s protected-route redirect gets the same treatment generically (not just for `/groups/join/*`), since any protected route hit while signed out should return the visitor to where they were headed. A shared `sanitizeNextPath` helper (reject anything not starting with a single `/`, reject `//...`) guards all three read sites against open-redirect abuse.
 
@@ -66,12 +72,12 @@ One migration: `groups`, `group_members`, `profiles` (+ auth trigger), RLS polic
 - `public.group_members (group_id uuid not null references public.groups(id) on delete cascade, user_id uuid not null references auth.users(id), joined_at timestamptz not null default now(), primary key (group_id, user_id))`. Grants: `select, insert, delete` to `authenticated`/`service_role`.
 - `public.profiles (id uuid primary key references auth.users(id) on delete cascade, email text not null, created_at timestamptz not null default now())`. Grants: `select` to `authenticated`; `select, insert` to `service_role`.
 - `public.is_member_of(p_group_id uuid, p_user_id uuid) returns boolean language sql security definer stable` — the RLS-recursion-avoidance helper described in Critical Implementation Details. Used by both `groups`' and `group_members`' SELECT policies.
-- RLS policies: `groups_select_member` (via `is_member_of`), `groups_insert_own` (`with check (auth.uid() = created_by)`); `group_members_select_fellow_members` (via `is_member_of`), `group_members_insert_own` (`with check (auth.uid() = user_id)` — used by `create_group`'s self-membership insert), `group_members_delete_own` (`using (auth.uid() = user_id)` — the leave action); `profiles_select_self_or_shared_group` (`auth.uid() = id` OR exists a shared `group_members` row).
+- RLS policies: `groups_select_member` (via `is_member_of`), `groups_select_own_created` (`using (auth.uid() = created_by)` — added during Phase 1 implementation, see Critical Implementation Details, required for `create_group`'s `RETURNING` to succeed), `groups_insert_own` (`with check (auth.uid() = created_by)`); `group_members_select_fellow_members` (via `is_member_of`), `group_members_insert_own` (`with check (auth.uid() = user_id)` — used by `create_group`'s self-membership insert), `group_members_delete_own` (`using (auth.uid() = user_id)` — the leave action); `profiles_select_self_or_shared_group` (`auth.uid() = id` OR exists a shared `group_members` row).
 - `public.handle_new_user()` trigger function (`security definer`) + `on_auth_user_created after insert on auth.users` trigger, inserting `(new.id, new.email)` into `profiles` — the standard Supabase profile-sync pattern. **Accepted limitation**: this only fires on insert, not on an email change — `profiles.email` would go stale if a user ever changes their auth email. No email-change feature exists anywhere in this app today, so this is a deliberate, accepted gap, not an oversight; revisit if such a feature is ever built.
 - `public.create_group(p_name text) returns uuid language plpgsql` (no `security definer` needed — both statements are actions the caller is already allowed to perform under existing RLS): inserts into `groups` then `group_members` for `auth.uid()` in one transaction, returning the new group's id. Wrapping both inserts in a function (rather than two sequential client-side inserts) prevents an orphaned group with no members if the second insert ever failed.
 - `public.get_group_preview(p_invite_token uuid) returns table (group_id uuid, group_name text, creator_email text, already_member boolean) language sql security definer stable`: joins `groups`/`profiles` by `invite_token`, computing `already_member` via an `exists` check against `group_members` for `auth.uid()`.
 - `public.join_group_by_token(p_invite_token uuid) returns uuid language plpgsql security definer`: resolves `group_id` from the token (returns `null` if not found), then `insert ... on conflict (group_id, user_id) do nothing`, returning the resolved `group_id`.
-- `grant execute` on `create_group`, `get_group_preview`, `join_group_by_token` to `authenticated`.
+- `revoke execute ... from public` on `is_member_of`, `create_group`, `get_group_preview`, `join_group_by_token` (Postgres grants execute to `public` by default on function creation; without the explicit revoke, `anon` retains callable access to these `security definer` functions regardless of the grants below). `grant execute` on `is_member_of`, `create_group`, `join_group_by_token` to `authenticated`. `grant execute` on `get_group_preview` to `authenticated` **and** `anon` (revised 2026-08-31 — see Critical Implementation Details: the invite-confirm screen must preview the group before requiring sign-in).
 
 ### Success Criteria:
 
@@ -169,9 +175,9 @@ The three mutation endpoints, plus the `next`-path threading that lets an invite
 
 **File**: `src/pages/api/groups/join.ts` (new)
 
-**Intent**: Form-POST accept, backing the confirm screen's "Join" button.
+**Intent**: Form-POST accept, backing the confirm screen's "Join" button. Since the confirm *page* (Phase 4, revised 2026-08-31) no longer sits behind the auth middleware — it must render for signed-out visitors too — this endpoint is now the actual auth enforcement point for the join action itself, not just a formality.
 
-**Contract**: form field `token` (`z.uuid()`). On a resolved group id, redirect to `/groups/<groupId>`; on `null` (invalid token), redirect to `/groups?error=...`.
+**Contract**: auth check first, same inline pattern as `goals/index.ts` (`if (!user) return context.redirect("/auth/signin")`) — the confirm page never renders a Join *form* for a signed-out visitor (it renders a sign-in link instead, see Phase 4), so reaching this endpoint unauthenticated only happens via a direct/crafted POST, and a plain sign-in redirect (no `next` needed) is sufficient. Form field `token` (`z.uuid()`). On a resolved group id, redirect to `/groups/<groupId>`; on `null` (invalid token), redirect to `/groups?error=...`.
 
 #### 5. Auth callback threading
 
@@ -201,9 +207,9 @@ The three mutation endpoints, plus the `next`-path threading that lets an invite
 
 **File**: `src/middleware.ts`
 
-**Intent**: Any protected route hit while signed out returns the visitor to where they were headed after they sign in — required for `/groups/join/[token]` specifically, and a natural generalization for every protected route.
+**Intent**: Any protected route hit while signed out returns the visitor to where they were headed after they sign in — a natural generalization for every protected route. **Revised 2026-08-31**: `/groups/join/[token]` is deliberately *excluded* from this gate — the invite-confirm page must render its preview for a signed-out visitor (see Phase 4), and only the actual Join action requires auth. The `next`-threading mechanism (this item) is still exactly what carries a visitor from that page's own "Sign in to join" link back to itself after auth.
 
-**Contract**: change the unauthenticated redirect from `context.redirect("/auth/signin")` to `context.redirect(\`/auth/signin?next=${encodeURIComponent(context.url.pathname + context.url.search)}\`)`. Add `/groups` to `PROTECTED_ROUTES`.
+**Contract**: change the unauthenticated redirect from `context.redirect("/auth/signin")` to `context.redirect(\`/auth/signin?next=${encodeURIComponent(context.url.pathname + context.url.search)}\`)`. Add `/groups` to `PROTECTED_ROUTES`, but exempt any path starting with `/groups/join` from the gate via a short exception list checked before the protected-route match (e.g. `const PUBLIC_EXCEPTIONS = ["/groups/join"];` and skip the redirect when `PUBLIC_EXCEPTIONS.some((p) => pathname.startsWith(p))`) — `/groups` (the list page) and `/groups/[id]` (detail) stay fully gated.
 
 ### Success Criteria:
 
@@ -217,7 +223,7 @@ The three mutation endpoints, plus the `next`-path threading that lets an invite
 - As a signed-in user, create a group via the endpoint (curl or a temporary form) and confirm both `groups` and `group_members` rows exist
 - As a second signed-in test user with a valid invite token, POST to the join endpoint and confirm a `group_members` row appears; POST again with the same token and confirm no error (idempotent) and no duplicate row
 - As a member, POST to leave and confirm the `group_members` row is gone and (with `BREVO_API_KEY` configured) an email arrives for any remaining member
-- Sign out, visit `/groups/join/<a-real-token>`, confirm redirect to `/auth/signin?next=%2Fgroups%2Fjoin%2F<token>`, request a magic link, click it, and confirm landing back on the join page rather than `/dashboard`
+- Sign out, visit `/groups/join/<a-real-token>`, confirm the page renders the preview directly with no redirect (revised 2026-08-31); click "Sign in to join", confirm redirect to `/auth/signin?next=%2Fgroups%2Fjoin%2F<token>`, request a magic link, click it, and confirm landing back on the join page (now showing a Join button) rather than `/dashboard`
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -253,9 +259,12 @@ The three pages, plus nav/middleware wiring.
 
 **File**: `src/pages/groups/join/[token].astro` (new)
 
-**Intent**: The explicit-accept screen — relies on `middleware.ts`'s protection (Phase 3) to guarantee `Astro.locals.user` is set here, so no separate auth check is needed in the page itself.
+**Intent**: The explicit-accept screen. **Revised 2026-08-31**: no longer relies on `middleware.ts`'s protection to guarantee `Astro.locals.user` — this route is now exempted from the auth gate (Phase 3) so a signed-out visitor sees the invite preview immediately, before being asked to sign in. The page branches explicitly on `Astro.locals.user` instead.
 
-**Contract**: validate `Astro.params.token` with `z.uuid()` before calling `previewInvite` — a malformed (non-UUID) value is treated identically to a not-found token, rather than reaching `get_group_preview`'s uuid-typed RPC parameter and surfacing a raw Postgres/PostgREST error. Server-calls `previewInvite(token)`; if `null` (or the token failed UUID validation), render "This invite link is invalid"; if `alreadyMember`, render a link straight to `/groups/<groupId>` instead of a Join button; otherwise render `"You've been invited to join <groupName>, created by <creatorEmail>"` with a `<form method="POST" action="/api/groups/join">` (hidden `token` field) and a Join button.
+**Contract**: validate `Astro.params.token` with `z.uuid()` before calling `previewInvite` — a malformed (non-UUID) value is treated identically to a not-found token, rather than reaching `get_group_preview`'s uuid-typed RPC parameter and surfacing a raw Postgres/PostgREST error. Server-calls `previewInvite(token)` regardless of auth state (the RPC is callable by `anon` too, per Phase 1's revised grant). If `null` (or the token failed UUID validation), render "This invite link is invalid" — for anyone, signed in or not. Otherwise render `"You've been invited to join <groupName>, created by <creatorEmail>"`, then branch:
+- **Signed out** (`!Astro.locals.user`): render a "Sign in to join" link to `/auth/signin?next=${encodeURIComponent(Astro.url.pathname)}` — no join form, since joining requires an authenticated identity.
+- **Signed in and `alreadyMember`**: render a link straight to `/groups/<groupId>` instead of a Join button.
+- **Signed in, not yet a member**: render a `<form method="POST" action="/api/groups/join">` (hidden `token` field) and a Join button.
 
 #### 4. Navigation
 
@@ -275,10 +284,10 @@ The three pages, plus nav/middleware wiring.
 #### Manual Verification:
 
 - End-to-end as an existing user: create a group on `/groups`, open its detail page, copy the invite link
-- End-to-end as a brand-new user (no account): open the invite link in a private window, get redirected through sign-in and back to the confirm screen, see the correct group name and creator, sign up via magic link, land back on the confirm screen, join, and see the group on `/groups`
+- End-to-end as a brand-new user (no account): open the invite link in a private window, see the correct group name and creator immediately with no sign-in prompt yet (revised 2026-08-31), click "Sign in to join", get redirected through sign-in and back to the same confirm screen (now with a Join button), sign up via magic link, join, and see the group on `/groups`
 - As the original creator, refresh the group detail page and confirm the new member now appears in the list
 - Leave the group as the new member and confirm the creator receives the departure email
-- Confirm `/groups` and `/groups/join/<token>` redirect to sign-in when signed out, and `/goals`/`/dashboard` still behave as before (no regression from the `PROTECTED_ROUTES`/middleware change)
+- Confirm `/groups` and `/groups/<id>` redirect to sign-in when signed out, `/groups/join/<token>` renders its preview instead of redirecting (revised 2026-08-31), and `/goals`/`/dashboard` still behave as before (no regression from the `PROTECTED_ROUTES`/middleware change)
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -298,8 +307,8 @@ N/A — see above.
 
 1. Create a group as user A; confirm it appears on `/groups` and its detail page shows A as the sole member.
 2. Copy the invite link; open it in a private/incognito window (simulating user B with no account).
-3. Confirm redirect to sign-in with `next` preserved; request a magic link for B's email; click it; confirm landing back on the confirm screen (not `/dashboard`).
-4. Confirm the screen shows the correct group name and A's email; click Join.
+3. Confirm the confirm screen renders directly — no sign-in redirect yet — showing the correct group name and A's email, with a "Sign in to join" link. Click it; confirm redirect to sign-in with `next` preserved; request a magic link for B's email; click it; confirm landing back on the confirm screen (not `/dashboard`), now showing a Join button.
+4. Click Join.
 5. Confirm B now appears in the group's member list (visible to both A and B).
 6. As B, leave the group; confirm A receives an email; confirm B's `group_members` row is gone.
 7. Re-visit the same invite link as A (already a member) and confirm it shows "already a member" rather than a Join button.
@@ -328,15 +337,15 @@ New migration only; no changes to `goals`' existing migration.
 
 #### Automated
 
-- [ ] 1.1 Migration applies cleanly: `npx supabase db reset`
-- [ ] 1.2 Lint passes: `npm run lint`
-- [ ] 1.3 Build passes: `npm run build`
+- [x] 1.1 Migration applies cleanly: `npx supabase db reset`
+- [x] 1.2 Lint passes: `npm run lint`
+- [x] 1.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 1.4 Tables/constraints/functions exist as expected in Supabase Studio
-- [ ] 1.5 No infinite-recursion error on `group_members` select with two members
-- [ ] 1.6 `get_group_preview` returns a row for a valid token, none for a bogus one
+- [x] 1.4 Tables/constraints/functions exist as expected in Supabase Studio
+- [x] 1.5 No infinite-recursion error on `group_members` select with two members
+- [x] 1.6 `get_group_preview` returns a row for a valid token, none for a bogus one
 
 ### Phase 2: Types & service layer
 
@@ -357,7 +366,7 @@ New migration only; no changes to `goals`' existing migration.
 - [ ] 3.3 Create endpoint produces both a `groups` and `group_members` row
 - [ ] 3.4 Join endpoint is idempotent (no duplicate row on re-submit)
 - [ ] 3.5 Leave endpoint removes the row and triggers an email to remaining members
-- [ ] 3.6 Signed-out visit to `/groups/join/<token>` redirects to sign-in with `next` preserved and returns there after auth
+- [ ] 3.6 Signed-out visit to `/groups/join/<token>` renders the preview with no redirect; its "Sign in to join" link preserves `next` and returns there after auth
 
 ### Phase 4: UI
 
@@ -372,4 +381,4 @@ New migration only; no changes to `goals`' existing migration.
 - [ ] 4.4 Member list updates after a new member joins
 - [ ] 4.5 Leave flow sends the departure email and updates both users' views
 - [ ] 4.6 Already-member revisit shows the "already a member" state, not a Join button
-- [ ] 4.7 `/groups` and `/groups/join/<token>` are gated when signed out; `/goals`/`/dashboard` unaffected
+- [ ] 4.7 `/groups` (list/detail) is gated when signed out; `/groups/join/<token>` renders its preview ungated (revised 2026-08-31); `/goals`/`/dashboard` unaffected

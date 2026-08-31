@@ -1,7 +1,7 @@
 ---
 change_id: form-and-manage-a-group
 title: Form and manage a group
-status: plan_reviewed
+status: implementing
 created: 2026-08-30
 updated: 2026-08-31
 archived_at: null
