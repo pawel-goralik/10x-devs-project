@@ -171,26 +171,26 @@ None — no schema or RLS changes in this plan.
 
 #### Automated
 
-- [ ] 1.1 Lint passes: `npm run lint`
-- [ ] 1.2 Build (incl. type-check) passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — 8968eb1
+- [x] 1.2 Build (incl. type-check) passes: `npm run build` — 8968eb1
 
 #### Manual
 
-- [ ] 1.3 POST a valid numeric progress amount for an owned goal and confirm `current_value` increases
-- [ ] 1.4 POST a boolean mark-done for an owned goal and confirm `is_done` flips to `true`
-- [ ] 1.5 Confirm a progress submission for another user's goal id is a no-op
+- [x] 1.3 POST a valid numeric progress amount for an owned goal and confirm `current_value` increases — 8968eb1
+- [x] 1.4 POST a boolean mark-done for an owned goal and confirm `is_done` flips to `true` — 8968eb1
+- [x] 1.5 Confirm a progress submission for another user's goal id is a no-op — 8968eb1
 
 ### Phase 2: UI integration
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — b109477
+- [x] 2.2 Build passes: `npm run build` — b109477
 
 #### Manual
 
-- [ ] 2.3 All four goal-state combinations (numeric/boolean × editable/locked) render the correct control
-- [ ] 2.4 Adding numeric progress persists and shows the `?progress=1` banner
-- [ ] 2.5 Marking a boolean goal done removes the checkbox and cannot be un-done
-- [ ] 2.6 Overshooting the numeric target saves without error and displays as "reached"
-- [ ] 2.7 Submitting with nothing filled redirects with no error banner
+- [x] 2.3 All four goal-state combinations (numeric/boolean × editable/locked) render the correct control — b109477
+- [x] 2.4 Adding numeric progress persists and shows the `?progress=1` banner — b109477
+- [x] 2.5 Marking a boolean goal done removes the checkbox and cannot be un-done — b109477
+- [x] 2.6 Overshooting the numeric target saves without error and displays as "reached" — b109477
+- [x] 2.7 Submitting with nothing filled redirects with no error banner — b109477

@@ -9,6 +9,7 @@ import type { Goal } from "@/types";
 const user = Astro.locals.user;
 const error = Astro.url.searchParams.get("error");
 const created = Astro.url.searchParams.get("created") === "1";
+const progressSaved = Astro.url.searchParams.get("progress") === "1";
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const goals: Goal[] = supabase && user ? await listGoals(supabase, user.id) : [];
@@ -18,6 +19,10 @@ const lockedGoals = goals.filter((goal) => !isEditable(goal));
 
 function measureLabel(goal: Goal): string {
   return goal.measureType === "numeric" ? `Target: ${goal.targetValue}` : "Yes / no";
+}
+
+function isReached(goal: Goal): boolean {
+  return goal.measureType === "numeric" && goal.currentValue >= goal.targetValue;
 }
 ---
 
@@ -39,6 +44,14 @@ function measureLabel(goal: Goal): string {
       }
 
       {
+        progressSaved && (
+          <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
+            Progress saved.
+          </div>
+        )
+      }
+
+      {
         error && (
           <div class="mb-6 rounded-lg border border-red-500/30 bg-red-900/30 px-4 py-3 text-sm text-red-300">
             {error}
@@ -54,6 +67,61 @@ function measureLabel(goal: Goal): string {
       {
         goals.length === 0 && (
           <p class="text-blue-100/60">You haven't committed any goals yet. Add your first one above.</p>
+        )
+      }
+
+      {
+        goals.length > 0 && (
+          <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+            <h2 class="mb-4 text-lg font-semibold">Track progress</h2>
+            <form method="POST" action="/api/goals/progress" class="space-y-4">
+              {goals.map((goal) => (
+                <div class="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
+                  <div>
+                    <p class="font-medium text-white">{goal.description}</p>
+                    <p class="text-sm text-blue-100/60">{measureLabel(goal)}</p>
+                  </div>
+                  {goal.measureType === "numeric" && (
+                    <div class="flex items-center gap-3">
+                      <span
+                        class:list={["text-sm", isReached(goal) ? "font-medium text-emerald-300" : "text-blue-100/60"]}
+                      >
+                        {isReached(goal) && "✓ "}
+                        {goal.currentValue} / {goal.targetValue}
+                      </span>
+                      <input
+                        name={`progress.${goal.id}.amount`}
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="Add amount"
+                        class="w-32 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                      />
+                    </div>
+                  )}
+                  {goal.measureType === "boolean" &&
+                    (goal.isDone ? (
+                      <span class="text-sm font-medium text-emerald-300">✓ Done</span>
+                    ) : (
+                      <label class="flex items-center gap-2 text-sm text-blue-100/80">
+                        <input
+                          name={`progress.${goal.id}.done`}
+                          type="checkbox"
+                          class="h-4 w-4 rounded border-white/20 bg-white/10 text-purple-500 focus:ring-2 focus:ring-purple-400"
+                        />
+                        Mark as done
+                      </label>
+                    ))}
+                </div>
+              ))}
+              <button
+                type="submit"
+                class="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
+              >
+                Save progress
+              </button>
+            </form>
+          </div>
         )
       }
 

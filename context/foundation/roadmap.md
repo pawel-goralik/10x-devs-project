@@ -34,7 +34,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | planning |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
-| S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | planning |
+| S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | in-progress |
 | S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, F-02     | FR-013, NFR ("Quarterly digest deliverability") | proposed |
 | S-06 | anonymize-on-account-deletion   | delete their account while their locked goals/progress persist as "former member" in group views | S-01, S-02     | FR-014                             | proposed |
 
@@ -137,7 +137,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** small and isolated (one field update on an existing goal); sequenced with generous parallel-with given `capacity` is the #1 constraint — it doesn't block, and isn't blocked by, the witnessing loop.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-05: Group member receives the quarterly digest
 
