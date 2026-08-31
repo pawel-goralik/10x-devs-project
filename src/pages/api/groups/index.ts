@@ -2,10 +2,11 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase";
 import { createGroup } from "@/lib/services/groups";
+import type { CreateGroupCommand } from "@/types";
 
 export const prerender = false;
 
-const createGroupSchema = z.object({
+const createGroupSchema: z.ZodType<CreateGroupCommand> = z.object({
   name: z.string().trim().min(1).max(255),
 });
 
@@ -26,7 +27,7 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`/groups?error=${encodeURIComponent("Supabase is not configured")}`);
   }
 
-  const result = await createGroup(supabase, parsed.data.name);
+  const result = await createGroup(supabase, parsed.data);
   if (!result.success) {
     return context.redirect(`/groups?error=${encodeURIComponent(result.error)}`);
   }

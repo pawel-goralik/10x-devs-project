@@ -1,5 +1,5 @@
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-import type { Group, GroupDetail, GroupMember, GroupPreview } from "@/types";
+import type { CreateGroupCommand, Group, GroupDetail, GroupMember, GroupPreview } from "@/types";
 import { sendEmail } from "@/lib/services/email";
 
 interface GroupRow {
@@ -119,8 +119,8 @@ export async function getGroupDetail(supabase: SupabaseClient, groupId: string):
 
 export type CreateGroupResult = { success: true; groupId: string } | { success: false; error: string };
 
-export async function createGroup(supabase: SupabaseClient, name: string): Promise<CreateGroupResult> {
-  const { data, error } = (await supabase.rpc("create_group", { p_name: name })) as {
+export async function createGroup(supabase: SupabaseClient, command: CreateGroupCommand): Promise<CreateGroupResult> {
+  const { data, error } = (await supabase.rpc("create_group", { p_name: command.name })) as {
     data: string | null;
     error: PostgrestError | null;
   };
