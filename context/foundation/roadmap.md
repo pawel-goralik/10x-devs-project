@@ -3,7 +3,7 @@ project: "Resolution Circle"
 version: 1
 status: draft
 created: 2026-08-02
-updated: 2026-08-30
+updated: 2026-08-31
 prd_version: 1
 main_goal: speed
 top_blocker: capacity
@@ -32,7 +32,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | done |
 | F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | in-progress |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
-| S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | proposed |
+| S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | planning |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
 | S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | planning |
 | S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, F-02     | FR-013, NFR ("Quarterly digest deliverability") | proposed |
@@ -105,7 +105,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ### S-02: User can form and manage a group
 
-- **Outcome:** authenticated user can create a group (optionally named, defaulting to "[name]'s circle"), invite others via a shareable link/code, accept an invite to join a group, and leave a group they belong to — with departure notifying remaining members.
+- **Outcome:** authenticated user can create a named group, invite others via a shareable link/code, accept an invite to join a group, and leave a group they belong to — with departure notifying remaining members by email.
 - **Change ID:** form-and-manage-a-group
 - **PRD refs:** US-01, FR-008, FR-009, FR-010, FR-011
 - **Prerequisites:** F-01, F-02
@@ -113,7 +113,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** bundles four FRs (create/invite/accept/leave) into one slice because they share the same groups/group_members schema and form one coherent membership workflow — splitting further would fragment a single vertical outcome without a real granularity benefit. Depends on F-02 (not just F-01) because FR-010's departure notification is a real email, not an in-app record.
-- **Status:** proposed
+- **Status:** planning
 
 ### S-03: Group member can witness the circle's goals (north star)
 

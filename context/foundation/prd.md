@@ -79,8 +79,9 @@ The same archetype shows up in two adjacent framings, both in scope for the MVP 
   > Socrates: Counter-argument considered: "manual tracking is the failure mode the seed criticized — users forget to update, digest becomes meaningless." Resolution: limitation accepted for MVP; the social cadence + closed-circle mechanism is the v1 mitigation. 'No third-party integrations' added to Non-Goals (see Phase 6); future external-source integration (Strava, Apple Health, etc.) routed to Open Questions for v2.
 
 ### Groups
-- FR-008: Authenticated user can create a group. Naming the group is optional; if omitted, it defaults to "[Creator's first name]'s circle." The group may be renamed later by any member. Priority: must-have
+- FR-008: Authenticated user can create a group by providing its name at creation time. Priority: must-have
   > Socrates: Counter-argument considered: "requiring a name adds friction — most users have one circle and the naming decision is unnecessary." Resolution: FR-008 revised to make naming optional with a sensible default; the rename affordance is preserved for groups with explicit identity needs.
+  > Revised during S-02 planning (2026-08-31): reverted to a required name at creation; the rename affordance is deferred to post-MVP (see Non-Goals). Simplifies S-02's scope by dropping default-name generation and the rename UI/endpoint, without weakening the underlying requirement — every group still gets a human-chosen name, just supplied once upfront rather than editable indefinitely.
 - FR-009: Authenticated user can accept a group invite and become a member. Priority: must-have
   > Socrates: Counter-argument considered: "without an explicit accept step, people get auto-added to groups they didn't intend to join." Resolution: this is a defense, not a critique — explicit accept is a positive consent signal that matters more in a social-pressure product than the friction it adds. FR-009 stands.
 - FR-010: Authenticated user can leave a group they belong to. When a member leaves, all remaining members of that group are notified of the departure. Priority: must-have
@@ -132,6 +133,7 @@ Post-window goal immutability (FR-006) is enforced at the **product surface** fo
 
 ## Non-Goals
 
+- **No group renaming for the MVP.** A group's name is fixed at creation; there's no rename affordance. Candidate for v2 if real usage shows groups need to be renamed. From FR-008's S-02-planning revision (2026-08-31).
 - **No notification channels other than email.** No push notifications, no SMS, no in-app banners. The quarterly digest is delivered via email and that is the only product channel. Stated by user in seed.
 - **No user-configurable notification frequency.** Cadence is fixed at calendar-quarter end for every user, every group; no per-user, per-group, or per-goal cadence override. Per-user frequency is the exact failure mode the cadence insight prevents. Stated by user in seed.
 - **No group-shared goals.** The MVP supports one-person-one-goal-with-witnesses; it does not support a goal that the entire group commits to together (no joint targets, no group quotas). A collective-goal model is a different product. Stated by user in seed.
