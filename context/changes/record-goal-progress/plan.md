@@ -184,13 +184,13 @@ None — no schema or RLS changes in this plan.
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — b109477
+- [x] 2.2 Build passes: `npm run build` — b109477
 
 #### Manual
 
-- [x] 2.3 All four goal-state combinations (numeric/boolean × editable/locked) render the correct control
-- [x] 2.4 Adding numeric progress persists and shows the `?progress=1` banner
-- [x] 2.5 Marking a boolean goal done removes the checkbox and cannot be un-done
-- [x] 2.6 Overshooting the numeric target saves without error and displays as "reached"
-- [x] 2.7 Submitting with nothing filled redirects with no error banner
+- [x] 2.3 All four goal-state combinations (numeric/boolean × editable/locked) render the correct control — b109477
+- [x] 2.4 Adding numeric progress persists and shows the `?progress=1` banner — b109477
+- [x] 2.5 Marking a boolean goal done removes the checkbox and cannot be un-done — b109477
+- [x] 2.6 Overshooting the numeric target saves without error and displays as "reached" — b109477
+- [x] 2.7 Submitting with nothing filled redirects with no error banner — b109477

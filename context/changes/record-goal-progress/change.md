@@ -1,7 +1,7 @@
 ---
 change_id: record-goal-progress
 title: Record goal progress
-status: implementing
+status: implemented
 created: 2026-08-30
 updated: 2026-08-31
 archived_at: null
