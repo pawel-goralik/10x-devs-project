@@ -20,6 +20,10 @@ const lockedGoals = goals.filter((goal) => !isEditable(goal));
 function measureLabel(goal: Goal): string {
   return goal.measureType === "numeric" ? `Target: ${goal.targetValue}` : "Yes / no";
 }
+
+function isReached(goal: Goal): boolean {
+  return goal.measureType === "numeric" && goal.currentValue >= goal.targetValue;
+}
 ---
 
 <Layout title="My Goals">
@@ -79,7 +83,10 @@ function measureLabel(goal: Goal): string {
                   </div>
                   {goal.measureType === "numeric" && (
                     <div class="flex items-center gap-3">
-                      <span class="text-sm text-blue-100/60">
+                      <span
+                        class:list={["text-sm", isReached(goal) ? "font-medium text-emerald-300" : "text-blue-100/60"]}
+                      >
+                        {isReached(goal) && "✓ "}
                         {goal.currentValue} / {goal.targetValue}
                       </span>
                       <input
