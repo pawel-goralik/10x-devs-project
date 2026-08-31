@@ -43,6 +43,43 @@ export interface UpdateGoalCommand {
 }
 
 /**
+ * Shared entity and command types for the groups feature (roadmap S-02:
+ * form-and-manage-a-group). See supabase/migrations/20260831123440_create_groups.sql
+ * for the underlying schema.
+ */
+
+export interface Group {
+  id: string;
+  name: string;
+  inviteToken: string;
+  createdBy: string;
+  createdAt: string;
+}
+
+export interface GroupMember {
+  userId: string;
+  email: string;
+  joinedAt: string;
+}
+
+export interface GroupDetail extends Group {
+  members: GroupMember[];
+}
+
+/** Shape returned by the get_group_preview RPC — used by the invite-confirm screen. */
+export interface GroupPreview {
+  groupId: string;
+  groupName: string;
+  creatorEmail: string;
+  alreadyMember: boolean;
+}
+
+/** One row of a create-group submission (see POST /api/groups). */
+export interface CreateGroupCommand {
+  name: string;
+}
+
+/**
  * One row of a progress submission (see POST /api/goals/progress). The boolean variant
  * always means "mark done" — there's only one legal direction, so no `isDone` field.
  */

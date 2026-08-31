@@ -337,22 +337,22 @@ New migration only; no changes to `goals`' existing migration.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npx supabase db reset`
-- [x] 1.2 Lint passes: `npm run lint`
-- [x] 1.3 Build passes: `npm run build`
+- [x] 1.1 Migration applies cleanly: `npx supabase db reset` — 56cb7f6
+- [x] 1.2 Lint passes: `npm run lint` — 56cb7f6
+- [x] 1.3 Build passes: `npm run build` — 56cb7f6
 
 #### Manual
 
-- [x] 1.4 Tables/constraints/functions exist as expected in Supabase Studio
-- [x] 1.5 No infinite-recursion error on `group_members` select with two members
-- [x] 1.6 `get_group_preview` returns a row for a valid token, none for a bogus one
+- [x] 1.4 Tables/constraints/functions exist as expected in Supabase Studio — 56cb7f6
+- [x] 1.5 No infinite-recursion error on `group_members` select with two members — 56cb7f6
+- [x] 1.6 `get_group_preview` returns a row for a valid token, none for a bogus one — 56cb7f6
 
 ### Phase 2: Types & service layer
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 ### Phase 3: API routes + auth callback threading
 
