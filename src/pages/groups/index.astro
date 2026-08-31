@@ -1,0 +1,83 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import { createClient } from "@/lib/supabase";
+import { listMyGroups } from "@/lib/services/groups";
+import type { Group } from "@/types";
+
+const user = Astro.locals.user;
+const error = Astro.url.searchParams.get("error");
+const left = Astro.url.searchParams.get("left") === "1";
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const groups: Group[] = supabase && user ? await listMyGroups(supabase, user.id) : [];
+---
+
+<Layout title="My Groups">
+  <div class="bg-cosmic min-h-screen p-4 sm:p-8">
+    <div class="mx-auto max-w-2xl">
+      <Topbar />
+
+      <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+        My Groups
+      </h1>
+
+      {
+        left && (
+          <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
+            You left the group.
+          </div>
+        )
+      }
+
+      {
+        error && (
+          <div class="mb-6 rounded-lg border border-red-500/30 bg-red-900/30 px-4 py-3 text-sm text-red-300">
+            {error}
+          </div>
+        )
+      }
+
+      <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+        <h2 class="mb-4 text-lg font-semibold">Create a group</h2>
+        <form method="POST" action="/api/groups" class="flex gap-3">
+          <input
+            name="name"
+            type="text"
+            placeholder="Group name"
+            required
+            class="flex-1 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+          />
+          <button
+            type="submit"
+            class="rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
+          >
+            Create
+          </button>
+        </form>
+      </div>
+
+      {
+        groups.length === 0 ? (
+          <p class="text-blue-100/60">You haven't joined or created any groups yet.</p>
+        ) : (
+          <div class="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+            <h2 class="mb-4 text-lg font-semibold">Your groups</h2>
+            <ul class="space-y-2">
+              {groups.map((group) => (
+                <li>
+                  <a
+                    href={`/groups/${group.id}`}
+                    class="block rounded-lg border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10"
+                  >
+                    <span class="font-medium text-white">{group.name}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

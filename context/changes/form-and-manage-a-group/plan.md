@@ -207,7 +207,7 @@ The three mutation endpoints, plus the `next`-path threading that lets an invite
 
 **File**: `src/middleware.ts`
 
-**Intent**: Any protected route hit while signed out returns the visitor to where they were headed after they sign in — a natural generalization for every protected route. **Revised 2026-08-31**: `/groups/join/[token]` is deliberately *excluded* from this gate — the invite-confirm page must render its preview for a signed-out visitor (see Phase 4), and only the actual Join action requires auth. The `next`-threading mechanism (this item) is still exactly what carries a visitor from that page's own "Sign in to join" link back to itself after auth.
+**Intent**: Any protected route hit while signed out returns the visitor to where they were headed after they sign in — a natural generalization for every protected route. **Revised 2026-08-31**: `/groups/join/[token]` is deliberately *excluded* from this gate — the invite-confirm page must render its preview for a signed-out visitor (see Phase 4), and only the actual Join action requires auth. The `next`-threading mechanism (this item) is still exactly what carries a visitor from that page's own "Sign in before joining" link back to itself after auth.
 
 **Contract**: change the unauthenticated redirect from `context.redirect("/auth/signin")` to `context.redirect(\`/auth/signin?next=${encodeURIComponent(context.url.pathname + context.url.search)}\`)`. Add `/groups` to `PROTECTED_ROUTES`, but exempt any path starting with `/groups/join` from the gate via a short exception list checked before the protected-route match (e.g. `const PUBLIC_EXCEPTIONS = ["/groups/join"];` and skip the redirect when `PUBLIC_EXCEPTIONS.some((p) => pathname.startsWith(p))`) — `/groups` (the list page) and `/groups/[id]` (detail) stay fully gated.
 
@@ -223,7 +223,7 @@ The three mutation endpoints, plus the `next`-path threading that lets an invite
 - As a signed-in user, create a group via the endpoint (curl or a temporary form) and confirm both `groups` and `group_members` rows exist
 - As a second signed-in test user with a valid invite token, POST to the join endpoint and confirm a `group_members` row appears; POST again with the same token and confirm no error (idempotent) and no duplicate row
 - As a member, POST to leave and confirm the `group_members` row is gone and (with `BREVO_API_KEY` configured) an email arrives for any remaining member
-- Sign out, visit `/groups/join/<a-real-token>`, confirm the page renders the preview directly with no redirect (revised 2026-08-31); click "Sign in to join", confirm redirect to `/auth/signin?next=%2Fgroups%2Fjoin%2F<token>`, request a magic link, click it, and confirm landing back on the join page (now showing a Join button) rather than `/dashboard`
+- Sign out, visit `/groups/join/<a-real-token>`, confirm the page renders the preview directly with no redirect (revised 2026-08-31); click "Sign in before joining", confirm redirect to `/auth/signin?next=%2Fgroups%2Fjoin%2F<token>`, request a magic link, click it, and confirm landing back on the join page (now showing a Join button) rather than `/dashboard`
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the manual testing was successful before proceeding to the next phase.
 
@@ -262,7 +262,7 @@ The three pages, plus nav/middleware wiring.
 **Intent**: The explicit-accept screen. **Revised 2026-08-31**: no longer relies on `middleware.ts`'s protection to guarantee `Astro.locals.user` — this route is now exempted from the auth gate (Phase 3) so a signed-out visitor sees the invite preview immediately, before being asked to sign in. The page branches explicitly on `Astro.locals.user` instead.
 
 **Contract**: validate `Astro.params.token` with `z.uuid()` before calling `previewInvite` — a malformed (non-UUID) value is treated identically to a not-found token, rather than reaching `get_group_preview`'s uuid-typed RPC parameter and surfacing a raw Postgres/PostgREST error. Server-calls `previewInvite(token)` regardless of auth state (the RPC is callable by `anon` too, per Phase 1's revised grant). If `null` (or the token failed UUID validation), render "This invite link is invalid" — for anyone, signed in or not. Otherwise render `"You've been invited to join <groupName>, created by <creatorEmail>"`, then branch:
-- **Signed out** (`!Astro.locals.user`): render a "Sign in to join" link to `/auth/signin?next=${encodeURIComponent(Astro.url.pathname)}` — no join form, since joining requires an authenticated identity.
+- **Signed out** (`!Astro.locals.user`): render a "Sign in before joining" link to `/auth/signin?next=${encodeURIComponent(Astro.url.pathname)}` — no join form, since joining requires an authenticated identity.
 - **Signed in and `alreadyMember`**: render a link straight to `/groups/<groupId>` instead of a Join button.
 - **Signed in, not yet a member**: render a `<form method="POST" action="/api/groups/join">` (hidden `token` field) and a Join button.
 
@@ -284,7 +284,7 @@ The three pages, plus nav/middleware wiring.
 #### Manual Verification:
 
 - End-to-end as an existing user: create a group on `/groups`, open its detail page, copy the invite link
-- End-to-end as a brand-new user (no account): open the invite link in a private window, see the correct group name and creator immediately with no sign-in prompt yet (revised 2026-08-31), click "Sign in to join", get redirected through sign-in and back to the same confirm screen (now with a Join button), sign up via magic link, join, and see the group on `/groups`
+- End-to-end as a brand-new user (no account): open the invite link in a private window, see the correct group name and creator immediately with no sign-in prompt yet (revised 2026-08-31), click "Sign in before joining", get redirected through sign-in and back to the same confirm screen (now with a Join button), sign up via magic link, join, and see the group on `/groups`
 - As the original creator, refresh the group detail page and confirm the new member now appears in the list
 - Leave the group as the new member and confirm the creator receives the departure email
 - Confirm `/groups` and `/groups/<id>` redirect to sign-in when signed out, `/groups/join/<token>` renders its preview instead of redirecting (revised 2026-08-31), and `/goals`/`/dashboard` still behave as before (no regression from the `PROTECTED_ROUTES`/middleware change)
@@ -307,7 +307,7 @@ N/A — see above.
 
 1. Create a group as user A; confirm it appears on `/groups` and its detail page shows A as the sole member.
 2. Copy the invite link; open it in a private/incognito window (simulating user B with no account).
-3. Confirm the confirm screen renders directly — no sign-in redirect yet — showing the correct group name and A's email, with a "Sign in to join" link. Click it; confirm redirect to sign-in with `next` preserved; request a magic link for B's email; click it; confirm landing back on the confirm screen (not `/dashboard`), now showing a Join button.
+3. Confirm the confirm screen renders directly — no sign-in redirect yet — showing the correct group name and A's email, with a "Sign in before joining" link. Click it; confirm redirect to sign-in with `next` preserved; request a magic link for B's email; click it; confirm landing back on the confirm screen (not `/dashboard`), now showing a Join button.
 4. Click Join.
 5. Confirm B now appears in the group's member list (visible to both A and B).
 6. As B, leave the group; confirm A receives an email; confirm B's `group_members` row is gone.
@@ -358,27 +358,27 @@ New migration only; no changes to `goals`' existing migration.
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint`
-- [x] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint` — 1322d04
+- [x] 3.2 Build passes: `npm run build` — 1322d04
 
 #### Manual
 
-- [x] 3.3 Create endpoint produces both a `groups` and `group_members` row
-- [x] 3.4 Join endpoint is idempotent (no duplicate row on re-submit)
-- [x] 3.5 Leave endpoint removes the row and triggers an email to remaining members
-- [x] 3.6 Signed-out visit to `/groups/join/<token>` renders the preview with no redirect; its "Sign in to join" link preserves `next` and returns there after auth
+- [x] 3.3 Create endpoint produces both a `groups` and `group_members` row — 1322d04
+- [x] 3.4 Join endpoint is idempotent (no duplicate row on re-submit) — 1322d04
+- [x] 3.5 Leave endpoint removes the row and triggers an email to remaining members — 1322d04
+- [x] 3.6 Signed-out visit to `/groups/join/<token>` renders the preview with no redirect; its "Sign in before joining" link preserves `next` and returns there after auth — 1322d04
 
 ### Phase 4: UI
 
 #### Automated
 
-- [ ] 4.1 Lint passes: `npm run lint`
-- [ ] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint`
+- [x] 4.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 4.3 Full create → invite → sign-up → confirm → join flow works end-to-end for a brand-new user
-- [ ] 4.4 Member list updates after a new member joins
-- [ ] 4.5 Leave flow sends the departure email and updates both users' views
-- [ ] 4.6 Already-member revisit shows the "already a member" state, not a Join button
-- [ ] 4.7 `/groups` (list/detail) is gated when signed out; `/groups/join/<token>` renders its preview ungated (revised 2026-08-31); `/goals`/`/dashboard` unaffected
+- [x] 4.3 Full create → invite → sign-up → confirm → join flow works end-to-end for a brand-new user
+- [x] 4.4 Member list updates after a new member joins
+- [x] 4.5 Leave flow sends the departure email and updates both users' views
+- [x] 4.6 Already-member revisit shows the "already a member" state, not a Join button
+- [x] 4.7 `/groups` (list/detail) is gated when signed out; `/groups/join/<token>` renders its preview ungated (revised 2026-08-31); `/goals`/`/dashboard` unaffected
