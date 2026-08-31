@@ -171,26 +171,26 @@ None — no schema or RLS changes in this plan.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build (incl. type-check) passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — 8968eb1
+- [x] 1.2 Build (incl. type-check) passes: `npm run build` — 8968eb1
 
 #### Manual
 
-- [x] 1.3 POST a valid numeric progress amount for an owned goal and confirm `current_value` increases
-- [x] 1.4 POST a boolean mark-done for an owned goal and confirm `is_done` flips to `true`
-- [x] 1.5 Confirm a progress submission for another user's goal id is a no-op
+- [x] 1.3 POST a valid numeric progress amount for an owned goal and confirm `current_value` increases — 8968eb1
+- [x] 1.4 POST a boolean mark-done for an owned goal and confirm `is_done` flips to `true` — 8968eb1
+- [x] 1.5 Confirm a progress submission for another user's goal id is a no-op — 8968eb1
 
 ### Phase 2: UI integration
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 All four goal-state combinations (numeric/boolean × editable/locked) render the correct control
-- [ ] 2.4 Adding numeric progress persists and shows the `?progress=1` banner
-- [ ] 2.5 Marking a boolean goal done removes the checkbox and cannot be un-done
-- [ ] 2.6 Overshooting the numeric target saves without error and displays as "reached"
-- [ ] 2.7 Submitting with nothing filled redirects with no error banner
+- [x] 2.3 All four goal-state combinations (numeric/boolean × editable/locked) render the correct control
+- [x] 2.4 Adding numeric progress persists and shows the `?progress=1` banner
+- [x] 2.5 Marking a boolean goal done removes the checkbox and cannot be un-done
+- [x] 2.6 Overshooting the numeric target saves without error and displays as "reached"
+- [x] 2.7 Submitting with nothing filled redirects with no error banner
