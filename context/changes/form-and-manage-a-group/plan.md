@@ -372,13 +372,13 @@ New migration only; no changes to `goals`' existing migration.
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint`
-- [x] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint` — 18073be
+- [x] 4.2 Build passes: `npm run build` — 18073be
 
 #### Manual
 
-- [x] 4.3 Full create → invite → sign-up → confirm → join flow works end-to-end for a brand-new user
-- [x] 4.4 Member list updates after a new member joins
-- [x] 4.5 Leave flow sends the departure email and updates both users' views
-- [x] 4.6 Already-member revisit shows the "already a member" state, not a Join button
-- [x] 4.7 `/groups` (list/detail) is gated when signed out; `/groups/join/<token>` renders its preview ungated (revised 2026-08-31); `/goals`/`/dashboard` unaffected
+- [x] 4.3 Full create → invite → sign-up → confirm → join flow works end-to-end for a brand-new user — 18073be
+- [x] 4.4 Member list updates after a new member joins — 18073be
+- [x] 4.5 Leave flow sends the departure email and updates both users' views — 18073be
+- [x] 4.6 Already-member revisit shows the "already a member" state, not a Join button — 18073be
+- [x] 4.7 `/groups` (list/detail) is gated when signed out; `/groups/join/<token>` renders its preview ungated (revised 2026-08-31); `/goals`/`/dashboard` unaffected — 18073be
