@@ -21,6 +21,7 @@ function parseProgress(form: FormData): unknown[] {
   for (const [key, value] of form.entries()) {
     const match = PROGRESS_FIELD_PATTERN.exec(key);
     if (!match) continue;
+    if (typeof value === "string" && value.trim() === "") continue;
     const [, id, field] = match;
     byId.set(id, { ...byId.get(id), id, [field]: value });
   }
