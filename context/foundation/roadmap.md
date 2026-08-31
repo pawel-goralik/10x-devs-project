@@ -30,7 +30,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | ID   | Change ID                      | Outcome (user can …)                                                            | Prerequisites | PRD refs                          | Status   |
 | ---- | ------------------------------- | -------------------------------------------------------------------------------- | -------------- | ---------------------------------- | -------- |
 | F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | done |
-| F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | in-progress |
+| F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | done |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | in-progress |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
@@ -87,7 +87,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** pulled forward from being S-05-only infra because S-02's FR-010 also needs real email delivery, not just an in-app record — provisioning the REST API key and building the send-email utility once, ahead of both consumers, avoids duplicating that setup across two slices.
-- **Status:** in-progress
+- **Status:** done
 
 ## Slices
 
@@ -193,3 +193,4 @@ None. All PRD shaping-stage questions were resolved before this roadmap was gene
 
 - **F-01: (foundation) passwordless magic-link auth replaces the current password flow** — Archived 2026-08-30 → `context/archive/2026-08-25-magic-link-auth/`. Lesson: —.
 - **S-01: authenticated user can create a goal (one-line description + one measure — numeric target or yes/no) and view it on their personal goals page; within 24 hours they can edit or delete it, after which it's locked forever** — Archived 2026-08-30 → `context/archive/2026-08-29-commit-a-goal/`. Lesson: —.
+- **F-02: (foundation) the application can send app-triggered transactional email via Brevo's REST API — a provisioned `BREVO_API_KEY` Worker secret plus a reusable send-email service other slices call rather than each wiring their own. Brevo's SMTP side (sender verification, magic-link email) is already done as part of `context/changes/deployment/deployment-plan.md` Phase 1c/4 — this item is scoped to the separate REST API key and the code, not account/sender setup.** — Archived 2026-08-31 → `context/archive/2026-08-30-email-sending-infrastructure/`. Lesson: —.
