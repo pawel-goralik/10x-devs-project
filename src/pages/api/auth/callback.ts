@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
+import { sanitizeNextPath } from "@/lib/utils";
 
 export const prerender = false;
 
@@ -26,5 +27,6 @@ export const GET: APIRoute = async (context) => {
     return context.redirect(`/auth/signin?error=${encodeURIComponent(INVALID_LINK_MESSAGE)}`);
   }
 
-  return context.redirect("/dashboard");
+  const next = sanitizeNextPath(context.url.searchParams.get("next"));
+  return context.redirect(next ?? "/dashboard");
 };

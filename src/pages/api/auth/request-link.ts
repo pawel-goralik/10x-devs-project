@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase";
+import { sanitizeNextPath } from "@/lib/utils";
 
 export const prerender = false;
 
@@ -25,8 +26,18 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`/auth/signin?error=${encodeURIComponent("Supabase is not configured")}`);
   }
 
-  const emailRedirectTo = new URL("/api/auth/callback", context.url.origin).toString();
-  const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } });
+  const nextRaw = form.get("next");
+  const next = sanitizeNextPath(typeof nextRaw === "string" ? nextRaw : null);
+
+  const emailRedirectUrl = new URL("/api/auth/callback", context.url.origin);
+  if (next) {
+    emailRedirectUrl.searchParams.set("next", next);
+  }
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: emailRedirectUrl.toString() },
+  });
 
   if (error) {
     const message = error.code === "over_email_send_rate_limit" ? RATE_LIMIT_MESSAGE : error.message;

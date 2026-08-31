@@ -6,9 +6,10 @@ import { ServerError } from "@/components/shared/ServerError";
 
 interface Props {
   serverError?: string | null;
+  next?: string | null;
 }
 
-export default function MagicLinkForm({ serverError }: Props) {
+export default function MagicLinkForm({ serverError, next }: Props) {
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState<{ email?: string }>({});
 
@@ -35,6 +36,7 @@ export default function MagicLinkForm({ serverError }: Props) {
 
   return (
     <form method="POST" action="/api/auth/request-link" className="space-y-4" onSubmit={handleSubmit} noValidate>
+      {next && <input type="hidden" name="next" value={next} />}
       <FormField
         id="email"
         type="email"

@@ -351,22 +351,22 @@ New migration only; no changes to `goals`' existing migration.
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — fd63f6e
+- [x] 2.2 Build passes: `npm run build` — fd63f6e
 
 ### Phase 3: API routes + auth callback threading
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Create endpoint produces both a `groups` and `group_members` row
-- [ ] 3.4 Join endpoint is idempotent (no duplicate row on re-submit)
-- [ ] 3.5 Leave endpoint removes the row and triggers an email to remaining members
-- [ ] 3.6 Signed-out visit to `/groups/join/<token>` renders the preview with no redirect; its "Sign in to join" link preserves `next` and returns there after auth
+- [x] 3.3 Create endpoint produces both a `groups` and `group_members` row
+- [x] 3.4 Join endpoint is idempotent (no duplicate row on re-submit)
+- [x] 3.5 Leave endpoint removes the row and triggers an email to remaining members
+- [x] 3.6 Signed-out visit to `/groups/join/<token>` renders the preview with no redirect; its "Sign in to join" link preserves `next` and returns there after auth
 
 ### Phase 4: UI
 
