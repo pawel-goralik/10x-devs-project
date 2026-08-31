@@ -32,7 +32,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | done |
 | F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | done |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
-| S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | in-progress |
+| S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | done |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
 | S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | in-progress |
 | S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, F-02     | FR-013, NFR ("Quarterly digest deliverability") | proposed |
@@ -113,7 +113,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** bundles four FRs (create/invite/accept/leave) into one slice because they share the same groups/group_members schema and form one coherent membership workflow — splitting further would fragment a single vertical outcome without a real granularity benefit. Depends on F-02 (not just F-01) because FR-010's departure notification is a real email, not an in-app record.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-03: Group member can witness the circle's goals (north star)
 
@@ -194,3 +194,4 @@ None. All PRD shaping-stage questions were resolved before this roadmap was gene
 - **F-01: (foundation) passwordless magic-link auth replaces the current password flow** — Archived 2026-08-30 → `context/archive/2026-08-25-magic-link-auth/`. Lesson: —.
 - **S-01: authenticated user can create a goal (one-line description + one measure — numeric target or yes/no) and view it on their personal goals page; within 24 hours they can edit or delete it, after which it's locked forever** — Archived 2026-08-30 → `context/archive/2026-08-29-commit-a-goal/`. Lesson: —.
 - **F-02: (foundation) the application can send app-triggered transactional email via Brevo's REST API — a provisioned `BREVO_API_KEY` Worker secret plus a reusable send-email service other slices call rather than each wiring their own. Brevo's SMTP side (sender verification, magic-link email) is already done as part of `context/changes/deployment/deployment-plan.md` Phase 1c/4 — this item is scoped to the separate REST API key and the code, not account/sender setup.** — Archived 2026-08-31 → `context/archive/2026-08-30-email-sending-infrastructure/`. Lesson: —.
+- **S-02: authenticated user can create a named group, invite others via a shareable link/code, accept an invite to join a group, and leave a group they belong to — with departure notifying remaining members by email.** — Archived 2026-08-31 → `context/archive/2026-08-30-form-and-manage-a-group/`. Lesson: —.
