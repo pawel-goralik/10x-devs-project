@@ -1,7 +1,7 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
 
-const PROTECTED_ROUTES = ["/dashboard", "/goals", "/groups"];
+const PROTECTED_ROUTES = ["/goals", "/groups"];
 
 // /groups/join/[token] must render its invite preview for a signed-out visitor —
 // only the actual Join action (POST /api/groups/join) requires auth. /groups (list)

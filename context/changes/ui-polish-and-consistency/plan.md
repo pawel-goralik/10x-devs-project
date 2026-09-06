@@ -335,6 +335,55 @@ Translate the two email surfaces the app controls — the Brevo-sent group-leave
 
 ---
 
+## Phase 6: Remove the dashboard page
+
+### Overview
+
+Added after all five original phases landed, at the user's request. Phase 1 already established that `/dashboard` has no real content of its own (just the user's email and a Sign-out button) and demoted it from every CTA/redirect target in favor of `/goals`. With nothing left pointing to it, keeping the page around is pure dead weight — remove it entirely rather than leaving an orphaned, content-less route reachable only via direct URL or nav.
+
+### Changes Required:
+
+#### 1. Delete the dashboard page
+
+**File**: `src/pages/dashboard.astro`
+
+**Intent**: The page has no content beyond email + sign-out, is no longer a CTA or post-sign-in redirect target (both point to `/goals` since Phase 1), and isn't linked from anywhere except the nav bar being removed below.
+
+**Contract**: Delete the file.
+
+#### 2. Remove it from protected routes
+
+**File**: `src/middleware.ts`
+
+**Intent**: `/dashboard` no longer exists, so it shouldn't be listed as a route the auth gate protects.
+
+**Contract**: Remove `"/dashboard"` from the `PROTECTED_ROUTES` array (line 4), leaving `["/goals", "/groups"]`.
+
+#### 3. Remove the nav link
+
+**File**: `src/components/Topbar.astro`
+
+**Intent**: The centralized nav's "Panel" link (added in Phase 2, translated in Phase 4) would now point to a 404.
+
+**Contract**: Remove the `<a href="/dashboard">Panel</a>` link from the signed-in nav block, leaving "Moje cele" and "Moje grupy" as the remaining links.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Lint passes: `npm run lint`
+- Build passes: `npm run build`
+- Repo-wide grep for `/dashboard` and `dashboard.astro` returns no matches in `src/`
+
+#### Manual Verification:
+
+- Visiting `/dashboard` directly now 404s (page no longer exists)
+- The nav bar no longer shows a "Panel" link on any page
+- Signing in via magic link still lands on `/goals` as before (unaffected by this phase)
+- No remaining in-app link points to `/dashboard`
+
+---
+
 ## Testing Strategy
 
 No automated test suite exists in this project yet (Module 2 stage — CI runs lint + build only). Verification relies on `npm run lint` / `npm run build` passing at every phase plus the manual click-through steps listed per phase above.
@@ -422,11 +471,26 @@ No data migration. Phase 5's Supabase email-template and config changes require 
 
 #### Automated
 
-- [x] 5.1 Lint passes: `npm run lint`
-- [x] 5.2 Build passes: `npm run build`
+- [x] 5.1 Lint passes: `npm run lint` — 206ec09
+- [x] 5.2 Build passes: `npm run build` — 206ec09
 
 #### Manual
 
-- [x] 5.3 Magic-link email renders correctly in Polish
-- [x] 5.4 Group-leave notification email renders correctly in Polish
-- [x] 5.5 Config-push to remote Supabase approved by user, diffed beforehand, and verified afterward with no other remote auth settings reverted
+- [x] 5.3 Magic-link email renders correctly in Polish — 206ec09
+- [x] 5.4 Group-leave notification email renders correctly in Polish — 206ec09
+- [x] 5.5 Config-push to remote Supabase approved by user, diffed beforehand, and verified afterward with no other remote auth settings reverted — 206ec09
+
+### Phase 6: Remove the dashboard page
+
+#### Automated
+
+- [x] 6.1 Lint passes: `npm run lint`
+- [x] 6.2 Build passes: `npm run build`
+- [x] 6.3 Repo-wide grep for `/dashboard` and `dashboard.astro` returns no matches in `src/`
+
+#### Manual
+
+- [x] 6.4 Visiting `/dashboard` directly now 404s
+- [x] 6.5 The nav bar no longer shows a "Panel" link on any page
+- [x] 6.6 Signing in via magic link still lands on `/goals` as before
+- [x] 6.7 No remaining in-app link points to `/dashboard`
