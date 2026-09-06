@@ -33,7 +33,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | done |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | done |
-| S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | proposed |
+| S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | in-progress |
 | S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | done |
 | S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, F-02     | FR-013, NFR ("Quarterly digest deliverability") | proposed |
 | S-06 | anonymize-on-account-deletion   | delete their account while their locked goals/progress persist as "former member" in group views | S-01, S-02     | FR-014                             | proposed |
@@ -129,7 +129,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** this is the north star — placed as early as S-01 and S-02 allow, not deferred for symmetric ordering, because it's the first point where the product's core bet (a promise witnessed by a trusted circle) becomes real and testable.
-- **Status:** proposed
+- **Status:** in-progress
 
 ### S-04: User can record progress on their own goal
 
