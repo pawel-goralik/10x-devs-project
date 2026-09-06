@@ -9,6 +9,7 @@ const user = Astro.locals.user;
 const error = Astro.url.searchParams.get("error");
 const created = Astro.url.searchParams.get("created") === "1";
 const progressSaved = Astro.url.searchParams.get("progress") === "1";
+const updated = Astro.url.searchParams.get("updated") === "1";
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const goals: Goal[] = supabase && user ? await listGoals(supabase, user.id) : [];
@@ -44,6 +45,14 @@ function isReached(goal: Goal): boolean {
         progressSaved && (
           <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
             Progress saved.
+          </div>
+        )
+      }
+
+      {
+        updated && (
+          <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
+            Zmiany zapisane.
           </div>
         )
       }

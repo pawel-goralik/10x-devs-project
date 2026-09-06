@@ -168,7 +168,7 @@ Close the one gap in an otherwise-consistent feedback pattern: editing or deleti
 
 **File**: `src/pages/api/goals/manage.ts`
 
-**Intent**: Both success paths (delete, edit-save) should redirect with a query param the page can key a banner off, matching the existing `?created=1`/`?progress=1` pattern.
+**Intent**: Both success paths (delete, edit-save) should redirect with a query param the page can key a banner off, matching the existing `?created=1`/`?progress=1` pattern. (A split into two distinct params/messages — one per action — was tried during manual verification and then reverted at the user's request; both actions share one `?updated=1` param and banner.)
 
 **Contract**: Change both success-path `return context.redirect("/goals")` calls (delete path and edit-save path) to `return context.redirect("/goals?updated=1")`.
 
@@ -380,30 +380,30 @@ No data migration. Phase 5's Supabase email-template and config changes require 
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — 22dc045
+- [x] 2.2 Build passes: `npm run build` — 22dc045
 
 #### Manual
 
-- [x] 2.3 `/dashboard` shows the nav bar and can reach Goals/Groups/Sign-out
-- [x] 2.4 `/groups/join/<token>` shows the nav bar
-- [x] 2.5 Homepage, `/goals`, `/groups`, `/groups/[id]` each show exactly one nav bar
-- [x] 2.6 Sign-in/check-email pages show the "Not signed in" nav state unaffected
-- [x] 2.7 Every page shows the dark cosmic background (no white flash/seam) and nav text/borders stay legible everywhere, including auth pages and the invite-join page
-- [x] 2.8 Sign-in, check-email, dashboard, and invite-join pages show their card truly vertically centered below the nav bar
+- [x] 2.3 `/dashboard` shows the nav bar and can reach Goals/Groups/Sign-out — 22dc045
+- [x] 2.4 `/groups/join/<token>` shows the nav bar — 22dc045
+- [x] 2.5 Homepage, `/goals`, `/groups`, `/groups/[id]` each show exactly one nav bar — 22dc045
+- [x] 2.6 Sign-in/check-email pages show the "Not signed in" nav state unaffected — 22dc045
+- [x] 2.7 Every page shows the dark cosmic background (no white flash/seam) and nav text/borders stay legible everywhere, including auth pages and the invite-join page — 22dc045
+- [x] 2.8 Sign-in, check-email, dashboard, and invite-join pages show their card truly vertically centered below the nav bar — 22dc045
 
 ### Phase 3: Consistent save/edit feedback
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Editing a goal and saving shows a success banner
-- [ ] 3.4 Deleting a goal shows the same success banner
-- [ ] 3.5 Banner styled consistently with create/progress banners
+- [x] 3.3 Editing a goal and saving shows a success banner
+- [x] 3.4 Deleting a goal shows the same success banner
+- [x] 3.5 Banner styled consistently with create/progress banners
 
 ### Phase 4: Full in-app Polish translation
 

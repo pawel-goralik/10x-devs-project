@@ -51,7 +51,7 @@ export const POST: APIRoute = async (context) => {
         `/goals?error=${encodeURIComponent("That goal could no longer be deleted — its 24h window has closed")}`,
       );
     }
-    return context.redirect("/goals");
+    return context.redirect("/goals?updated=1");
   }
 
   const parsed = editsSchema.safeParse(parseEdits(form));
@@ -68,5 +68,5 @@ export const POST: APIRoute = async (context) => {
     );
   }
 
-  return context.redirect("/goals");
+  return context.redirect("/goals?updated=1");
 };
