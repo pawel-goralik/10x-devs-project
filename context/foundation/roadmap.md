@@ -3,7 +3,7 @@ project: "Resolution Circle"
 version: 1
 status: draft
 created: 2026-08-02
-updated: 2026-08-31
+updated: 2026-09-06
 prd_version: 1
 main_goal: speed
 top_blocker: capacity
@@ -37,6 +37,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | done |
 | S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, F-02     | FR-013, NFR ("Quarterly digest deliverability") | proposed |
 | S-06 | anonymize-on-account-deletion   | delete their account while their locked goals/progress persist as "former member" in group views | S-01, S-02     | FR-014                             | proposed |
+| S-07 | ui-polish-and-consistency       | see product-relevant homepage content, navigate to any page after sign-in, get success feedback when saving a goal edit or progress update, and read all user-facing text (incl. errors) in consistent Polish | F-01, S-01, S-04 | — (surfaced during implementation, not PRD-derived) | done |
 
 ## Streams
 
@@ -48,6 +49,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | B      | Progress tracking            | `S-04`                              | Branches off `S-01` in parallel with the rest of Stream A; not a hard prerequisite for `S-03`. |
 | C      | Social heartbeat             | `S-05`                              | Depends on `S-03`'s data/query logic and `F-02`'s email infra; the quarterly long-tail mechanism, sequenced after the core loop lands. |
 | D      | Account lifecycle            | `S-06`                              | Depends on Stream A's `S-01` + `S-02`; an edge-case departure flow, not part of first-value delivery. |
+| E      | Post-launch UI/UX polish     | `F-01`, `S-01`, `S-04` → `S-07`     | Surfaced by using the shipped app rather than by a PRD requirement; joins Stream A at `S-01` and Stream B at `S-04` instead of belonging to either, since it touches navigation, forms, and copy across both. |
 
 ## Baseline
 
@@ -163,6 +165,20 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** an account-lifecycle edge case, not part of first-value delivery, so it's sequenced after the core loop; correctness here matters because it's the one place immutability and identity deletion intersect (FR-014's anonymize-not-delete guarantee).
 - **Status:** proposed
 
+### S-07: User experiences a coherent, navigable, Polish-language UI
+
+- **Outcome:** authenticated user gets a coherent app experience: the homepage shows product-relevant content instead of the default Astro starter page, every page is reachable via visible in-app navigation after sign-in, saving a goal edit or recording progress gives clear success feedback, and every user-facing text — including error messages — reads in consistent Polish.
+- **Change ID:** ui-polish-and-consistency
+- **PRD refs:** — (not PRD-derived; surfaced by the user while exercising the shipped S-01/S-02/S-04 slices, not by a stated FR/US)
+- **Prerequisites:** F-01, S-01, S-04
+- **Parallel with:** S-03, S-05, S-06
+- **Blockers:** —
+- **Unknowns:**
+  - Does progress tracking already give adequate feedback via the visibly-updated value, or does it need an explicit confirmation too? — Owner: user. Block: no.
+  - Does the Polish-only text pass extend to transactional email templates (invite, leave-group, quarterly digest), or is it limited to in-app UI/error messages? — Owner: user. Block: no.
+- **Risk:** bundles four independent, low-risk UI fixes discovered by using the shipped app rather than by a PRD requirement; kept as one slice per explicit request, but each item touches a different surface (root layout/homepage, dashboard nav, goal/progress forms, i18n strings) — `/10x-plan` should confirm scope, or split it, during planning.
+- **Status:** done
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID                    | Suggested issue title                                            | Ready for `/10x-plan` | Notes |
@@ -175,6 +191,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-04       | record-goal-progress          | User can record progress on their own goal                           | no                     | Needs S-01 first |
 | S-05       | quarterly-digest-email        | Group member receives a quarterly digest email                       | no                     | Needs S-03 and F-02 first |
 | S-06       | anonymize-on-account-deletion | User can delete their account; goals persist anonymized              | no                     | Needs S-01 and S-02 first |
+| S-07       | ui-polish-and-consistency     | Homepage, in-app navigation, save-feedback, and Polish i18n polish    | no                     | Needs S-01 and S-04 first; not PRD-derived — see slice Unknowns |
 
 ## Open Roadmap Questions
 
@@ -196,3 +213,4 @@ None. All PRD shaping-stage questions were resolved before this roadmap was gene
 - **F-02: (foundation) the application can send app-triggered transactional email via Brevo's REST API — a provisioned `BREVO_API_KEY` Worker secret plus a reusable send-email service other slices call rather than each wiring their own. Brevo's SMTP side (sender verification, magic-link email) is already done as part of `context/changes/deployment/deployment-plan.md` Phase 1c/4 — this item is scoped to the separate REST API key and the code, not account/sender setup.** — Archived 2026-08-31 → `context/archive/2026-08-30-email-sending-infrastructure/`. Lesson: —.
 - **S-02: authenticated user can create a named group, invite others via a shareable link/code, accept an invite to join a group, and leave a group they belong to — with departure notifying remaining members by email.** — Archived 2026-08-31 → `context/archive/2026-08-30-form-and-manage-a-group/`. Lesson: —.
 - **S-04: authenticated user can increment their own goal's numeric measure, or flip a yes/no measure to done.** — Archived 2026-08-31 → `context/archive/2026-08-30-record-goal-progress/`. Lesson: —.
+- **S-07: authenticated user gets a coherent app experience: the homepage shows product-relevant content instead of the default Astro starter page, every page is reachable via visible in-app navigation after sign-in, saving a goal edit or recording progress gives clear success feedback, and every user-facing text — including error messages — reads in consistent Polish.** — Archived 2026-09-06 → `context/archive/2026-09-06-ui-polish-and-consistency/`. Lesson: —.
