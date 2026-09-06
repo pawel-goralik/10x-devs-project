@@ -28,5 +28,5 @@ export const GET: APIRoute = async (context) => {
   }
 
   const next = sanitizeNextPath(context.url.searchParams.get("next"));
-  return context.redirect(next ?? "/dashboard");
+  return context.redirect(next ?? "/goals");
 };
