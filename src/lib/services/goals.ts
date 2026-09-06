@@ -59,6 +59,11 @@ export function isEditable(goal: Pick<Goal, "createdAt">): boolean {
   return Date.now() - new Date(goal.createdAt).getTime() < EDIT_WINDOW_MS;
 }
 
+/** Pure — milliseconds remaining in the 24h edit window (0 when already locked), for display only. */
+export function editWindowRemainingMs(goal: Pick<Goal, "createdAt">): number {
+  return Math.max(0, EDIT_WINDOW_MS - (Date.now() - new Date(goal.createdAt).getTime()));
+}
+
 export async function listGoals(supabase: SupabaseClient, userId: string): Promise<Goal[]> {
   const { data, error } = await supabase
     .from("goals")

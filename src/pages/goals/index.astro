@@ -1,8 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import GoalBundleForm from "@/components/goals/GoalBundleForm";
+import GoalCard from "@/components/goals/GoalCard";
 import { createClient } from "@/lib/supabase";
-import { isEditable, listGoals } from "@/lib/services/goals";
+import { editWindowRemainingMs, isEditable, listGoals } from "@/lib/services/goals";
 import type { Goal } from "@/types";
 
 const user = Astro.locals.user;
@@ -14,15 +15,24 @@ const updated = Astro.url.searchParams.get("updated") === "1";
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const goals: Goal[] = supabase && user ? await listGoals(supabase, user.id) : [];
 
-const editableGoals = goals.filter((goal) => isEditable(goal));
-const lockedGoals = goals.filter((goal) => !isEditable(goal));
+/** Editable-first; within editable, least-time-remaining (oldest) first — those are closest to
+ * locking. Within locked, newest-first (listGoals's natural order). */
+const sorted = [...goals].sort((a, b) => {
+  const aEditable = isEditable(a);
+  const bEditable = isEditable(b);
+  if (aEditable !== bEditable) {
+    return aEditable ? -1 : 1;
+  }
+  const aCreated = new Date(a.createdAt).getTime();
+  const bCreated = new Date(b.createdAt).getTime();
+  return aEditable ? aCreated - bCreated : bCreated - aCreated;
+});
 
-function measureLabel(goal: Goal): string {
-  return goal.measureType === "numeric" ? `Cel: ${goal.targetValue}` : "Tak / nie";
-}
-
-function isReached(goal: Goal): boolean {
-  return goal.measureType === "numeric" && goal.currentValue >= goal.targetValue;
+function formatRemaining(ms: number): string {
+  const totalMinutes = Math.max(0, Math.round(ms / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return hours === 0 ? `Do edycji: jeszcze ${minutes} min` : `Do edycji: jeszcze ${hours}h ${minutes}min`;
 }
 ---
 
@@ -74,128 +84,19 @@ function isReached(goal: Goal): boolean {
 
       {
         goals.length > 0 && (
-          <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-            <h2 class="mb-4 text-lg font-semibold">Zapisz postęp</h2>
-            <form method="POST" action="/api/goals/progress" class="space-y-4">
-              {goals.map((goal) => (
-                <div class="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
+          <div class="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+            <h2 class="mb-4 text-lg font-semibold">Lista celów</h2>
+            <div class="flex flex-col gap-4">
+              {sorted.map((goal) => {
+                const editable = isEditable(goal);
+                const remainingLabel = editable ? formatRemaining(editWindowRemainingMs(goal)) : null;
+                return (
                   <div>
-                    <p class="font-medium text-white">{goal.description}</p>
-                    <p class="text-sm text-blue-100/60">{measureLabel(goal)}</p>
+                    <GoalCard goal={goal} editable={editable} remainingLabel={remainingLabel} client:load />
                   </div>
-                  {goal.measureType === "numeric" && (
-                    <div class="flex items-center gap-3">
-                      <span
-                        class:list={["text-sm", isReached(goal) ? "font-medium text-emerald-300" : "text-blue-100/60"]}
-                      >
-                        {isReached(goal) && "✓ "}
-                        {goal.currentValue} / {goal.targetValue}
-                      </span>
-                      <input
-                        name={`progress.${goal.id}.amount`}
-                        type="number"
-                        min="0"
-                        step="any"
-                        placeholder="Dodaj wartość"
-                        class="w-40 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
-                      />
-                    </div>
-                  )}
-                  {goal.measureType === "boolean" &&
-                    (goal.isDone ? (
-                      <span class="text-sm font-medium text-emerald-300">✓ Wykonano</span>
-                    ) : (
-                      <label class="flex items-center gap-2 text-sm text-blue-100/80">
-                        <input
-                          name={`progress.${goal.id}.done`}
-                          type="checkbox"
-                          class="h-4 w-4 rounded border-white/20 bg-white/10 text-purple-500 focus:ring-2 focus:ring-purple-400"
-                        />
-                        Oznacz jako wykonane
-                      </label>
-                    ))}
-                </div>
-              ))}
-              <button
-                type="submit"
-                class="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
-              >
-                Zapisz postęp
-              </button>
-            </form>
-          </div>
-        )
-      }
-
-      {
-        editableGoals.length > 0 && (
-          <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-            <h2 class="mb-4 text-lg font-semibold">Zarządzaj celami (edycja przez 24h)</h2>
-            <form method="POST" action="/api/goals/manage" class="space-y-4">
-              {editableGoals.map((goal) => (
-                <div class="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
-                  <div>
-                    <label class="mb-1 block text-sm text-blue-100/80" for={`edit-${goal.id}-description`}>
-                      Cel
-                    </label>
-                    <input
-                      id={`edit-${goal.id}-description`}
-                      name={`edits.${goal.id}.description`}
-                      type="text"
-                      value={goal.description}
-                      class="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
-                    />
-                  </div>
-                  <div class="flex items-center justify-between gap-4">
-                    <span class="text-xs text-blue-100/60">
-                      {goal.measureType === "numeric" ? "Liczbowy" : "Tak / nie"}
-                    </span>
-                    {goal.measureType === "numeric" && (
-                      <input
-                        name={`edits.${goal.id}.targetValue`}
-                        type="number"
-                        value={goal.targetValue}
-                        min="0"
-                        step="any"
-                        class="w-28 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:ring-2 focus:ring-purple-400 focus:outline-none"
-                      />
-                    )}
-                  </div>
-                  <button
-                    type="submit"
-                    name="action"
-                    value={`delete:${goal.id}`}
-                    class="text-sm text-red-300 transition-colors hover:text-red-200 hover:underline"
-                  >
-                    Usuń
-                  </button>
-                </div>
-              ))}
-              <button
-                type="submit"
-                name="action"
-                value="save-all"
-                class="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
-              >
-                Zapisz zmiany
-              </button>
-            </form>
-          </div>
-        )
-      }
-
-      {
-        lockedGoals.length > 0 && (
-          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-white/70 backdrop-blur-xl">
-            <h2 class="mb-4 text-lg font-semibold text-white/90">Zablokowane cele</h2>
-            <ul class="space-y-2">
-              {lockedGoals.map((goal) => (
-                <li class="rounded-lg border border-white/10 bg-white/5 px-4 py-3">
-                  <span class="font-medium text-white">{goal.description}</span>
-                  <span class="ml-2 text-sm text-blue-100/50">{measureLabel(goal)}</span>
-                </li>
-              ))}
-            </ul>
+                );
+              })}
+            </div>
           </div>
         )
       }

@@ -209,8 +209,8 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build (incl. type-check) passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — ba63e76
+- [x] 1.2 Build (incl. type-check) passes: `npm run build` — ba63e76
 
 #### Manual
 
@@ -220,19 +220,19 @@ None — no schema or data changes.
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build (incl. type-check) passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build (incl. type-check) passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 Empty state unchanged
-- [ ] 2.4 Create numeric + boolean goal — both show as editable cards with countdown badge
-- [ ] 2.5 Record progress on numeric goal via its card
-- [ ] 2.6 Mark boolean goal done via its card
-- [ ] 2.7 Edit numeric goal's description/target via its card
-- [ ] 2.8 Delete boolean goal via its card — numeric goal's card unaffected
-- [ ] 2.9 Force a goal past 24h — shows locked (no badge/edit controls), progress form still works
-- [ ] 2.10 List ordering: editable before locked, newest-first within each group
+- [x] 2.3 Empty state unchanged
+- [x] 2.4 Create numeric + boolean goal — both show as editable cards with countdown badge
+- [x] 2.5 Record progress on numeric goal via its card
+- [x] 2.6 Mark boolean goal done via its card
+- [x] 2.7 Edit numeric goal's description/target via its card
+- [x] 2.8 Delete boolean goal via its card — numeric goal's card unaffected
+- [x] 2.9 Force a goal past 24h — shows locked (no badge/edit controls), progress form still works
+- [x] 2.10 List ordering: editable before locked, least-time-remaining first within editable, newest-first within locked (adjusted from originally-planned newest-first-within-editable per live feedback)
 
 ### Phase 3: Cleanup & verification
 

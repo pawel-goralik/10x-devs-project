@@ -38,6 +38,8 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, F-02     | FR-013, NFR ("Quarterly digest deliverability") | proposed |
 | S-06 | anonymize-on-account-deletion   | delete their account while their locked goals/progress persist as "former member" in group views | S-01, S-02     | FR-014                             | proposed |
 | S-07 | ui-polish-and-consistency       | see product-relevant homepage content, navigate to any page after sign-in, get success feedback when saving a goal edit or progress update, and read all user-facing text (incl. errors) in consistent Polish | F-01, S-01, S-04 | — (surfaced during implementation, not PRD-derived) | done |
+| S-08 | goals-page-ux-consolidation     | see all of their goals as one list — one card per goal — with progress recording and (while still editable) inline edit/delete on that same card, instead of three separate sections/forms | S-01, S-04, S-07 | FR-005, FR-006, FR-007 (presentation-only; no new FR) | in-progress |
+| S-09 | shadcn-dark-theme-tokens        | (any shadcn/ui component renders correctly out of the box) the app's design tokens in `global.css` actually encode its dark "cosmic glass" palette instead of the unused shadcn-scaffold light defaults | S-08 | — (surfaced during implementation, not PRD-derived) | proposed |
 
 ## Streams
 
@@ -49,7 +51,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | B      | Progress tracking            | `S-04`                              | Branches off `S-01` in parallel with the rest of Stream A; not a hard prerequisite for `S-03`. |
 | C      | Social heartbeat             | `S-05`                              | Depends on `S-03`'s data/query logic and `F-02`'s email infra; the quarterly long-tail mechanism, sequenced after the core loop lands. |
 | D      | Account lifecycle            | `S-06`                              | Depends on Stream A's `S-01` + `S-02`; an edge-case departure flow, not part of first-value delivery. |
-| E      | Post-launch UI/UX polish     | `F-01`, `S-01`, `S-04` → `S-07`     | Surfaced by using the shipped app rather than by a PRD requirement; joins Stream A at `S-01` and Stream B at `S-04` instead of belonging to either, since it touches navigation, forms, and copy across both. |
+| E      | Post-launch UI/UX polish     | `F-01`, `S-01`, `S-04` → `S-07` → `S-08` → `S-09` | Surfaced by using the shipped app rather than by a PRD requirement; joins Stream A at `S-01` and Stream B at `S-04` instead of belonging to either, since it touches navigation, forms, and copy across both. `S-08` builds directly on `S-07`'s goals-page save-feedback work, consolidating the same page's layout next. `S-09` is a design-system fix surfaced while building `S-08`'s first shadcn Dialog. |
 
 ## Baseline
 
@@ -179,6 +181,33 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** bundles four independent, low-risk UI fixes discovered by using the shipped app rather than by a PRD requirement; kept as one slice per explicit request, but each item touches a different surface (root layout/homepage, dashboard nav, goal/progress forms, i18n strings) — `/10x-plan` should confirm scope, or split it, during planning.
 - **Status:** done
 
+### S-08: User sees their goals as one consolidated list
+
+- **Outcome:** authenticated user views their goals page as two sections only — "Dodaj nowe cele" (unchanged) and a single "Lista celów" — where each goal is exactly one card showing its description, measure, and progress-recording controls; while still within its 24h edit window a card also exposes inline edit/delete, and once locked it shows a read-only/locked state instead. Replaces today's three separate sections ("Zapisz postęp", "Zarządzaj celami", "Zablokowane cele"), each iterating the goal list independently.
+- **Change ID:** goals-page-ux-consolidation
+- **PRD refs:** FR-005 (view own goals), FR-006 (24h edit/delete window), FR-007 (record progress) — presentation-only consolidation of capabilities already shipped in S-01/S-04; no new FR, no schema change, no change to the 24h immutability rule or to unrestricted progress recording.
+- **Prerequisites:** S-01, S-04, S-07 (reworks the same `/goals` page S-07 already touched for save-feedback and copy)
+- **Parallel with:** S-03, S-05, S-06
+- **Blockers:** —
+- **Unknowns:**
+  - Should a locked goal's card show any visual "locked" affordance (e.g., a badge/greyed state), or simply omit edit/delete controls silently? — Owner: user. Block: no.
+  - Per-card actions currently span two independent endpoints (`/api/goals/progress`, `/api/goals/manage`); does consolidating the visual card also require consolidating the submit action (e.g., one form per card, or per-card AJAX), or can two sibling forms per card stay as-is? — Owner: team. Block: no.
+- **Risk:** reads as "just markup," but each card still has to submit to two independent existing endpoints without nesting `<form>` elements — `/10x-plan` should confirm the per-card form/submit structure before implementation, since that decision drives whether this stays a server-rendered Astro page or needs a client-side island.
+- **Status:** in-progress
+
+### S-09: App's design tokens actually match its dark visual identity
+
+- **Outcome:** the `:root`/`.dark` CSS custom properties in `src/styles/global.css` (`background`, `foreground`, `muted-foreground`, `secondary`/`secondary-foreground`, `border`, etc.) encode this app's real "cosmic glass" dark palette (navy background, white text, white/10 borders, blue-100/60 muted text, purple accents) instead of the unused shadcn-scaffold light/gray defaults, so any shadcn/ui component (the `Dialog` added in `S-08`, and future additions) renders correctly out of the box without per-component class overrides.
+- **Change ID:** shadcn-dark-theme-tokens
+- **PRD refs:** — (not PRD-derived; surfaced while implementing `S-08`'s progress-recording `Dialog` — see `context/foundation/lessons.md` § "Override shadcn's default theme tokens to match this app's dark-only look")
+- **Prerequisites:** S-08 (surfaced during its implementation; not a hard technical dependency — it's a design-system fix, not something `S-08`'s own code needs)
+- **Parallel with:** S-03, S-05, S-06
+- **Blockers:** —
+- **Unknowns:**
+  - Should the app also wire up an actual light/dark toggle (both palettes properly defined), or is this genuinely a dark-only product where `:root` itself should just carry the dark values and `.dark` is left unused? — Owner: user. Block: no.
+- **Risk:** touches a shared design-system file (`global.css`) that every shadcn component reads from — low blast radius today since only `Dialog` currently depends on the tokens, but the rewrite should be checked against every installed `src/components/ui/*` component, not just the one that surfaced it.
+- **Status:** proposed
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID                    | Suggested issue title                                            | Ready for `/10x-plan` | Notes |
@@ -192,6 +221,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-05       | quarterly-digest-email        | Group member receives a quarterly digest email                       | no                     | Needs S-03 and F-02 first |
 | S-06       | anonymize-on-account-deletion | User can delete their account; goals persist anonymized              | no                     | Needs S-01 and S-02 first |
 | S-07       | ui-polish-and-consistency     | Homepage, in-app navigation, save-feedback, and Polish i18n polish    | no                     | Needs S-01 and S-04 first; not PRD-derived — see slice Unknowns |
+| S-08       | goals-page-ux-consolidation   | Consolidate the goals page into "add goals" + one-card-per-goal list  | yes                    | Needs S-01, S-04, S-07 first — all `done` |
+| S-09       | shadcn-dark-theme-tokens      | Align shadcn/ui design tokens with the app's dark visual identity    | no                     | Surfaced during S-08; not PRD-derived — see slice Unknowns |
 
 ## Open Roadmap Questions
 
