@@ -409,24 +409,24 @@ No data migration. Phase 5's Supabase email-template and config changes require 
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint`
-- [x] 4.2 Build passes: `npm run build`
-- [x] 4.3 Repo-wide grep for sample English literals returns no matches outside code/comments
+- [x] 4.1 Lint passes: `npm run lint` — d6b59b7
+- [x] 4.2 Build passes: `npm run build` — d6b59b7
+- [x] 4.3 Repo-wide grep for sample English literals returns no matches outside code/comments — d6b59b7
 
 #### Manual
 
-- [x] 4.4 Every page, signed in and signed out, shows no remaining English user-facing text
-- [x] 4.5 Every validation/error path shows a Polish message
+- [x] 4.4 Every page, signed in and signed out, shows no remaining English user-facing text — d6b59b7
+- [x] 4.5 Every validation/error path shows a Polish message — d6b59b7
 
 ### Phase 5: Email content Polish translation
 
 #### Automated
 
-- [ ] 5.1 Lint passes: `npm run lint`
-- [ ] 5.2 Build passes: `npm run build`
+- [x] 5.1 Lint passes: `npm run lint`
+- [x] 5.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 5.3 Magic-link email renders correctly in Polish
-- [ ] 5.4 Group-leave notification email renders correctly in Polish
-- [ ] 5.5 Config-push to remote Supabase approved by user, diffed beforehand, and verified afterward with no other remote auth settings reverted
+- [x] 5.3 Magic-link email renders correctly in Polish
+- [x] 5.4 Group-leave notification email renders correctly in Polish
+- [x] 5.5 Config-push to remote Supabase approved by user, diffed beforehand, and verified afterward with no other remote auth settings reverted

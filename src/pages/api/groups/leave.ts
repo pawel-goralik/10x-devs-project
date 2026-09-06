@@ -38,7 +38,7 @@ export const POST: APIRoute = async (context) => {
   }
 
   if (groupBeforeLeaving) {
-    const callerEmail = user.email ?? "A member";
+    const callerEmail = user.email ?? "Członek grupy";
     const remainingEmails = groupBeforeLeaving.members
       .map((member) => member.email)
       .filter((email) => email !== callerEmail);

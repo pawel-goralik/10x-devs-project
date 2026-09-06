@@ -206,10 +206,10 @@ export async function notifyGroupOfDeparture(
   departedEmail: string,
   recipientEmails: string[],
 ): Promise<void> {
-  const subject = `${departedEmail} left ${groupName}`;
-  const heading = `${escapeHtml(departedEmail)} left ${escapeHtml(groupName)}`;
-  const bodyHtml = `<p>${escapeHtml(departedEmail)} has left the group "${escapeHtml(groupName)}".</p>`;
-  const text = `${departedEmail} has left the group "${groupName}".`;
+  const subject = `${departedEmail} opuścił grupę ${groupName}`;
+  const heading = `${escapeHtml(departedEmail)} opuścił grupę ${escapeHtml(groupName)}`;
+  const bodyHtml = `<p>${escapeHtml(departedEmail)} opuścił grupę "${escapeHtml(groupName)}".</p>`;
+  const text = `${departedEmail} opuścił grupę "${groupName}".`;
 
   await Promise.all(recipientEmails.map((to) => sendEmail({ to, subject, heading, bodyHtml, text })));
 }

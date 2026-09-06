@@ -227,11 +227,11 @@ otp_expiry = 3600
 # sender_name = "Admin"
 
 [auth.email.template.magic_link]
-subject = "Your Resolution Circle sign-in link"
+subject = "Twój link do logowania w Resolution Circle"
 content_path = "./supabase/templates/magic-link.html"
 
 [auth.email.template.confirmation]
-subject = "Your Resolution Circle sign-in link"
+subject = "Twój link do logowania w Resolution Circle"
 content_path = "./supabase/templates/confirmation.html"
 
 # Uncomment to customize email template
