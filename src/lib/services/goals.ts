@@ -77,6 +77,46 @@ export async function listGoals(supabase: SupabaseClient, userId: string): Promi
   return data.map(fromRow);
 }
 
+/**
+ * Fully-locked goals only (created more than 24h ago), grouped by author — the data
+ * source for the "witness the circle" group view (roadmap S-03) and, later, the
+ * quarterly digest (S-05). Relies on the goals_select_shared_group RLS policy for
+ * cross-member visibility; this function only adds the lock-window filter on top, since
+ * RLS itself doesn't know about the 24h window (same convention as updateGoals/deleteGoal).
+ */
+export async function listGroupMemberGoals(
+  supabase: SupabaseClient,
+  memberIds: string[],
+): Promise<Map<string, Goal[]>> {
+  if (memberIds.length === 0) {
+    return new Map();
+  }
+
+  const cutoff = new Date(Date.now() - EDIT_WINDOW_MS).toISOString();
+  const { data, error } = await supabase
+    .from("goals")
+    .select("*")
+    .in("user_id", memberIds)
+    .lte("created_at", cutoff)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Failed to list group member goals: ${error.message}`);
+  }
+
+  const goalsByUser = new Map<string, Goal[]>();
+  for (const row of data as GoalRow[]) {
+    const goal = fromRow(row);
+    const existing = goalsByUser.get(goal.userId);
+    if (existing) {
+      existing.push(goal);
+    } else {
+      goalsByUser.set(goal.userId, [goal]);
+    }
+  }
+  return goalsByUser;
+}
+
 export type CreateGoalsResult = { success: true; goals: Goal[] } | { success: false; error: string };
 
 /** All-or-nothing: a single multi-row insert, so bundle members share one `created_at`. */

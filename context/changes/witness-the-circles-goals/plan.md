@@ -201,26 +201,26 @@ Additive-only migration (new policy, no altered/dropped objects); no backfill ne
 
 #### Automated
 
-- [x] 1.1 `npx supabase db reset` applies the new migration cleanly
-- [x] 1.2 `npx astro check` passes
-- [x] 1.3 `npm run lint` passes
+- [x] 1.1 `npx supabase db reset` applies the new migration cleanly — 4d94584
+- [x] 1.2 `npx astro check` passes — 4d94584
+- [x] 1.3 `npm run lint` passes — 4d94584
 
 #### Manual
 
-- [x] 1.4 Two accounts sharing a group can see each other's goal rows post-migration
-- [x] 1.5 A third account sharing no group cannot see either account's goals
-- [x] 1.6 Leaving the shared group immediately revokes visibility
+- [x] 1.4 Two accounts sharing a group can see each other's goal rows post-migration — 4d94584
+- [x] 1.5 A third account sharing no group cannot see either account's goals — 4d94584
+- [x] 1.6 Leaving the shared group immediately revokes visibility — 4d94584
 
 ### Phase 2: Cross-member locked-goals roll-up
 
 #### Automated
 
-- [ ] 2.1 `npx astro check` passes
-- [ ] 2.2 `npm run lint` passes
+- [x] 2.1 `npx astro check` passes
+- [x] 2.2 `npm run lint` passes
 
 #### Manual
 
-- [ ] 2.3 `listGroupMemberGoals` returns only goals older than 24h, and an empty array for a member with none
+- [x] 2.3 `listGroupMemberGoals` returns only goals older than 24h, and an empty array for a member with none
 
 ### Phase 3: Read-only card mode + group page section
 
