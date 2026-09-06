@@ -18,6 +18,8 @@ interface Props {
   goal: Goal;
   editable: boolean;
   remainingLabel: string | null;
+  /** Hides the progress-recording dialog entirely — for viewing another group member's goal. */
+  readOnly?: boolean;
 }
 
 function isReached(goal: Goal): boolean {
@@ -31,7 +33,7 @@ const DIALOG_CONTENT_CLASS = "border-white/10 bg-neutral-900 text-white";
 const DIALOG_TITLE_CLASS = "text-white";
 const DIALOG_DESCRIPTION_CLASS = "text-blue-100/60";
 
-export default function GoalCard({ goal, editable, remainingLabel }: Props) {
+export default function GoalCard({ goal, editable, remainingLabel, readOnly = false }: Props) {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState(goal.description);
   const [targetValue, setTargetValue] = useState(goal.measureType === "numeric" ? String(goal.targetValue) : "");
@@ -87,63 +89,62 @@ export default function GoalCard({ goal, editable, remainingLabel }: Props) {
     </div>
   );
 
-  const progressTrigger =
-    goal.measureType === "numeric" ? (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button type="button" variant="secondary" className={TRIGGER_BUTTON_CLASS}>
-            <TrendingUp className="size-4" />
-            Dodaj postęp
-          </Button>
-        </DialogTrigger>
-        <DialogContent className={DIALOG_CONTENT_CLASS}>
-          <DialogHeader>
-            <DialogTitle className={DIALOG_TITLE_CLASS}>Dodaj postęp</DialogTitle>
-            <DialogDescription className={DIALOG_DESCRIPTION_CLASS}>{goal.description}</DialogDescription>
-          </DialogHeader>
-          <form method="POST" action="/api/goals/progress" className="space-y-4">
-            <FormField
-              id={`progress-${goal.id}-amount`}
-              name={`progress.${goal.id}.amount`}
-              type="number"
-              label="Wartość do dodania"
-              value={amount}
-              onChange={setAmount}
-              placeholder="np. 1"
-              icon={<TrendingUp className="size-4" />}
-            />
-            <DialogFooter>
-              <SubmitButton pendingText="Zapisywanie..." icon={<Send className="size-4" />}>
-                Potwierdź
-              </SubmitButton>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    ) : goal.isDone ? null : (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button type="button" variant="secondary" className={TRIGGER_BUTTON_CLASS}>
-            <CircleCheck className="size-4" />
-            Oznacz jako wykonane
-          </Button>
-        </DialogTrigger>
-        <DialogContent className={DIALOG_CONTENT_CLASS}>
-          <DialogHeader>
-            <DialogTitle className={DIALOG_TITLE_CLASS}>Oznacz jako wykonane</DialogTitle>
-            <DialogDescription className={DIALOG_DESCRIPTION_CLASS}>{goal.description}</DialogDescription>
-          </DialogHeader>
-          <form method="POST" action="/api/goals/progress" className="space-y-4">
-            <input type="hidden" name={`progress.${goal.id}.done`} value="on" />
-            <DialogFooter>
-              <SubmitButton pendingText="Zapisywanie..." icon={<Send className="size-4" />}>
-                Potwierdź
-              </SubmitButton>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
+  const progressTrigger = readOnly ? null : goal.measureType === "numeric" ? (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button type="button" variant="secondary" className={TRIGGER_BUTTON_CLASS}>
+          <TrendingUp className="size-4" />
+          Dodaj postęp
+        </Button>
+      </DialogTrigger>
+      <DialogContent className={DIALOG_CONTENT_CLASS}>
+        <DialogHeader>
+          <DialogTitle className={DIALOG_TITLE_CLASS}>Dodaj postęp</DialogTitle>
+          <DialogDescription className={DIALOG_DESCRIPTION_CLASS}>{goal.description}</DialogDescription>
+        </DialogHeader>
+        <form method="POST" action="/api/goals/progress" className="space-y-4">
+          <FormField
+            id={`progress-${goal.id}-amount`}
+            name={`progress.${goal.id}.amount`}
+            type="number"
+            label="Wartość do dodania"
+            value={amount}
+            onChange={setAmount}
+            placeholder="np. 1"
+            icon={<TrendingUp className="size-4" />}
+          />
+          <DialogFooter>
+            <SubmitButton pendingText="Zapisywanie..." icon={<Send className="size-4" />}>
+              Potwierdź
+            </SubmitButton>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  ) : goal.isDone ? null : (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button type="button" variant="secondary" className={TRIGGER_BUTTON_CLASS}>
+          <CircleCheck className="size-4" />
+          Oznacz jako wykonane
+        </Button>
+      </DialogTrigger>
+      <DialogContent className={DIALOG_CONTENT_CLASS}>
+        <DialogHeader>
+          <DialogTitle className={DIALOG_TITLE_CLASS}>Oznacz jako wykonane</DialogTitle>
+          <DialogDescription className={DIALOG_DESCRIPTION_CLASS}>{goal.description}</DialogDescription>
+        </DialogHeader>
+        <form method="POST" action="/api/goals/progress" className="space-y-4">
+          <input type="hidden" name={`progress.${goal.id}.done`} value="on" />
+          <DialogFooter>
+            <SubmitButton pendingText="Zapisywanie..." icon={<Send className="size-4" />}>
+              Potwierdź
+            </SubmitButton>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 
   if (!editable) {
     return (

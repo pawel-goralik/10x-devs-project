@@ -1,9 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import GoalCard from "@/components/goals/GoalCard";
 import { createClient } from "@/lib/supabase";
 import { getGroupDetail } from "@/lib/services/groups";
+import { listGroupMemberGoals } from "@/lib/services/goals";
+import type { Goal } from "@/types";
 
 const { id } = Astro.params;
+const user = Astro.locals.user;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const group = id && supabase ? await getGroupDetail(supabase, id) : null;
 // Accepted risk (plan review, 2026-08-31): no friendly not-found/not-a-member message —
@@ -15,6 +19,18 @@ if (!group) {
 }
 
 const inviteLink = new URL(`/groups/join/${group.inviteToken}`, Astro.url.origin).toString();
+
+// "Witness the circle's goals" (roadmap S-03): every OTHER current member's locked goals,
+// in the same order as the members list above. The viewer's own goals stay exclusive to
+// /goals — see plan.md's "What We're NOT Doing".
+const otherMembers = group.members.filter((member) => member.userId !== user?.id);
+const goalsByMember: Map<string, Goal[]> =
+  supabase && otherMembers.length > 0
+    ? await listGroupMemberGoals(
+        supabase,
+        otherMembers.map((member) => member.userId),
+      )
+    : new Map<string, Goal[]>();
 ---
 
 <Layout title={group.name}>
@@ -50,6 +66,35 @@ const inviteLink = new URL(`/groups/join/${group.inviteToken}`, Astro.url.origin
             ))
           }
         </ul>
+      </div>
+
+      <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+        <h2 class="mb-4 text-lg font-semibold">Cele członków grupy</h2>
+        {
+          otherMembers.length === 0 ? (
+            <p class="text-sm text-blue-100/60">Nie masz jeszcze innych członków w tej grupie.</p>
+          ) : (
+            <div class="space-y-6">
+              {otherMembers.map((member) => {
+                const memberGoals = goalsByMember.get(member.userId) ?? [];
+                return (
+                  <div>
+                    <h3 class="mb-2 text-sm font-semibold text-blue-100/80">{member.email}</h3>
+                    {memberGoals.length === 0 ? (
+                      <p class="text-sm text-blue-100/50">Brak celów.</p>
+                    ) : (
+                      <div class="space-y-3">
+                        {memberGoals.map((goal) => (
+                          <GoalCard client:load goal={goal} editable={false} remainingLabel={null} readOnly={true} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )
+        }
       </div>
 
       <form method="POST" action="/api/groups/leave">

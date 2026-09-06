@@ -215,26 +215,26 @@ Additive-only migration (new policy, no altered/dropped objects); no backfill ne
 
 #### Automated
 
-- [x] 2.1 `npx astro check` passes
-- [x] 2.2 `npm run lint` passes
+- [x] 2.1 `npx astro check` passes — 578b677
+- [x] 2.2 `npm run lint` passes — 578b677
 
 #### Manual
 
-- [x] 2.3 `listGroupMemberGoals` returns only goals older than 24h, and an empty array for a member with none
+- [x] 2.3 `listGroupMemberGoals` returns only goals older than 24h, and an empty array for a member with none — 578b677
 
 ### Phase 3: Read-only card mode + group page section
 
 #### Automated
 
-- [ ] 3.1 `npx astro check` passes
-- [ ] 3.2 `npm run lint` passes
-- [ ] 3.3 `npm run build` succeeds
+- [x] 3.1 `npx astro check` passes
+- [x] 3.2 `npm run lint` passes
+- [x] 3.3 `npm run build` succeeds
 
 #### Manual
 
-- [ ] 3.4 Only locked goals appear for other members, with no progress/edit/delete controls
-- [ ] 3.5 Viewer's own goals do not appear in the new section
-- [ ] 3.6 Member ordering matches the existing "Członkowie" list
-- [ ] 3.7 A member with zero locked goals shows the per-member empty state
-- [ ] 3.8 A solo group shows the whole-section empty state
-- [ ] 3.9 Leaving the group removes goals from view on next load
+- [x] 3.4 Only locked goals appear for other members, with no progress/edit/delete controls
+- [x] 3.5 Viewer's own goals do not appear in the new section
+- [x] 3.6 Member ordering matches the existing "Członkowie" list
+- [x] 3.7 A member with zero locked goals shows the per-member empty state
+- [x] 3.8 A solo group shows the whole-section empty state
+- [x] 3.9 Leaving the group removes goals from view on next load
