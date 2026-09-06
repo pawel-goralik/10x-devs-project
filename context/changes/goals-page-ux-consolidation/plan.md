@@ -214,34 +214,34 @@ None — no schema or data changes.
 
 #### Manual
 
-- [ ] 1.3 Component renders without console errors for numeric/boolean, editable/locked goals
+- [x] 1.3 Component renders without console errors for numeric/boolean, editable/locked goals
 
 ### Phase 2: Add the remaining-time helper and rewire `index.astro`
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build (incl. type-check) passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — b7fbc3d
+- [x] 2.2 Build (incl. type-check) passes: `npm run build` — b7fbc3d
 
 #### Manual
 
-- [x] 2.3 Empty state unchanged
-- [x] 2.4 Create numeric + boolean goal — both show as editable cards with countdown badge
-- [x] 2.5 Record progress on numeric goal via its card
-- [x] 2.6 Mark boolean goal done via its card
-- [x] 2.7 Edit numeric goal's description/target via its card
-- [x] 2.8 Delete boolean goal via its card — numeric goal's card unaffected
-- [x] 2.9 Force a goal past 24h — shows locked (no badge/edit controls), progress form still works
-- [x] 2.10 List ordering: editable before locked, least-time-remaining first within editable, newest-first within locked (adjusted from originally-planned newest-first-within-editable per live feedback)
+- [x] 2.3 Empty state unchanged — b7fbc3d
+- [x] 2.4 Create numeric + boolean goal — both show as editable cards with countdown badge — b7fbc3d
+- [x] 2.5 Record progress on numeric goal via its card — b7fbc3d
+- [x] 2.6 Mark boolean goal done via its card — b7fbc3d
+- [x] 2.7 Edit numeric goal's description/target via its card — b7fbc3d
+- [x] 2.8 Delete boolean goal via its card — numeric goal's card unaffected — b7fbc3d
+- [x] 2.9 Force a goal past 24h — shows locked (no badge/edit controls), progress form still works — b7fbc3d
+- [x] 2.10 List ordering: editable before locked, least-time-remaining first within editable, newest-first within locked (adjusted from originally-planned newest-first-within-editable per live feedback) — b7fbc3d
 
 ### Phase 3: Cleanup & verification
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build (incl. type-check) passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build (incl. type-check) passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Full golden-path pass on local dev server, no regressions
-- [ ] 3.4 Responsive check at mobile width
+- [x] 3.3 Full golden-path pass on local dev server, no regressions
+- [x] 3.4 Responsive check at mobile width
