@@ -226,15 +226,15 @@ Additive-only migration (new policy, no altered/dropped objects); no backfill ne
 
 #### Automated
 
-- [x] 3.1 `npx astro check` passes
-- [x] 3.2 `npm run lint` passes
-- [x] 3.3 `npm run build` succeeds
+- [x] 3.1 `npx astro check` passes — 56f9ba2
+- [x] 3.2 `npm run lint` passes — 56f9ba2
+- [x] 3.3 `npm run build` succeeds — 56f9ba2
 
 #### Manual
 
-- [x] 3.4 Only locked goals appear for other members, with no progress/edit/delete controls
-- [x] 3.5 Viewer's own goals do not appear in the new section
-- [x] 3.6 Member ordering matches the existing "Członkowie" list
-- [x] 3.7 A member with zero locked goals shows the per-member empty state
-- [x] 3.8 A solo group shows the whole-section empty state
-- [x] 3.9 Leaving the group removes goals from view on next load
+- [x] 3.4 Only locked goals appear for other members, with no progress/edit/delete controls — 56f9ba2
+- [x] 3.5 Viewer's own goals do not appear in the new section — 56f9ba2
+- [x] 3.6 Member ordering matches the existing "Członkowie" list — 56f9ba2
+- [x] 3.7 A member with zero locked goals shows the per-member empty state — 56f9ba2
+- [x] 3.8 A solo group shows the whole-section empty state — 56f9ba2
+- [x] 3.9 Leaving the group removes goals from view on next load — 56f9ba2
