@@ -1,7 +1,7 @@
 ---
 change_id: goals-page-ux-consolidation
 title: Goals page UX/UI consolidation
-status: implementing
+status: implemented
 created: 2026-09-06
 updated: 2026-09-06
 ---

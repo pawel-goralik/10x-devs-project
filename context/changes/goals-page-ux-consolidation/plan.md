@@ -214,7 +214,7 @@ None — no schema or data changes.
 
 #### Manual
 
-- [x] 1.3 Component renders without console errors for numeric/boolean, editable/locked goals
+- [x] 1.3 Component renders without console errors for numeric/boolean, editable/locked goals — 83382f7
 
 ### Phase 2: Add the remaining-time helper and rewire `index.astro`
 
@@ -238,10 +238,10 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint`
-- [x] 3.2 Build (incl. type-check) passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint` — 83382f7
+- [x] 3.2 Build (incl. type-check) passes: `npm run build` — 83382f7
 
 #### Manual
 
-- [x] 3.3 Full golden-path pass on local dev server, no regressions
-- [x] 3.4 Responsive check at mobile width
+- [x] 3.3 Full golden-path pass on local dev server, no regressions — 83382f7
+- [x] 3.4 Responsive check at mobile width — 83382f7
