@@ -34,7 +34,7 @@ The same archetype shows up in two adjacent framings, both in scope for the MVP 
 ## Success Criteria
 
 ### Primary
-- Users meet at least **70% of their annual goals**, measured at the year-end mark across the active user base. (Stated by user in seed; the headline product outcome.)
+- Users meet at least **70% of their annual goals**, measured at the year-end mark across the active user base. (Stated by user in seed; the headline product outcome.) "Year-end mark" is measured per-goal as 12 months from that goal's individual commit date (same pattern as the secondary criterion below) — the MVP has no shared calendar-year boundary or per-year goal list (see Non-Goals, "No goal-year scoping").
 
 ### Secondary
 - **Group retention through year 1**: a non-trivial share of groups still have at least one active member at the 12-month mark from group creation. Proves the social-circle mechanism actually retains, not just attracts.
@@ -140,11 +140,13 @@ Post-window goal immutability (FR-006) is enforced at the **product surface** fo
 - **No frequency-style goals.** Goal measures in the MVP are limited to numeric target OR binary yes/no (FR-004). Frequency goals such as "N times per period" (e.g. "run 3× per week") are not supported and would require a recurring-window state model. From FR-004 Socratic resolution.
 - **No third-party progress integrations.** The MVP does not import progress from external systems (fitness wearables, calendar feeds, or any other external source). Progress is recorded manually by the goal author (FR-007). From FR-007 Socratic resolution. *Candidate for v2 if manual reporting proves a credibility limitation at real-world scale.*
 - **No operator-proof immutability.** Post-window immutability (FR-006) binds the product surface, not the datastore. The MVP does not build an append-only / cryptographically tamper-evident store; operators retain raw data access for maintenance. Revisit only if regulatory or trust requirements demand provable integrity.
+- **No goal-year scoping.** The MVP does not bind a goal to a calendar year, nor to any other cycle. A user's goals (FR-004, FR-005) form one continuous, ongoing list; there is no product concept of "my 2026 goals" as distinct from "my 2027 goals," no year-boundary marker, and no affordance to start a new year's list separate from previous years'. In practice this means goals from every year the user has ever committed sit together on the same personal view and group view, indefinitely. Raised during PRD review (2026-09-06); deferred to post-MVP purely to keep MVP scope small, not because the need is in doubt — a multi-year / goal-cycle model (separating "2026 goals" from "2027 goals") is very likely required once users return for a second New Year cycle.
 
 ## Open Questions
 
 All shaping-stage questions have been resolved. Decisions are recorded in their owning sections:
 
+- *Goal-year scoping (separate goal lists per calendar year)* — no MVP support; captured in `## Non-Goals` as a post-MVP candidate (raised during PRD review, 2026-09-06).
 - *Frequency-style goals* and *third-party progress integrations* — deferred scope, captured in `## Non-Goals` as v2 candidates (not blocking).
 - *Closed-circle privacy* — elevated to an NFR ("Closed-circle confinement" in `## Non-Functional Requirements`).
 - *Operator-side immutability* — scoped out for the MVP (`## Access Control`, `## Non-Goals`); immutability is enforced at the product surface only.
