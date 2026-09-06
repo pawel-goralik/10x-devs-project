@@ -33,7 +33,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | done |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | done |
-| S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | in-progress |
+| S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | done |
 | S-04 | record-goal-progress             | record progress on their own goal (increment number / flip yes-no)              | S-01           | FR-007                             | done |
 | S-05 | quarterly-digest-email          | receive a quarterly email summarizing every group's goals and progress          | S-03, F-02     | FR-013, NFR ("Quarterly digest deliverability") | proposed |
 | S-06 | anonymize-on-account-deletion   | delete their account while their locked goals/progress persist as "former member" in group views | S-01, S-02     | FR-014                             | proposed |
@@ -129,7 +129,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** this is the north star — placed as early as S-01 and S-02 allow, not deferred for symmetric ordering, because it's the first point where the product's core bet (a promise witnessed by a trusted circle) becomes real and testable.
-- **Status:** in-progress
+- **Status:** done
 
 ### S-04: User can record progress on their own goal
 
@@ -246,3 +246,4 @@ None. All PRD shaping-stage questions were resolved before this roadmap was gene
 - **S-04: authenticated user can increment their own goal's numeric measure, or flip a yes/no measure to done.** — Archived 2026-08-31 → `context/archive/2026-08-30-record-goal-progress/`. Lesson: —.
 - **S-07: authenticated user gets a coherent app experience: the homepage shows product-relevant content instead of the default Astro starter page, every page is reachable via visible in-app navigation after sign-in, saving a goal edit or recording progress gives clear success feedback, and every user-facing text — including error messages — reads in consistent Polish.** — Archived 2026-09-06 → `context/archive/2026-09-06-ui-polish-and-consistency/`. Lesson: —.
 - **S-08: authenticated user views their goals page as two sections only — "Dodaj nowe cele" (unchanged) and a single "Lista celów" — where each goal is exactly one card showing its description, measure, and progress-recording controls; while still within its 24h edit window a card also exposes inline edit/delete, and once locked it shows a read-only/locked state instead. Replaces today's three separate sections ("Zapisz postęp", "Zarządzaj celami", "Zablokowane cele"), each iterating the goal list independently.** — Archived 2026-09-06 → `context/archive/2026-09-06-goals-page-ux-consolidation/`. Lesson: [[override-shadcn-default-theme-tokens-to-match-this-app-s-dark-only-look]] (see `context/foundation/lessons.md`; follow-up tracked as roadmap slice S-09).
+- **S-03: group member can view every other member's committed goals and current progress, across every group they belong to, on one shared view.** — Archived 2026-09-06 → `context/archive/2026-09-06-witness-the-circles-goals/`. Lesson: —.
