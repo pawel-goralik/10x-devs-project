@@ -5,15 +5,19 @@ import { getGroupDetail } from "@/lib/services/groups";
 
 const { id } = Astro.params;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
-// Accepted risk (plan review, 2026-08-31): no explicit not-found/not-a-member branch —
-// a non-member visiting another group's URL directly gets an ungraceful error rather
-// than a friendly message. RLS already blocks any data exposure either way.
 const group = id && supabase ? await getGroupDetail(supabase, id) : null;
+// Accepted risk (plan review, 2026-08-31): no friendly not-found/not-a-member message —
+// a non-member visiting another group's URL directly gets an ungraceful error instead.
+// RLS already blocks any data exposure either way; this throw only narrows `group` to
+// non-null for TypeScript.
+if (!group) {
+  throw new Error(`Group ${id} not found or not accessible`);
+}
 
-const inviteLink = group ? new URL(`/groups/join/${group.inviteToken}`, Astro.url.origin).toString() : "";
+const inviteLink = new URL(`/groups/join/${group.inviteToken}`, Astro.url.origin).toString();
 ---
 
-<Layout title={group ? group.name : "Grupa"}>
+<Layout title={group.name}>
   <div class="min-h-screen p-4 sm:p-8">
     <div class="mx-auto max-w-2xl">
       <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
