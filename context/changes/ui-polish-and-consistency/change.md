@@ -1,7 +1,7 @@
 ---
 change_id: ui-polish-and-consistency
 title: Ui polish and consistency
-status: implementing
+status: implemented
 created: 2026-09-06
 updated: 2026-09-06
 archived_at: null

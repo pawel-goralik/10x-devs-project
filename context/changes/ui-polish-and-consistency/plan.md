@@ -484,13 +484,13 @@ No data migration. Phase 5's Supabase email-template and config changes require 
 
 #### Automated
 
-- [x] 6.1 Lint passes: `npm run lint`
-- [x] 6.2 Build passes: `npm run build`
-- [x] 6.3 Repo-wide grep for `/dashboard` and `dashboard.astro` returns no matches in `src/`
+- [x] 6.1 Lint passes: `npm run lint` — ece4ea3
+- [x] 6.2 Build passes: `npm run build` — ece4ea3
+- [x] 6.3 Repo-wide grep for `/dashboard` and `dashboard.astro` returns no matches in `src/` — ece4ea3
 
 #### Manual
 
-- [x] 6.4 Visiting `/dashboard` directly now 404s
-- [x] 6.5 The nav bar no longer shows a "Panel" link on any page
-- [x] 6.6 Signing in via magic link still lands on `/goals` as before
-- [x] 6.7 No remaining in-app link points to `/dashboard`
+- [x] 6.4 Visiting `/dashboard` directly now 404s — ece4ea3
+- [x] 6.5 The nav bar no longer shows a "Panel" link on any page — ece4ea3
+- [x] 6.6 Signing in via magic link still lands on `/goals` as before — ece4ea3
+- [x] 6.7 No remaining in-app link points to `/dashboard` — ece4ea3
