@@ -396,27 +396,27 @@ No data migration. Phase 5's Supabase email-template and config changes require 
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint`
-- [x] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint` — 29bd243
+- [x] 3.2 Build passes: `npm run build` — 29bd243
 
 #### Manual
 
-- [x] 3.3 Editing a goal and saving shows a success banner
-- [x] 3.4 Deleting a goal shows the same success banner
-- [x] 3.5 Banner styled consistently with create/progress banners
+- [x] 3.3 Editing a goal and saving shows a success banner — 29bd243
+- [x] 3.4 Deleting a goal shows the same success banner — 29bd243
+- [x] 3.5 Banner styled consistently with create/progress banners — 29bd243
 
 ### Phase 4: Full in-app Polish translation
 
 #### Automated
 
-- [ ] 4.1 Lint passes: `npm run lint`
-- [ ] 4.2 Build passes: `npm run build`
-- [ ] 4.3 Repo-wide grep for sample English literals returns no matches outside code/comments
+- [x] 4.1 Lint passes: `npm run lint`
+- [x] 4.2 Build passes: `npm run build`
+- [x] 4.3 Repo-wide grep for sample English literals returns no matches outside code/comments
 
 #### Manual
 
-- [ ] 4.4 Every page, signed in and signed out, shows no remaining English user-facing text
-- [ ] 4.5 Every validation/error path shows a Polish message
+- [x] 4.4 Every page, signed in and signed out, shows no remaining English user-facing text
+- [x] 4.5 Every validation/error path shows a Polish message
 
 ### Phase 5: Email content Polish translation
 

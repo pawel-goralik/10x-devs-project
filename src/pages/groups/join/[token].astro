@@ -15,16 +15,16 @@ const supabase = createClient(Astro.request.headers, Astro.cookies);
 const preview = token && supabase ? await previewInvite(supabase, token) : null;
 ---
 
-<Layout title="Join group">
+<Layout title="Dołącz do grupy">
   <div class="flex flex-1 items-center justify-center p-4">
     <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
       {
         !preview ? (
-          <p class="text-red-300">This invite link is invalid.</p>
+          <p class="text-red-300">Ten link z zaproszeniem jest nieprawidłowy.</p>
         ) : (
           <>
             <h1 class="mb-6 text-xl font-semibold">
-              You've been invited to join {preview.groupName}, created by {preview.creatorEmail}
+              Zaproszenie do dołączenia do grupy {preview.groupName}, utworzonej przez {preview.creatorEmail}
             </h1>
 
             {!user ? (
@@ -32,14 +32,14 @@ const preview = token && supabase ? await previewInvite(supabase, token) : null;
                 href={`/auth/signin?next=${encodeURIComponent(Astro.url.pathname)}`}
                 class="block w-full rounded-lg bg-purple-600 px-4 py-2 text-center font-medium text-white transition-colors hover:bg-purple-500"
               >
-                Sign in before joining
+                Zaloguj się, aby dołączyć
               </a>
             ) : preview.alreadyMember ? (
               <a
                 href={`/groups/${preview.groupId}`}
                 class="block w-full rounded-lg bg-purple-600 px-4 py-2 text-center font-medium text-white transition-colors hover:bg-purple-500"
               >
-                You're already a member — go to group
+                Jesteś już członkiem — przejdź do grupy
               </a>
             ) : (
               <form method="POST" action="/api/groups/join">
@@ -48,7 +48,7 @@ const preview = token && supabase ? await previewInvite(supabase, token) : null;
                   type="submit"
                   class="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
                 >
-                  Join
+                  Dołącz
                 </button>
               </form>
             )}

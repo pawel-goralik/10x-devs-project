@@ -12,17 +12,17 @@ const supabase = createClient(Astro.request.headers, Astro.cookies);
 const groups: Group[] = supabase && user ? await listMyGroups(supabase, user.id) : [];
 ---
 
-<Layout title="My Groups">
+<Layout title="Moje grupy">
   <div class="min-h-screen p-4 sm:p-8">
     <div class="mx-auto max-w-2xl">
       <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-        My Groups
+        Moje grupy
       </h1>
 
       {
         left && (
           <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
-            You left the group.
+            Opuszczono grupę.
           </div>
         )
       }
@@ -36,12 +36,12 @@ const groups: Group[] = supabase && user ? await listMyGroups(supabase, user.id)
       }
 
       <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-        <h2 class="mb-4 text-lg font-semibold">Create a group</h2>
+        <h2 class="mb-4 text-lg font-semibold">Utwórz grupę</h2>
         <form method="POST" action="/api/groups" class="flex gap-3">
           <input
             name="name"
             type="text"
-            placeholder="Group name"
+            placeholder="Nazwa grupy"
             required
             class="flex-1 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
           />
@@ -49,17 +49,17 @@ const groups: Group[] = supabase && user ? await listMyGroups(supabase, user.id)
             type="submit"
             class="rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
           >
-            Create
+            Utwórz
           </button>
         </form>
       </div>
 
       {
         groups.length === 0 ? (
-          <p class="text-blue-100/60">You haven't joined or created any groups yet.</p>
+          <p class="text-blue-100/60">Nie masz jeszcze żadnych grup.</p>
         ) : (
           <div class="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-            <h2 class="mb-4 text-lg font-semibold">Your groups</h2>
+            <h2 class="mb-4 text-lg font-semibold">Twoje grupy</h2>
             <ul class="space-y-2">
               {groups.map((group) => (
                 <li>

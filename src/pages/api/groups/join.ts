@@ -9,7 +9,7 @@ const joinSchema = z.object({
   token: z.uuid(),
 });
 
-const INVALID_INVITE_MESSAGE = "This invite link is invalid.";
+const INVALID_INVITE_MESSAGE = "Ten link z zaproszeniem jest nieprawidłowy.";
 
 export const POST: APIRoute = async (context) => {
   const user = context.locals.user;
@@ -28,7 +28,7 @@ export const POST: APIRoute = async (context) => {
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/groups?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/groups?error=${encodeURIComponent("Supabase nie jest skonfigurowany")}`);
   }
 
   const groupId = await joinGroup(supabase, parsed.data.token);

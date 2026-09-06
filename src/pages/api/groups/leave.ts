@@ -18,12 +18,12 @@ export const POST: APIRoute = async (context) => {
   const form = await context.request.formData();
   const parsed = leaveSchema.safeParse({ groupId: form.get("groupId") });
   if (!parsed.success) {
-    return context.redirect(`/groups?error=${encodeURIComponent("Invalid group")}`);
+    return context.redirect(`/groups?error=${encodeURIComponent("Nieprawidłowa grupa")}`);
   }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/groups?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/groups?error=${encodeURIComponent("Supabase nie jest skonfigurowany")}`);
   }
 
   const { groupId } = parsed.data;
@@ -34,7 +34,7 @@ export const POST: APIRoute = async (context) => {
 
   const left = await leaveGroup(supabase, user.id, groupId);
   if (!left) {
-    return context.redirect(`/groups?error=${encodeURIComponent("You are not a member of that group")}`);
+    return context.redirect(`/groups?error=${encodeURIComponent("Nie jesteś członkiem tej grupy")}`);
   }
 
   if (groupBeforeLeaving) {

@@ -37,7 +37,7 @@ export const POST: APIRoute = async (context) => {
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/goals?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/goals?error=${encodeURIComponent("Supabase nie jest skonfigurowany")}`);
   }
 
   const form = await context.request.formData();
@@ -48,7 +48,7 @@ export const POST: APIRoute = async (context) => {
     const deleted = await deleteGoal(supabase, user.id, goalId);
     if (!deleted) {
       return context.redirect(
-        `/goals?error=${encodeURIComponent("That goal could no longer be deleted — its 24h window has closed")}`,
+        `/goals?error=${encodeURIComponent("Tego celu nie można już usunąć — jego 24-godzinne okno edycji minęło")}`,
       );
     }
     return context.redirect("/goals?updated=1");
@@ -57,14 +57,14 @@ export const POST: APIRoute = async (context) => {
   const parsed = editsSchema.safeParse(parseEdits(form));
   if (!parsed.success) {
     return context.redirect(
-      `/goals?error=${encodeURIComponent("Check your edits — description is required and targets must be positive numbers")}`,
+      `/goals?error=${encodeURIComponent("Sprawdź swoje zmiany — opis jest wymagany, a wartości docelowe muszą być liczbami dodatnimi")}`,
     );
   }
 
   const { skipped } = await updateGoals(supabase, user.id, parsed.data);
   if (skipped.length > 0) {
     return context.redirect(
-      `/goals?error=${encodeURIComponent(`${skipped.length} goal(s) could not be saved — their 24h window has closed`)}`,
+      `/goals?error=${encodeURIComponent(`Nie zapisano ${skipped.length} cel(ów) — ich 24-godzinne okno edycji minęło`)}`,
     );
   }
 

@@ -59,12 +59,12 @@ export default function GoalBundleForm({ serverError }: Props) {
     rows.forEach((row, index) => {
       const rowErrors: RowErrors = {};
       if (!row.description.trim()) {
-        rowErrors.description = "Description is required";
+        rowErrors.description = "Opis jest wymagany";
       }
       if (row.measureType === "numeric") {
         const value = Number(row.targetValue);
         if (!row.targetValue.trim() || !Number.isFinite(value) || value <= 0) {
-          rowErrors.targetValue = "Enter a positive target";
+          rowErrors.targetValue = "Podaj dodatnią wartość docelową";
         }
       }
       if (Object.keys(rowErrors).length > 0) {
@@ -87,7 +87,7 @@ export default function GoalBundleForm({ serverError }: Props) {
         {rows.map((row, index) => (
           <div key={index} className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-blue-100/80">Goal {index + 1}</span>
+              <span className="text-sm font-medium text-blue-100/80">Cel {index + 1}</span>
               {rows.length > 1 && (
                 <Button
                   type="button"
@@ -99,7 +99,7 @@ export default function GoalBundleForm({ serverError }: Props) {
                   className="text-red-300 hover:bg-red-500/10 hover:text-red-200"
                 >
                   <Trash2 className="size-4" />
-                  Remove
+                  Usuń
                 </Button>
               )}
             </div>
@@ -107,18 +107,18 @@ export default function GoalBundleForm({ serverError }: Props) {
             <FormField
               id={`goals-${index}-description`}
               name={`goals.${index}.description`}
-              label="Goal"
+              label="Cel"
               value={row.description}
               onChange={(v) => {
                 updateRow(index, { description: v });
               }}
-              placeholder="e.g. Read books"
+              placeholder="np. Przeczytaj książki"
               error={errors[index]?.description}
               icon={<PenLine className="size-4" />}
             />
 
             <div>
-              <Label className="mb-2 block text-sm text-blue-100/80">Measure</Label>
+              <Label className="mb-2 block text-sm text-blue-100/80">Miara</Label>
               <RadioGroup
                 name={`goals.${index}.measureType`}
                 value={row.measureType}
@@ -130,13 +130,13 @@ export default function GoalBundleForm({ serverError }: Props) {
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="numeric" id={`goals-${index}-measure-numeric`} />
                   <Label htmlFor={`goals-${index}-measure-numeric`} className="font-normal text-white/80">
-                    Numeric target
+                    Wartość liczbowa
                   </Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="boolean" id={`goals-${index}-measure-boolean`} />
                   <Label htmlFor={`goals-${index}-measure-boolean`} className="font-normal text-white/80">
-                    Yes / no
+                    Tak / nie
                   </Label>
                 </div>
               </RadioGroup>
@@ -147,12 +147,12 @@ export default function GoalBundleForm({ serverError }: Props) {
                 id={`goals-${index}-target`}
                 name={`goals.${index}.targetValue`}
                 type="number"
-                label="Target"
+                label="Wartość docelowa"
                 value={row.targetValue}
                 onChange={(v) => {
                   updateRow(index, { targetValue: v });
                 }}
-                placeholder="e.g. 5"
+                placeholder="np. 5"
                 error={errors[index]?.targetValue}
                 icon={<Target className="size-4" />}
               />
@@ -169,13 +169,13 @@ export default function GoalBundleForm({ serverError }: Props) {
         className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10 disabled:opacity-50"
       >
         <Plus className="size-4" />
-        Add another goal
+        Dodaj kolejny cel
       </Button>
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Committing..." icon={<Send className="size-4" />}>
-        Commit goals
+      <SubmitButton pendingText="Zapisywanie..." icon={<Send className="size-4" />}>
+        Zapisz cele
       </SubmitButton>
     </form>
   );

@@ -45,13 +45,13 @@ export const POST: APIRoute = async (context) => {
   const parsed = bundleSchema.safeParse(parseBundle(form));
   if (!parsed.success) {
     return context.redirect(
-      `/goals?error=${encodeURIComponent("Check each goal — description is required and targets must be positive numbers")}`,
+      `/goals?error=${encodeURIComponent("Sprawdź każdy cel — opis jest wymagany, a wartości docelowe muszą być liczbami dodatnimi")}`,
     );
   }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/goals?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/goals?error=${encodeURIComponent("Supabase nie jest skonfigurowany")}`);
   }
 
   const result = await createGoals(supabase, user.id, parsed.data);

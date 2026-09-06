@@ -6,13 +6,13 @@ const error = Astro.url.searchParams.get("error");
 const next = Astro.url.searchParams.get("next");
 ---
 
-<Layout title="Sign in">
+<Layout title="Zaloguj się">
   <div class="flex flex-1 items-center justify-center p-4">
     <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
       <h1
         class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
       >
-        Sign in
+        Zaloguj się
       </h1>
       <MagicLinkForm serverError={error} next={next} client:load />
     </div>

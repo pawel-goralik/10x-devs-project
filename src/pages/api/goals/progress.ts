@@ -36,14 +36,14 @@ export const POST: APIRoute = async (context) => {
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/goals?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/goals?error=${encodeURIComponent("Supabase nie jest skonfigurowany")}`);
   }
 
   const form = await context.request.formData();
   const parsed = progressSchema.safeParse(parseProgress(form));
   if (!parsed.success) {
     return context.redirect(
-      `/goals?error=${encodeURIComponent("Check your progress entries — amounts must be positive numbers")}`,
+      `/goals?error=${encodeURIComponent("Sprawdź wpisy postępu — wartości muszą być liczbami dodatnimi")}`,
     );
   }
 
@@ -59,7 +59,7 @@ export const POST: APIRoute = async (context) => {
 
   const { skipped } = await recordProgress(supabase, user.id, commands);
   if (skipped.length > 0) {
-    return context.redirect(`/goals?error=${encodeURIComponent(`${skipped.length} goal(s) could not be updated`)}`);
+    return context.redirect(`/goals?error=${encodeURIComponent(`Nie zaktualizowano ${skipped.length} cel(ów)`)}`);
   }
 
   return context.redirect("/goals?progress=1");

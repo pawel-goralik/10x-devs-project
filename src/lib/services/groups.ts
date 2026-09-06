@@ -126,7 +126,7 @@ export async function createGroup(supabase: SupabaseClient, command: CreateGroup
   };
 
   if (error || !data) {
-    return { success: false, error: error?.message ?? "Failed to create group" };
+    return { success: false, error: error?.message ?? "Nie udało się utworzyć grupy" };
   }
   return { success: true, groupId: data };
 }

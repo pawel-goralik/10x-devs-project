@@ -9,21 +9,21 @@ const requestLinkSchema = z.object({
   email: z.email(),
 });
 
-const RATE_LIMIT_MESSAGE = "You've requested a link recently — check your inbox, or wait a bit before trying again.";
+const RATE_LIMIT_MESSAGE = "Link został niedawno wysłany — sprawdź skrzynkę odbiorczą lub spróbuj ponownie za chwilę.";
 
 export const POST: APIRoute = async (context) => {
   const form = await context.request.formData();
   const parsed = requestLinkSchema.safeParse({ email: form.get("email") });
 
   if (!parsed.success) {
-    return context.redirect(`/auth/signin?error=${encodeURIComponent("Enter a valid email address")}`);
+    return context.redirect(`/auth/signin?error=${encodeURIComponent("Podaj prawidłowy adres e-mail")}`);
   }
 
   const { email } = parsed.data;
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/auth/signin?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/auth/signin?error=${encodeURIComponent("Supabase nie jest skonfigurowany")}`);
   }
 
   const nextRaw = form.get("next");

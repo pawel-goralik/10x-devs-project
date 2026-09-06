@@ -16,9 +16,9 @@ export default function MagicLinkForm({ serverError, next }: Props) {
   function validate() {
     const next: typeof errors = {};
     if (!email.trim()) {
-      next.email = "Email is required";
+      next.email = "Adres e-mail jest wymagany";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      next.email = "Enter a valid email address";
+      next.email = "Podaj prawidłowy adres e-mail";
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -40,21 +40,21 @@ export default function MagicLinkForm({ serverError, next }: Props) {
       <FormField
         id="email"
         type="email"
-        label="Email"
+        label="E-mail"
         value={email}
         onChange={(v) => {
           setEmail(v);
           clearError("email");
         }}
-        placeholder="you@example.com"
+        placeholder="ty@przyklad.pl"
         error={errors.email}
         icon={<Mail className="size-4" />}
       />
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Sending link..." icon={<Send className="size-4" />}>
-        Continue with email
+      <SubmitButton pendingText="Wysyłanie linku..." icon={<Send className="size-4" />}>
+        Kontynuuj przez e-mail
       </SubmitButton>
     </form>
   );

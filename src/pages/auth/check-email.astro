@@ -4,19 +4,20 @@ import Layout from "@/layouts/Layout.astro";
 const email = Astro.url.searchParams.get("email");
 ---
 
-<Layout title="Check your email">
+<Layout title="Sprawdź skrzynkę e-mail">
   <div class="flex flex-1 items-center justify-center p-4">
     <div
       class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl"
     >
       <div class="mb-4 text-5xl">📧</div>
       <h1 class="mb-3 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
-        Check your email
+        Sprawdź skrzynkę e-mail
       </h1>
       <p class="mb-6 text-blue-100/80">
-        We've sent a sign-in link to {email ? <strong>{email}</strong> : "your email address"}. Click it to continue.
+        Wysłaliśmy link do logowania na adres {email ? <strong>{email}</strong> : "Twój adres e-mail"}. Kliknij go, aby
+        kontynuować.
       </p>
-      <a href="/auth/signin" class="text-sm text-purple-300 hover:underline"> Back to sign in </a>
+      <a href="/auth/signin" class="text-sm text-purple-300 hover:underline"> Wróć do logowania </a>
     </div>
   </div>
 </Layout>

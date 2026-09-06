@@ -19,12 +19,12 @@ export const POST: APIRoute = async (context) => {
   const form = await context.request.formData();
   const parsed = createGroupSchema.safeParse({ name: form.get("name") });
   if (!parsed.success) {
-    return context.redirect(`/groups?error=${encodeURIComponent("Enter a group name")}`);
+    return context.redirect(`/groups?error=${encodeURIComponent("Podaj nazwę grupy")}`);
   }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/groups?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/groups?error=${encodeURIComponent("Supabase nie jest skonfigurowany")}`);
   }
 
   const result = await createGroup(supabase, parsed.data);

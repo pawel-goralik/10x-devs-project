@@ -18,7 +18,7 @@ const editableGoals = goals.filter((goal) => isEditable(goal));
 const lockedGoals = goals.filter((goal) => !isEditable(goal));
 
 function measureLabel(goal: Goal): string {
-  return goal.measureType === "numeric" ? `Target: ${goal.targetValue}` : "Yes / no";
+  return goal.measureType === "numeric" ? `Cel: ${goal.targetValue}` : "Tak / nie";
 }
 
 function isReached(goal: Goal): boolean {
@@ -26,17 +26,17 @@ function isReached(goal: Goal): boolean {
 }
 ---
 
-<Layout title="My Goals">
+<Layout title="Moje cele">
   <div class="min-h-screen p-4 sm:p-8">
     <div class="mx-auto max-w-2xl">
       <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-        My Goals
+        Moje cele
       </h1>
 
       {
         created && (
           <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
-            Goals committed! They lock in 24 hours — edit or remove them below until then.
+            Cele zapisane! Blokują się po 24 godzinach — do tego czasu możesz je edytować lub usunąć poniżej.
           </div>
         )
       }
@@ -44,7 +44,7 @@ function isReached(goal: Goal): boolean {
       {
         progressSaved && (
           <div class="mb-6 rounded-lg border border-emerald-400/30 bg-emerald-900/20 px-4 py-3 text-sm text-emerald-200">
-            Progress saved.
+            Postęp zapisany.
           </div>
         )
       }
@@ -66,20 +66,16 @@ function isReached(goal: Goal): boolean {
       }
 
       <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-        <h2 class="mb-4 text-lg font-semibold">Commit new goals</h2>
+        <h2 class="mb-4 text-lg font-semibold">Dodaj nowe cele</h2>
         <GoalBundleForm serverError={error} client:load />
       </div>
 
-      {
-        goals.length === 0 && (
-          <p class="text-blue-100/60">You haven't committed any goals yet. Add your first one above.</p>
-        )
-      }
+      {goals.length === 0 && <p class="text-blue-100/60">Nie masz jeszcze żadnych celów. Dodaj pierwszy powyżej.</p>}
 
       {
         goals.length > 0 && (
           <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-            <h2 class="mb-4 text-lg font-semibold">Track progress</h2>
+            <h2 class="mb-4 text-lg font-semibold">Zapisz postęp</h2>
             <form method="POST" action="/api/goals/progress" class="space-y-4">
               {goals.map((goal) => (
                 <div class="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 p-4">
@@ -100,14 +96,14 @@ function isReached(goal: Goal): boolean {
                         type="number"
                         min="0"
                         step="any"
-                        placeholder="Add amount"
-                        class="w-32 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                        placeholder="Dodaj wartość"
+                        class="w-40 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
                       />
                     </div>
                   )}
                   {goal.measureType === "boolean" &&
                     (goal.isDone ? (
-                      <span class="text-sm font-medium text-emerald-300">✓ Done</span>
+                      <span class="text-sm font-medium text-emerald-300">✓ Wykonano</span>
                     ) : (
                       <label class="flex items-center gap-2 text-sm text-blue-100/80">
                         <input
@@ -115,7 +111,7 @@ function isReached(goal: Goal): boolean {
                           type="checkbox"
                           class="h-4 w-4 rounded border-white/20 bg-white/10 text-purple-500 focus:ring-2 focus:ring-purple-400"
                         />
-                        Mark as done
+                        Oznacz jako wykonane
                       </label>
                     ))}
                 </div>
@@ -124,7 +120,7 @@ function isReached(goal: Goal): boolean {
                 type="submit"
                 class="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
               >
-                Save progress
+                Zapisz postęp
               </button>
             </form>
           </div>
@@ -134,13 +130,13 @@ function isReached(goal: Goal): boolean {
       {
         editableGoals.length > 0 && (
           <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-            <h2 class="mb-4 text-lg font-semibold">Manage goals (editable for 24h)</h2>
+            <h2 class="mb-4 text-lg font-semibold">Zarządzaj celami (edycja przez 24h)</h2>
             <form method="POST" action="/api/goals/manage" class="space-y-4">
               {editableGoals.map((goal) => (
                 <div class="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
                   <div>
                     <label class="mb-1 block text-sm text-blue-100/80" for={`edit-${goal.id}-description`}>
-                      Goal
+                      Cel
                     </label>
                     <input
                       id={`edit-${goal.id}-description`}
@@ -152,7 +148,7 @@ function isReached(goal: Goal): boolean {
                   </div>
                   <div class="flex items-center justify-between gap-4">
                     <span class="text-xs text-blue-100/60">
-                      {goal.measureType === "numeric" ? "Numeric" : "Yes / no"}
+                      {goal.measureType === "numeric" ? "Liczbowy" : "Tak / nie"}
                     </span>
                     {goal.measureType === "numeric" && (
                       <input
@@ -171,7 +167,7 @@ function isReached(goal: Goal): boolean {
                     value={`delete:${goal.id}`}
                     class="text-sm text-red-300 transition-colors hover:text-red-200 hover:underline"
                   >
-                    Delete
+                    Usuń
                   </button>
                 </div>
               ))}
@@ -181,7 +177,7 @@ function isReached(goal: Goal): boolean {
                 value="save-all"
                 class="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
               >
-                Save changes
+                Zapisz zmiany
               </button>
             </form>
           </div>
@@ -191,7 +187,7 @@ function isReached(goal: Goal): boolean {
       {
         lockedGoals.length > 0 && (
           <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-white/70 backdrop-blur-xl">
-            <h2 class="mb-4 text-lg font-semibold text-white/90">Locked goals</h2>
+            <h2 class="mb-4 text-lg font-semibold text-white/90">Zablokowane cele</h2>
             <ul class="space-y-2">
               {lockedGoals.map((goal) => (
                 <li class="rounded-lg border border-white/10 bg-white/5 px-4 py-3">
