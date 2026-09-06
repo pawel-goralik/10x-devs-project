@@ -1,7 +1,7 @@
 ---
 change_id: witness-the-circles-goals
 title: Witness the circles goals
-status: implemented
+status: impl_reviewed
 created: 2026-09-06
 updated: 2026-09-07
 archived_at: null

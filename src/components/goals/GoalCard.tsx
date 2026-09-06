@@ -14,13 +14,18 @@ import {
 } from "@/components/ui/dialog";
 import type { Goal } from "@/types";
 
-interface Props {
+interface BaseProps {
   goal: Goal;
-  editable: boolean;
   remainingLabel: string | null;
-  /** Hides the progress-recording dialog entirely — for viewing another group member's goal. */
-  readOnly?: boolean;
 }
+
+/**
+ * `readOnly` (hides the progress-recording dialog, for viewing another group member's
+ * goal) only makes sense alongside `editable: false` — the editable branch always
+ * renders its own edit/delete form regardless, so combining the two would produce a
+ * misleadingly-interactive card for a goal the viewer doesn't own.
+ */
+type Props = BaseProps & ({ editable: false; readOnly?: boolean } | { editable: true; readOnly?: false });
 
 function isReached(goal: Goal): boolean {
   return goal.measureType === "numeric" && goal.currentValue >= goal.targetValue;

@@ -23,6 +23,8 @@ Visiting `/groups/[id]` as a current member of that group, a new "Cele członkó
 - `src/pages/groups/[id].astro:8-10` already documents an accepted gap (no not-found/non-member branch); this plan doesn't touch that — it only adds a new section further down the same template.
 - `GoalCard.tsx`'s only editable-gated branch is the outer `if (!editable) {...}` at line 148 — everything needed for read-only rendering already lives in that branch; the only missing piece is suppressing `progressTrigger`.
 
+**Addendum (post-implementation, impl-review F1):** Phase 1 additionally fixed a pre-existing `astro check` null-narrowing failure in `groups/[id].astro` (an explicit `if (!group) throw` guard, replacing an implicit null-crash) — surfaced while verifying Phase 1 and approved live via `AskUserQuestion`, contradicting this section's original "this plan doesn't touch that" statement above.
+
 ## What We're NOT Doing
 
 - No aggregated cross-group page — goals appear only within each group's own `/groups/[id]` page, per-group (not a unified "all my circles" view).
