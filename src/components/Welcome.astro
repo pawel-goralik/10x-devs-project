@@ -1,10 +1,8 @@
 ---
-import Topbar from "@/components/Topbar.astro";
-
 const { user } = Astro.locals;
 ---
 
-<div class="bg-cosmic relative min-h-screen w-full overflow-hidden">
+<div class="relative min-h-screen w-full overflow-hidden">
   <!-- Cosmic orbs -->
   <div
     class="pointer-events-none absolute top-1/4 -left-24 h-[350px] w-[350px] rounded-full bg-purple-500/20 blur-[120px]"
@@ -27,8 +25,6 @@ const { user } = Astro.locals;
   </div>
 
   <div class="relative z-10 p-4 sm:p-8">
-    <Topbar />
-
     <!-- Hero section -->
     <div class="mx-auto flex max-w-4xl flex-col items-center justify-center px-4 py-24 text-center sm:py-32 lg:py-40">
       <h1

@@ -1,6 +1,5 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
 import { createClient } from "@/lib/supabase";
 import { getGroupDetail } from "@/lib/services/groups";
 
@@ -15,10 +14,8 @@ const inviteLink = group ? new URL(`/groups/join/${group.inviteToken}`, Astro.ur
 ---
 
 <Layout title={group ? group.name : "Group"}>
-  <div class="bg-cosmic min-h-screen p-4 sm:p-8">
+  <div class="min-h-screen p-4 sm:p-8">
     <div class="mx-auto max-w-2xl">
-      <Topbar />
-
       <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
         {group.name}
       </h1>

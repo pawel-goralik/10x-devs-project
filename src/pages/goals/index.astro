@@ -1,6 +1,5 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
 import GoalBundleForm from "@/components/goals/GoalBundleForm";
 import { createClient } from "@/lib/supabase";
 import { isEditable, listGoals } from "@/lib/services/goals";
@@ -27,10 +26,8 @@ function isReached(goal: Goal): boolean {
 ---
 
 <Layout title="My Goals">
-  <div class="bg-cosmic min-h-screen p-4 sm:p-8">
+  <div class="min-h-screen p-4 sm:p-8">
     <div class="mx-auto max-w-2xl">
-      <Topbar />
-
       <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
         My Goals
       </h1>

@@ -110,7 +110,7 @@ Move `<Topbar/>` rendering into `Layout.astro` so every page gets consistent nav
 
 **Intent**: Render the nav bar once, centrally, for every page that uses this layout.
 
-**Contract**: Import `Topbar` and render `<Topbar />` inside `<body>`, after the `missingConfigs` banner block and before `<slot />`. No prop wiring needed — `Topbar` reads `Astro.locals.user` directly.
+**Contract**: Import `Topbar` and render it inside `<body>`, after the `missingConfigs` banner block and before `<slot />`, wrapped in a `<div class="p-4 sm:p-8">` so it keeps the same edge padding every page previously gave it individually. No prop wiring needed — `Topbar` reads `Astro.locals.user` directly.
 
 #### 2. Remove duplicate Topbar usages
 
@@ -121,6 +121,22 @@ Move `<Topbar/>` rendering into `Layout.astro` so every page gets consistent nav
 **Contract**: Remove the `Topbar` import and its `<Topbar />` usage from each file; leave the rest of each page's content untouched.
 
 No code change is required for `src/pages/dashboard.astro` or `src/pages/groups/join/[token].astro` — both gain nav automatically once Phase 2 lands, since both already use `Layout.astro`.
+
+#### 3. Move the `bg-cosmic` background from every page to `<body>`
+
+**File**: `src/layouts/Layout.astro`, plus `src/components/Welcome.astro`, `src/pages/dashboard.astro`, `src/pages/goals/index.astro`, `src/pages/groups/index.astro`, `src/pages/groups/[id].astro`, `src/pages/auth/signin.astro`, `src/pages/auth/check-email.astro`, `src/pages/groups/join/[token].astro`
+
+**Intent**: Scope extension discovered during implementation — `Topbar`'s styling (`text-white/80`, translucent white borders/backgrounds) assumes it sits on the dark `bg-cosmic` gradient that today is applied per-page, nested *around* each page's own `<Topbar/>` usage. Rendering `Topbar` centrally from `Layout.astro`'s `<body>` (which has a plain white `bg-background` per `src/styles/global.css:121-123`) would make it nearly invisible. Moving `bg-cosmic` up to `<body>` fixes this at the root — every page (including the auth pages and the invite-join page, which never had `Topbar` before) now sits on the correct dark background regardless of what's rendered above their own content div.
+
+**Contract**: Add `class="bg-cosmic"` to `<body>` in `Layout.astro`. Remove `bg-cosmic` from each listed page's own top-level wrapper `<div>` class list, leaving every other class (layout, min-height, padding) unchanged.
+
+#### 4. Fix vertical centering on "centered card" pages
+
+**Files**: `src/layouts/Layout.astro`, `src/pages/dashboard.astro`, `src/pages/auth/signin.astro`, `src/pages/auth/check-email.astro`, `src/pages/groups/join/[token].astro`
+
+**Intent**: Scope extension discovered during manual verification (user report: sign-in/check-email no longer look vertically centered). These four pages use a `flex min-h-screen items-center justify-center` wrapper to center a single card in the full viewport; before Phase 2 they had no `Topbar` above them, so `min-h-screen` on that div correctly claimed the whole viewport. Now `Topbar` renders above it via `Layout.astro`, so the page becomes taller than one viewport and the "centered" card sits low instead of truly centered.
+
+**Contract**: Make `<body>` a flex column (`class="bg-cosmic flex min-h-screen flex-col"`) so `Topbar`'s wrapper and the slotted page content share the viewport height as flex siblings. On each of the four pages, change the wrapper div's `flex min-h-screen items-center justify-center` to `flex flex-1 items-center justify-center` — it now fills the remaining space after `Topbar` instead of re-claiming a full `100vh`. Pages that don't use this centering pattern (homepage, goals, groups) are unaffected and need no change.
 
 ### Success Criteria:
 
@@ -135,6 +151,8 @@ No code change is required for `src/pages/dashboard.astro` or `src/pages/groups/
 - `/groups/join/<token>` shows the nav bar too
 - Homepage, `/goals`, `/groups`, and `/groups/[id]` each show exactly one nav bar (no visual duplication)
 - Sign-in and check-email pages show the "Not signed in" nav state, unaffected by this change
+- Every page still shows the dark cosmic gradient background with no white flash/seam, and the nav bar text/borders remain legible (not washed out) on every page, including the two auth pages and the invite-join page
+- Sign-in, check-email, dashboard, and the invite-join page all show their card truly vertically centered in the viewport (below the nav bar), not sitting low
 
 ---
 
@@ -348,29 +366,31 @@ No data migration. Phase 5's Supabase email-template and config changes require 
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — fec6e97
+- [x] 1.2 Build passes: `npm run build` — fec6e97
 
 #### Manual
 
-- [x] 1.3 Visiting `/` shows Resolution Circle copy with no starter/feature-card text anywhere
-- [x] 1.4 Signed out, CTA reads "Sign in" and links to `/auth/signin`
-- [x] 1.5 Signed in, CTA links to `/goals` instead
-- [x] 1.6 Signing in via magic link with no `next` param lands on `/goals`, not `/dashboard`
+- [x] 1.3 Visiting `/` shows Resolution Circle copy with no starter/feature-card text anywhere — fec6e97
+- [x] 1.4 Signed out, CTA reads "Sign in" and links to `/auth/signin` — fec6e97
+- [x] 1.5 Signed in, CTA links to `/goals` instead — fec6e97
+- [x] 1.6 Signing in via magic link with no `next` param lands on `/goals`, not `/dashboard` — fec6e97
 
 ### Phase 2: Centralize navigation in Layout
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 `/dashboard` shows the nav bar and can reach Goals/Groups/Sign-out
-- [ ] 2.4 `/groups/join/<token>` shows the nav bar
-- [ ] 2.5 Homepage, `/goals`, `/groups`, `/groups/[id]` each show exactly one nav bar
-- [ ] 2.6 Sign-in/check-email pages show the "Not signed in" nav state unaffected
+- [x] 2.3 `/dashboard` shows the nav bar and can reach Goals/Groups/Sign-out
+- [x] 2.4 `/groups/join/<token>` shows the nav bar
+- [x] 2.5 Homepage, `/goals`, `/groups`, `/groups/[id]` each show exactly one nav bar
+- [x] 2.6 Sign-in/check-email pages show the "Not signed in" nav state unaffected
+- [x] 2.7 Every page shows the dark cosmic background (no white flash/seam) and nav text/borders stay legible everywhere, including auth pages and the invite-join page
+- [x] 2.8 Sign-in, check-email, dashboard, and invite-join pages show their card truly vertically centered below the nav bar
 
 ### Phase 3: Consistent save/edit feedback
 
