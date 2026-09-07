@@ -85,7 +85,9 @@ const goalsByMember: Map<string, Goal[]> =
                     ) : (
                       <div class="space-y-3">
                         {memberGoals.map((goal) => (
-                          <GoalCard client:load goal={goal} editable={false} remainingLabel={null} readOnly={true} />
+                          <div>
+                            <GoalCard client:load goal={goal} editable={false} remainingLabel={null} readOnly={true} />
+                          </div>
                         ))}
                       </div>
                     )}
