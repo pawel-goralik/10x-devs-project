@@ -3,7 +3,7 @@ project: "Resolution Circle"
 version: 1
 status: draft
 created: 2026-08-02
-updated: 2026-09-06
+updated: 2026-09-10
 prd_version: 1
 main_goal: speed
 top_blocker: capacity
@@ -31,6 +31,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | ---- | ------------------------------- | -------------------------------------------------------------------------------- | -------------- | ---------------------------------- | -------- |
 | F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | done |
 | F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | done |
+| F-03 | automated-migration-deploy      | (foundation) Supabase migrations are applied to production automatically as part of the CI deploy job, so a migration merged to `main` can never silently fail to reach prod | —              | — (not PRD-derived; surfaced by a production incident — see below) | proposed |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | done |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | done |
@@ -52,6 +53,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | C      | Social heartbeat             | `S-05`                              | Depends on `S-03`'s data/query logic and `F-02`'s email infra; the quarterly long-tail mechanism, sequenced after the core loop lands. |
 | D      | Account lifecycle            | `S-06`                              | Depends on Stream A's `S-01` + `S-02`; an edge-case departure flow, not part of first-value delivery. |
 | E      | Post-launch UI/UX polish     | `F-01`, `S-01`, `S-04` → `S-07` → `S-08` → `S-09` | Surfaced by using the shipped app rather than by a PRD requirement; joins Stream A at `S-01` and Stream B at `S-04` instead of belonging to either, since it touches navigation, forms, and copy across both. `S-08` builds directly on `S-07`'s goals-page save-feedback work, consolidating the same page's layout next. `S-09` is a design-system fix surfaced while building `S-08`'s first shadcn Dialog. |
+| F      | Deploy reliability            | `F-03`                              | Infra-only fix surfaced by a production incident (a Supabase migration verified locally never reached prod) — not blocking any feature slice, but should land soon since `S-05` and `S-06` both still need schema changes and would otherwise repeat the same drift risk. Raised during `/10x-test-plan` discovery, 2026-09-10. |
 
 ## Baseline
 
@@ -92,6 +94,20 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:** —
 - **Risk:** pulled forward from being S-05-only infra because S-02's FR-010 also needs real email delivery, not just an in-app record — provisioning the REST API key and building the send-email utility once, ahead of both consumers, avoids duplicating that setup across two slices.
 - **Status:** done
+
+### F-03: Automated Supabase migration deploy in CI
+
+- **Outcome:** (foundation) Supabase migrations are applied to the linked production project automatically as part of the CI deploy job (alongside the existing `wrangler-action` Worker deploy), so a migration merged to `main` can never silently stop short of production the way it did before.
+- **Change ID:** automated-migration-deploy
+- **PRD refs:** — (not PRD-derived; surfaced by a production incident during `/10x-test-plan` discovery, 2026-09-10 — a migration verified working in local dev did not reach production, and the gap wasn't noticed until the app broke the next day)
+- **Unlocks:** general reliability net for every future schema-touching slice — most directly `S-05` (digest send-state schema) and `S-06` (anonymization fields), both still `proposed` and both would otherwise repeat the same drift risk
+- **Prerequisites:** — (CI + `wrangler-action` deploy pipeline already exists per Baseline)
+- **Parallel with:** any slice not touching the database schema
+- **Blockers:** —
+- **Unknowns:**
+  - Does `supabase db push --linked` (or equivalent) in CI need additional secrets (project ref, DB password / access token) beyond what's already configured for the Worker deploy? — Owner: user. Block: no.
+- **Risk:** a pure reliability/process fix triggered by a real incident, not a PRD requirement — low technical risk (the deploy pipeline already exists and just needs one more step), but worth prioritizing soon since the drift it prevents is silent by nature — it isn't caught until something breaks.
+- **Status:** proposed
 
 ## Slices
 
@@ -214,6 +230,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | ---------- | ------------------------------ | -------------------------------------------------------------------- | ---------------------- | ----- |
 | F-01       | magic-link-auth               | Replace password auth with passwordless magic-link auth              | yes                    | Run `/10x-plan magic-link-auth` |
 | F-02       | email-sending-infrastructure   | Provision Brevo and add a reusable send-email service                | yes                    | Run `/10x-plan email-sending-infrastructure` |
+| F-03       | automated-migration-deploy    | Apply Supabase migrations to production automatically in CI          | yes                    | Run `/10x-plan automated-migration-deploy`; surfaced by a production incident, not the PRD |
 | S-01       | commit-a-goal                 | User can commit a goal with a 24h edit/delete window                 | no                     | Needs F-01 first |
 | S-02       | form-and-manage-a-group       | User can create, invite to, join, and leave a group                  | no                     | Needs F-01 and F-02 first |
 | S-03       | witness-the-circles-goals     | Group member can see every member's committed goals and progress     | no                     | Needs S-01 and S-02 first (north star) |
