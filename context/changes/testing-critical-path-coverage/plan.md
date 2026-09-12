@@ -401,9 +401,9 @@ No new Supabase migrations. No changes to existing migrations or `seed.sql`.
 
 #### Automated
 
-- [x] 5.1 `npm run lint` passes
+- [x] 5.1 `npm run lint` passes — 1174e83
 
 #### Manual
 
-- [x] 5.2 `test-plan.md` §6.1/§6.2 no longer read "TBD"
-- [x] 5.3 `test-plan.md` §3 Phase 1 Status reads `planned`
+- [x] 5.2 `test-plan.md` §6.1/§6.2 no longer read "TBD" — 1174e83
+- [x] 5.3 `test-plan.md` §3 Phase 1 Status reads `planned` — 1174e83
