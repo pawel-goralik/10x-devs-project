@@ -388,22 +388,22 @@ No new Supabase migrations. No changes to existing migrations or `seed.sql`.
 
 #### Automated
 
-- [x] 4.1 `npm run test` passes
-- [x] 4.2 `npm run test:integration` passes
-- [x] 4.3 `npx astro check` passes
-- [x] 4.4 `npm run lint` passes
+- [x] 4.1 `npm run test` passes — c00b779
+- [x] 4.2 `npm run test:integration` passes — c00b779
+- [x] 4.3 `npx astro check` passes — c00b779
+- [x] 4.4 `npm run lint` passes — c00b779
 
 #### Manual
 
-- [x] 4.5 A flipped boundary operator causes the corresponding test to fail
+- [x] 4.5 A flipped boundary operator causes the corresponding test to fail — c00b779
 
 ### Phase 5: Cookbook update + rollout status sync
 
 #### Automated
 
-- [ ] 5.1 `npm run lint` passes
+- [x] 5.1 `npm run lint` passes
 
 #### Manual
 
-- [ ] 5.2 `test-plan.md` §6.1/§6.2 no longer read "TBD"
-- [ ] 5.3 `test-plan.md` §3 Phase 1 Status reads `planned`
+- [x] 5.2 `test-plan.md` §6.1/§6.2 no longer read "TBD"
+- [x] 5.3 `test-plan.md` §3 Phase 1 Status reads `planned`
