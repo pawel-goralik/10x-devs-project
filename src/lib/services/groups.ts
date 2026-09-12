@@ -206,8 +206,8 @@ export async function notifyGroupOfDeparture(
   departedEmail: string,
   recipientEmails: string[],
 ): Promise<void> {
-  const subject = `${departedEmail} opuścił grupę ${groupName}`;
-  const heading = `${escapeHtml(departedEmail)} opuścił grupę ${escapeHtml(groupName)}`;
+  const subject = `Członek opuścił grupę ${groupName}`;
+  const heading = `Opuszczenie grupy`;
   const bodyHtml = `<p>${escapeHtml(departedEmail)} opuścił grupę "${escapeHtml(groupName)}".</p>`;
   const text = `${departedEmail} opuścił grupę "${groupName}".`;
 
