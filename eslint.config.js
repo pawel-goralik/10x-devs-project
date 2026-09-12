@@ -8,6 +8,7 @@ import reactCompiler from "eslint-plugin-react-compiler";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import path from "node:path";
 import tseslint from "typescript-eslint";
+import globals from "globals";
 
 const gitignorePath = path.resolve(import.meta.dirname, ".gitignore");
 
@@ -68,10 +69,18 @@ const astroConfig = tseslint.config({
   },
 });
 
+const nodeScriptsConfig = tseslint.config({
+  files: ["scripts/**/*.mjs"],
+  languageOptions: {
+    globals: globals.node,
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
   reactConfig,
+  nodeScriptsConfig,
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
