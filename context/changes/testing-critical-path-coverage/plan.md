@@ -364,25 +364,25 @@ No new Supabase migrations. No changes to existing migrations or `seed.sql`.
 
 #### Automated
 
-- [x] 2.1 `npx astro check` passes
-- [x] 2.2 `npm run lint` passes
+- [x] 2.1 `npx astro check` passes — 270204f
+- [x] 2.2 `npm run lint` passes — 270204f
 
 #### Manual
 
-- [x] 2.3 `createTestUser` + `signInAsTestUser` produces a correctly-authenticated client
-- [x] 2.4 `cleanupFixtures` leaves no orphaned rows
+- [x] 2.3 `createTestUser` + `signInAsTestUser` produces a correctly-authenticated client — 270204f
+- [x] 2.4 `cleanupFixtures` leaves no orphaned rows — 270204f
 
 ### Phase 3: Integration tests — cross-group visibility (Risk #1)
 
 #### Automated
 
-- [ ] 3.1 `npm run test:integration` passes
-- [ ] 3.2 `npx astro check` passes
-- [ ] 3.3 `npm run lint` passes
+- [x] 3.1 `npm run test:integration` passes
+- [x] 3.2 `npx astro check` passes
+- [x] 3.3 `npm run lint` passes
 
 #### Manual
 
-- [ ] 3.4 An intentionally broken assertion causes the corresponding test to fail
+- [x] 3.4 An intentionally broken assertion causes the corresponding test to fail
 
 ### Phase 4: 24h immutability lock boundary tests (Risk #2)
 
