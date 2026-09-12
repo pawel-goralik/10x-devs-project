@@ -1,0 +1,11 @@
+-- grant service_role delete on public.groups
+--
+-- purpose: test-only fixture teardown. context/changes/testing-critical-path-coverage's
+-- Phase 2 support helpers (tests/support/fixtures.ts) create disposable groups via a
+-- service-role client and must delete them afterward. public.groups previously granted
+-- only select/insert to service_role (supabase/migrations/20260831123440_create_groups.sql)
+-- since no application feature ever deletes a group — RLS bypass alone doesn't help here,
+-- Postgres grants are a separate, un-bypassed layer, so cleanup failed with "permission
+-- denied for table groups". Deliberately service_role only: authenticated is untouched,
+-- so no application-facing behavior changes — there is still no "delete a group" feature.
+grant delete on public.groups to service_role;

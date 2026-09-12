@@ -351,26 +351,26 @@ No new Supabase migrations. No changes to existing migrations or `seed.sql`.
 
 #### Automated
 
-- [x] 1.1 `npm run test` runs (empty pass acceptable)
-- [x] 1.2 `npx astro check` passes
-- [x] 1.3 `npm run lint` passes
+- [x] 1.1 `npm run test` runs (empty pass acceptable) — de69e11
+- [x] 1.2 `npx astro check` passes — de69e11
+- [x] 1.3 `npm run lint` passes — de69e11
 
 #### Manual
 
-- [x] 1.4 `npm run test:integration` fails fast with preflight message when Supabase is stopped
-- [x] 1.5 `npm run test:integration` runs `supabase db reset` + Vitest when Supabase is running
+- [x] 1.4 `npm run test:integration` fails fast with preflight message when Supabase is stopped — de69e11
+- [x] 1.5 `npm run test:integration` runs `supabase db reset` + Vitest when Supabase is running — de69e11
 
 ### Phase 2: Test-only Supabase helpers
 
 #### Automated
 
-- [ ] 2.1 `npx astro check` passes
-- [ ] 2.2 `npm run lint` passes
+- [x] 2.1 `npx astro check` passes
+- [x] 2.2 `npm run lint` passes
 
 #### Manual
 
-- [ ] 2.3 `createTestUser` + `signInAsTestUser` produces a correctly-authenticated client
-- [ ] 2.4 `cleanupFixtures` leaves no orphaned rows
+- [x] 2.3 `createTestUser` + `signInAsTestUser` produces a correctly-authenticated client
+- [x] 2.4 `cleanupFixtures` leaves no orphaned rows
 
 ### Phase 3: Integration tests — cross-group visibility (Risk #1)
 
