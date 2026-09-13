@@ -1,4 +1,5 @@
 import { BREVO_API_KEY, BREVO_SENDER_EMAIL } from "astro:env/server";
+import { escapeHtml } from "@/lib/utils";
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 const SENDER_NAME = "Resolution Circle";
@@ -8,14 +9,20 @@ export interface RenderEmailLayoutParams {
   bodyHtml: string;
 }
 
-/** Matches supabase/templates/magic-link.html's branding — heading/bodyHtml replace that template's sign-in button block. */
+/**
+ * Matches supabase/templates/magic-link.html's branding — heading/bodyHtml replace that
+ * template's sign-in button block. `heading` is a plain string by contract (unlike
+ * `bodyHtml`, which callers must pre-build as trusted HTML), so it's escaped here rather
+ * than leaving every caller to remember to do it themselves.
+ */
 export function renderEmailLayout({ heading, bodyHtml }: RenderEmailLayoutParams): string {
+  const safeHeading = escapeHtml(heading);
   return `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${heading}</title>
+    <title>${safeHeading}</title>
   </head>
   <body style="margin:0; padding:0; background-color:#0f0a2e; font-family:Helvetica, Arial, sans-serif;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f0a2e; padding:32px 0;">
@@ -29,7 +36,7 @@ export function renderEmailLayout({ heading, bodyHtml }: RenderEmailLayoutParams
             </tr>
             <tr>
               <td style="color:#ffffff; font-size:18px; font-weight:bold; text-align:center; padding-bottom:16px;">
-                ${heading}
+                ${safeHeading}
               </td>
             </tr>
             <tr>

@@ -1,6 +1,7 @@
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import type { CreateGroupCommand, Group, GroupDetail, GroupMember, GroupPreview } from "@/types";
 import { sendEmail } from "@/lib/services/email";
+import { escapeHtml } from "@/lib/utils";
 
 interface GroupRow {
   id: string;
@@ -181,15 +182,6 @@ export async function leaveGroup(supabase: SupabaseClient, userId: string, group
     .select("group_id");
 
   return !error && data.length > 0;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 /**
