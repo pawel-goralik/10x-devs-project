@@ -220,15 +220,15 @@ Update `test-plan.md` to reflect that the unit/integration/e2e gates are now act
 
 #### Automated
 
-- [x] 2.1 `gh secret list` shows `SUPABASE_ACCESS_TOKEN`
-- [x] 2.2 `gh variable list` shows `SUPABASE_PROJECT_REF`
-- [ ] 2.3 Deploy job's migration-push step exits 0 with no pending migrations
+- [x] 2.1 `gh secret list` shows `SUPABASE_ACCESS_TOKEN` — ce85059
+- [x] 2.2 `gh variable list` shows `SUPABASE_PROJECT_REF` — ce85059
+- [x] 2.3 Deploy job's migration-push step exits 0 with no pending migrations
 
 #### Manual
 
-- [ ] 2.4 Merge to `main` applies the pending migration to production, confirmed via `supabase migration list --linked`
-- [ ] 2.5 Worker still deploys successfully after the new steps
-- [ ] 2.6 Fail-closed behavior verified or reasoned through
+- [x] 2.4 Merge to `main` applies the pending migration to production, confirmed via `supabase migration list --linked`
+- [x] 2.5 Worker still deploys successfully after the new steps
+- [x] 2.6 Fail-closed behavior verified or reasoned through
 
 ### Phase 3: Documentation sync
 
