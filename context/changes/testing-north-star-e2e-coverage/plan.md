@@ -285,12 +285,12 @@ Not applicable — no schema or data changes.
 
 #### Automated
 
-- [x] 1.1 New spec passes in isolation: `npx playwright test tests/e2e/group-goal-visibility.spec.ts`
-- [x] 1.2 Full E2E suite still passes: `npm run test:e2e`
-- [x] 1.3 Lint passes: `npm run lint`
-- [x] 1.4 Build/typecheck passes: `npm run build`
+- [x] 1.1 New spec passes in isolation: `npx playwright test tests/e2e/group-goal-visibility.spec.ts` — 4ea8420
+- [x] 1.2 Full E2E suite still passes: `npm run test:e2e` — 4ea8420
+- [x] 1.3 Lint passes: `npm run lint` — 4ea8420
+- [x] 1.4 Build/typecheck passes: `npm run build` — 4ea8420
 
 #### Manual
 
-- [x] 1.5 Mutation check: breaking the guarantee fails the spec; reverting passes it again
-- [x] 1.6 Visual confirmation via Playwright HTML report / trace of the rendered progress value and absent progress control
+- [x] 1.5 Mutation check: breaking the guarantee fails the spec; reverting passes it again — 4ea8420
+- [x] 1.6 Visual confirmation via Playwright HTML report / trace of the rendered progress value and absent progress control — 4ea8420
