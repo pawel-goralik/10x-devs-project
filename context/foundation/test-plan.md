@@ -68,7 +68,8 @@ orchestrator updates Status as artifacts appear on disk.
 | 1   | Critical-path authorization & immutability coverage | Bootstrap the test runner and defend the two highest-impact core guarantees: cross-group visibility and the 24h lock boundary    | #1, #2             | unit + integration | complete    | `context/changes/testing-critical-path-coverage/` |
 | 2   | Side-effect ordering & latent bundle-endpoint check | Catch mis-ordered leave/delete side effects (primary); confirm the now-latent multi-row bundle-endpoint behavior at low priority | #5, #4             | integration        | not started | —                                                 |
 | 3   | Abuse-surface hardening                             | Verify (or flag the absence of) rate-limiting on magic-link requests and invite-token lookups                                    | #6                 | integration        | not started | —                                                 |
-| 4   | Quality-gates wiring                                | Wire Phases 1–3 into CI, add one north-star e2e check, and land the F-03 migration-deploy automation                             | #3 + cross-cutting | gates              | not started | —                                                 |
+| 4   | North-star e2e coverage                             | Add one north-star e2e check for the cross-group witnessing flow                                                                 | #1 (cross-cutting) | e2e                | complete    | `context/changes/testing-north-star-e2e-coverage/` |
+| 5   | Quality-gates wiring                                | Wire Phases 1–4 into CI and land the F-03 migration-deploy automation                                                            | #3 + cross-cutting | gates              | not started | —                                                 |
 
 No AI-native phase: this app has no LLM-facing surface (`tech-stack.md`: `has_ai: false`) and interview Q5 explicitly excluded visual regression — no cost×signal case was found for an AI-native layer.
 
@@ -106,7 +107,7 @@ phase lands; before that, the gate is `planned`.
 | lint + typecheck                                | local + CI    | required (already wired — see `.github/workflows/ci.yml`) | syntactic / type drift                                              |
 | unit + integration                              | local + CI    | required after §3 Phase 1                                 | authorization-boundary and immutability-window regressions (#1, #2) |
 | integration (form-integrity & ordering)         | local + CI    | required after §3 Phase 2                                 | silent data loss and mis-ordered side effects (#4, #5)              |
-| e2e on north-star flow (cross-group witnessing) | CI on PR      | required after §3 Phase 4                                 | broken critical user path end-to-end                                |
+| e2e on north-star flow (cross-group witnessing) | CI on PR      | required after §3 Phase 5                                 | broken critical user path end-to-end                                |
 | automated Supabase migration deploy             | CI deploy job | required — tracked as roadmap `F-03`, not yet wired       | local-vs-prod schema/config drift (#3)                              |
 
 ## 6. Cookbook Patterns
@@ -162,6 +163,12 @@ contributors should respect these unless the underlying assumption changes.
 
 **Flagged for next refresh:**
 
+- 2026-09-13: §3 Phase 4/5 split — "Quality-gates wiring" was split into a
+  dedicated Phase 4 (write the north-star e2e test) and Phase 5 (wire
+  Phases 1–4 into CI, land F-03). Writing the e2e test no longer bundles
+  with CI-gate wiring, so it can start independently once its feature is
+  built. §5's e2e gate now points at Phase 5 (CI enforcement), not Phase 4
+  (test authored).
 - The magic-link auth flow itself (request-link → email → `/api/auth/callback`)
   has zero test coverage at any layer. Every test-harness identity — integration
   (`tests/support/test-users.ts`) and E2E (`tests/e2e/auth.setup.ts`) alike —
