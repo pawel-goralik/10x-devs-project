@@ -65,3 +65,11 @@ pnpm-debug.log*
 
 # supabase CLI local state
 supabase/.temp/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+.playwright-cli/

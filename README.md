@@ -55,6 +55,9 @@ npm run dev
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
+- `npm test` - Run unit tests
+- `npm run test:integration` - Run integration tests against local Supabase
+- `npm run test:e2e` - Run Playwright E2E tests against local Supabase (starts the dev server automatically)
 
 ## Project Structure
 

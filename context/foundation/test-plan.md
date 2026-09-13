@@ -160,6 +160,20 @@ contributors should respect these unless the underlying assumption changes.
 - Stack versions last verified: 2026-09-10
 - AI-native tool references last verified: 2026-09-10 (none in use)
 
+**Flagged for next refresh:**
+
+- The magic-link auth flow itself (request-link → email → `/api/auth/callback`)
+  has zero test coverage at any layer. Every test-harness identity — integration
+  (`tests/support/test-users.ts`) and E2E (`tests/e2e/auth.setup.ts`) alike —
+  authenticates by admin-creating a password-based user and injecting a session
+  directly, bypassing the real flow entirely. That's the right call for every
+  test that isn't *about* auth (see those files' own comments), but it means no
+  test anywhere would catch a break in email delivery or the callback's
+  `exchangeCodeForSession` handling. Not one of the six risks in §2's Risk Map
+  today. Flagged 2026-09-13 during E2E lever setup; consider as a candidate risk
+  (and its own E2E test, driving the real email via Mailpit/Inbucket, with no
+  auth bypass) on the next `/10x-test-plan --refresh`.
+
 Refresh (`/10x-test-plan --refresh`) when:
 
 - a new top-3 risk surfaces from the roadmap or archive,
