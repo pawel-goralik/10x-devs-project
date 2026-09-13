@@ -205,23 +205,23 @@ Update `test-plan.md` to reflect that the unit/integration/e2e gates are now act
 
 #### Automated
 
-- [x] 1.1 `npm run test` passes in CI
-- [x] 1.2 `npm run test:integration` passes in CI
-- [x] 1.3 `npm run test:e2e` passes in CI
+- [x] 1.1 `npm run test` passes in CI — b5fb8ba
+- [x] 1.2 `npm run test:integration` passes in CI — b5fb8ba
+- [x] 1.3 `npm run test:e2e` passes in CI — b5fb8ba
 
 #### Manual
 
-- [x] 1.4 PR shows all five CI steps green
-- [x] 1.5 Job wall-clock time confirmed reasonable, duration noted
-- [x] 1.6 No orphaned Supabase rows/containers after repeated runs
-- [x] 1.7 Deploy triggers via `workflow_run` only after CI completes, only on success
+- [x] 1.4 PR shows all five CI steps green — b5fb8ba
+- [x] 1.5 Job wall-clock time confirmed reasonable, duration noted — b5fb8ba
+- [x] 1.6 No orphaned Supabase rows/containers after repeated runs — b5fb8ba
+- [x] 1.7 Deploy triggers via `workflow_run` only after CI completes, only on success — b5fb8ba
 
 ### Phase 2: F-03 — automated Supabase migration deploy
 
 #### Automated
 
-- [ ] 2.1 `gh secret list` shows `SUPABASE_ACCESS_TOKEN`
-- [ ] 2.2 `gh variable list` shows `SUPABASE_PROJECT_REF`
+- [x] 2.1 `gh secret list` shows `SUPABASE_ACCESS_TOKEN`
+- [x] 2.2 `gh variable list` shows `SUPABASE_PROJECT_REF`
 - [ ] 2.3 Deploy job's migration-push step exits 0 with no pending migrations
 
 #### Manual
