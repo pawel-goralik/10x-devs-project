@@ -153,7 +153,10 @@ export default function GoalCard({ goal, editable, remainingLabel, readOnly = fa
 
   if (!editable) {
     return (
-      <div className="space-y-4 rounded-lg border border-white/10 bg-white/5 p-4">
+      <div
+        data-testid={`goal-card-${goal.description}`}
+        className="space-y-4 rounded-lg border border-white/10 bg-white/5 p-4"
+      >
         {celSection}
         {progressSection}
         {progressTrigger && <div className="flex border-t border-white/10 pt-4">{progressTrigger}</div>}
@@ -162,7 +165,10 @@ export default function GoalCard({ goal, editable, remainingLabel, readOnly = fa
   }
 
   return (
-    <div className="space-y-4 rounded-lg border border-white/10 bg-white/5 p-4">
+    <div
+      data-testid={`goal-card-${goal.description}`}
+      className="space-y-4 rounded-lg border border-white/10 bg-white/5 p-4"
+    >
       {remainingLabel && (
         <div className="flex justify-end">
           <span className="rounded-full border border-purple-400/30 bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-200">

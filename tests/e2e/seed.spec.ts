@@ -12,11 +12,20 @@
 // This single-identity assumption doesn't hold for a multi-user test.
 // For that cases, opt out of the project's default storageState.
 import { test, expect } from "@playwright/test";
-import { getByDisplayValue } from "./support/locators";
+import { getGoalCard } from "./support/locators";
+
+const goalDescription = `Test goal ${Date.now()}`;
+
+test.afterEach(async ({ page }) => {
+  await page.goto("/goals");
+  const goalCard = getGoalCard(page, goalDescription);
+  if ((await goalCard.count()) === 0) return;
+
+  await goalCard.getByRole("button", { name: "Usuń" }).click();
+  await expect(goalCard).toHaveCount(0);
+});
 
 test("created goal persists after page reload", async ({ page }) => {
-  const goalDescription = `Test goal ${Date.now()}`;
-
   await page.goto("/goals");
 
   await page.getByLabel("Cel", { exact: true }).fill(goalDescription);
@@ -25,14 +34,9 @@ test("created goal persists after page reload", async ({ page }) => {
 
   await expect(page.getByText("Cele zapisane!")).toBeVisible();
 
-  const goalField = getByDisplayValue(page, goalDescription);
+  const goalCard = getGoalCard(page, goalDescription);
+  await expect(goalCard).toBeVisible();
 
-  await expect(goalField).toBeVisible();
   await page.reload();
-  await expect(goalField).toBeVisible();
-
-  // Cleanup
-  const goalCard = page.locator("form").filter({ has: goalField });
-  await goalCard.getByRole("button", { name: "Usuń" }).click();
-  await expect(goalField).toHaveCount(0);
+  await expect(goalCard).toBeVisible();
 });

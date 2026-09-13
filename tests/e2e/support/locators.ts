@@ -1,20 +1,16 @@
 import type { Locator, Page } from "@playwright/test";
 
-function escapeForCssAttrValue(value: string): string {
-  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-}
-
 /**
- * Playwright has no built-in "find the textbox with this value" locator (unlike
- * Testing Library's getByDisplayValue). Needed here because every goal card's
- * description field shares the identical accessible name ("Cel"), so getByRole/
- * getByLabel alone can't tell two goals' fields apart — and a plain `.nth(i)` would
- * drift under the shared E2E fixture account, where another test's goal can appear
- * or disappear between one action and the next. Falling back to the value itself
- * (the exact state under test, not styling/DOM structure) is the disciplined
- * equivalent of the getByTestId fallback our E2E rules allow when accessible
- * attributes are ambiguous.
+ * Every goal card shares the identical accessible name for its description field
+ * ("Cel"), so getByRole/getByLabel alone can't tell two goals apart — and there's no
+ * id known test-side to key a testid on (it's server-generated at insert time). The
+ * description is: GoalCard renders `data-testid={`goal-card-${goal.description}`}` on
+ * the card's root element, and a test already knows its own (unique, timestamped)
+ * description before creating the goal, so it can look the card up by the same value
+ * it typed in. This is the getByTestId fallback our E2E rules allow when accessible
+ * attributes are ambiguous — scoped to the whole card, not just the description field,
+ * so a caller can find the row's own "Usuń" button under the same locator too.
  */
-export function getByDisplayValue(page: Page, value: string): Locator {
-  return page.locator(`input[value="${escapeForCssAttrValue(value)}"]`);
+export function getGoalCard(page: Page, description: string): Locator {
+  return page.getByTestId(`goal-card-${description}`);
 }

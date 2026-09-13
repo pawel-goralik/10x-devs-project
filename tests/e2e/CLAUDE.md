@@ -6,12 +6,20 @@ Scoped to `tests/e2e/`. Read `seed.spec.ts` first — it's the exemplar every te
   `getByTestId` only when accessibility attributes are ambiguous. Never CSS
   selectors, XPath, or DOM structure.
 - Each test must be independently runnable — its own setup, action, assertion,
-  and cleanup; no shared state between tests.
+  and cleanup; no shared state between tests. One test per file (the project
+  convention — see `/10x-e2e`'s File placement section).
 - Never use `page.waitForTimeout()`. Wait for a specific condition:
   `toBeVisible()`, `waitForURL()`, `waitForResponse()`.
 - Assert the business outcome, not implementation details.
 - Use a unique identifier (timestamp suffix) for test data, so parallel runs and
-  re-runs don't collide. Clean up what the test created.
+  re-runs don't collide. Clean up what the test created — in `afterEach`, not at
+  the end of the test body, so a failed assertion mid-test still cleans up
+  (otherwise the row is orphaned in the shared fixture account until the next
+  full run's `auth.setup.ts` wipe). Since specs are one-test-per-file, the
+  identifier can be a plain module-level `const` computed once and
+  shared with `afterEach` — no mutable/sentinel state needed, since `afterEach`
+  can just check whether its row still exists before acting. See the seed for
+  the pattern.
 - Auth is `storageState`, set up once — never log in (UI or otherwise) inside an
   individual test:
   - `auth.setup.ts` (the Playwright `setup` project, see `playwright.config.ts`'s
@@ -24,9 +32,13 @@ Scoped to `tests/e2e/`. Read `seed.spec.ts` first — it's the exemplar every te
     starts already signed in.
   - Because the fixture account is **shared** across specs (and any that run in
     parallel), never assume it's empty or that "the only X" is yours — scope
-    locators and cleanup to the exact row your test created (see
-    `support/locators.ts`'s `getByDisplayValue` and the seed's `.filter({ has: … })`
-    pattern for scoping an action to one card). A test that instead needs a
+    locators and cleanup to the exact row your test created. Goal cards all
+    share the same accessible name for their description field ("Cel"), so
+    `GoalCard` renders `data-testid={`goal-card-${goal.description}`}` on the
+    card's root — the getByTestId fallback our first rule allows, used because
+    a test knows its own (unique, timestamped) description before creating the
+    goal and needs no other id to key it. See `support/locators.ts`'s
+    `getGoalCard` and the seed's usage. A test that instead needs a
     guaranteed-empty, fully isolated account (e.g. a first-run/empty-state
     scenario) should use `signInContextAsNewUser` from `support/auth.ts`
     instead of the shared storageState.
