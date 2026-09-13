@@ -1,7 +1,7 @@
 ---
 change_id: quality-gates-wiring
 title: Wire Phases 1 & 4 test suites into CI and land F-03 migration-deploy automation
-status: implementing
+status: implemented
 created: 2026-09-13
 updated: 2026-09-13
 archived_at: null

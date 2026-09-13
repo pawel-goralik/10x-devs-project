@@ -234,8 +234,8 @@ Update `test-plan.md` to reflect that the unit/integration/e2e gates are now act
 
 #### Automated
 
-- [x] 3.1 `git diff context/foundation/test-plan.md` shows only intended edits
+- [x] 3.1 `git diff context/foundation/test-plan.md` shows only intended edits — bb7ac76
 
 #### Manual
 
-- [x] 3.2 Updated §5 table and Freshness Ledger read back as accurate
+- [x] 3.2 Updated §5 table and Freshness Ledger read back as accurate — bb7ac76
