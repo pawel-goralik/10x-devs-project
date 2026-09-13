@@ -22,3 +22,10 @@
 - **Problem**: Astro renders each hydrated island as <astro-island> with a built-in display:contents rule, so it generates no box. space-y-*'s margin-top (applied via the `> * ~ *` selector) lands on that boxless element and produces 0 visible spacing. Hit twice: first on /goals's GoalCard list, then again on groups/[id].astro's member-goals section — same symptom, same root cause, not caught the first time.
 - **Rule**: Never apply space-y-*/space-x-* directly to a list whose mapped children are client-hydrated Astro components; wrap each child in a plain block-level element (e.g. <div>), or use gap-based flex/grid layout instead, since CSS gap applies at the item level regardless of the child's own display.
 - **Applies to**: implement, impl-review
+
+## Astro's dev-mode toolbar can intercept Playwright clicks near the viewport bottom
+
+- **Context**: Any Playwright E2E test clicking an interactive element on a page rendered by `astro dev` (the `webServer` behind `playwright.config.ts`), especially when the element sits near the bottom of the default viewport.
+- **Problem**: Astro's dev-mode `<astro-dev-toolbar>` overlay (dev-only chrome, absent in production/preview builds) can intercept pointer events for elements it overlaps, causing `locator.click()` to retry indefinitely and time out — discovered in `tests/e2e/group-goal-visibility.spec.ts` when clicking a goal's "Dodaj postęp" button.
+- **Rule**: Before interacting with the page in a new e2e spec, hide the toolbar via `page.addStyleTag({ content: "astro-dev-toolbar { display: none !important; }" })` right after navigation.
+- **Applies to**: implement, e2e test authoring

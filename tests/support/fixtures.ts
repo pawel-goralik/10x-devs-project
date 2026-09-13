@@ -2,6 +2,13 @@ import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { deleteTestUser } from "./test-users";
 
+/**
+ * If the group_members insert below fails, this throws before returning the group id, so a
+ * caller's `groupIds` cleanup never runs for it. That's only safe today because `memberIds[0]`
+ * (the creator, `created_by`) is always a tracked test user, and `deleteTestUser` cascades its
+ * created groups on cleanup — don't rely on this for a group whose creator isn't cleaned up
+ * some other way.
+ */
 export async function createGroupWithMembers(
   serviceClient: SupabaseClient,
   memberIds: string[],
