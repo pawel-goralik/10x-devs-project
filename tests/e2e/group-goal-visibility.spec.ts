@@ -56,10 +56,6 @@ test("a group member sees another member's committed goal and its current progre
   browser,
   baseURL,
 }) => {
-  // Heavier setup than the other specs here (two real Supabase sign-ups/sign-ins, group+goal
-  // seeding, two full page navigations) — give it a bit more margin than the 30s default.
-  test.slow();
-
   if (!baseURL) throw new Error("playwright.config.ts must set use.baseURL");
   const serviceClient = createServiceRoleClient();
 
