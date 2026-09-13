@@ -211,10 +211,10 @@ Update `test-plan.md` to reflect that the unit/integration/e2e gates are now act
 
 #### Manual
 
-- [ ] 1.4 PR shows all five CI steps green
-- [ ] 1.5 Job wall-clock time confirmed reasonable, duration noted
-- [ ] 1.6 No orphaned Supabase rows/containers after repeated runs
-- [ ] 1.7 Deploy triggers via `workflow_run` only after CI completes, only on success
+- [x] 1.4 PR shows all five CI steps green
+- [x] 1.5 Job wall-clock time confirmed reasonable, duration noted
+- [x] 1.6 No orphaned Supabase rows/containers after repeated runs
+- [x] 1.7 Deploy triggers via `workflow_run` only after CI completes, only on success
 
 ### Phase 2: F-03 — automated Supabase migration deploy
 
