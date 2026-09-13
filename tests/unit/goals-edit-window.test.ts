@@ -17,7 +17,8 @@ describe("24h edit window boundary (Risk #2) — isEditable / editWindowRemainin
   it("is editable with the full window remaining when created just now", () => {
     const goal = { createdAt: NOW.toISOString() };
 
-    expect(isEditable(goal)).toBe(true);
+    // TEMPORARY: deliberately broken to verify deploy.yml skips on CI failure — will be reverted immediately.
+    expect(isEditable(goal)).toBe(false);
     expect(editWindowRemainingMs(goal)).toBe(EDIT_WINDOW_MS);
   });
 
