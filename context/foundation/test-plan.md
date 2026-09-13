@@ -69,7 +69,7 @@ orchestrator updates Status as artifacts appear on disk.
 | 2   | Side-effect ordering & latent bundle-endpoint check | Catch mis-ordered leave/delete side effects (primary); confirm the now-latent multi-row bundle-endpoint behavior at low priority | #5, #4             | integration        | not started | —                                                 |
 | 3   | Abuse-surface hardening                             | Verify (or flag the absence of) rate-limiting on magic-link requests and invite-token lookups                                    | #6                 | integration        | not started | —                                                 |
 | 4   | North-star e2e coverage                             | Add one north-star e2e check for the cross-group witnessing flow                                                                 | #1 (cross-cutting) | e2e                | complete    | `context/changes/testing-north-star-e2e-coverage/` |
-| 5   | Quality-gates wiring                                | Wire Phases 1–4 into CI and land the F-03 migration-deploy automation                                                            | #3 + cross-cutting | gates              | not started | —                                                 |
+| 5   | Quality-gates wiring                                | Wire Phases 1–4 into CI and land the F-03 migration-deploy automation                                                            | #3 + cross-cutting | gates              | complete    | `context/changes/quality-gates-wiring/`           |
 
 No AI-native phase: this app has no LLM-facing surface (`tech-stack.md`: `has_ai: false`) and interview Q5 explicitly excluded visual regression — no cost×signal case was found for an AI-native layer.
 
@@ -102,13 +102,13 @@ The full set of gates that must pass before a change reaches production.
 "Required for §3 Phase <N>" means the gate is enforced once that rollout
 phase lands; before that, the gate is `planned`.
 
-| Gate                                            | Where         | Required?                                                 | Catches                                                             |
-| ----------------------------------------------- | ------------- | --------------------------------------------------------- | ------------------------------------------------------------------- |
-| lint + typecheck                                | local + CI    | required (already wired — see `.github/workflows/ci.yml`) | syntactic / type drift                                              |
-| unit + integration                              | local + CI    | required after §3 Phase 1                                 | authorization-boundary and immutability-window regressions (#1, #2) |
-| integration (form-integrity & ordering)         | local + CI    | required after §3 Phase 2                                 | silent data loss and mis-ordered side effects (#4, #5)              |
-| e2e on north-star flow (cross-group witnessing) | CI on PR      | required after §3 Phase 5                                 | broken critical user path end-to-end                                |
-| automated Supabase migration deploy             | CI deploy job | required — tracked as roadmap `F-03`, not yet wired       | local-vs-prod schema/config drift (#3)                              |
+| Gate                                            | Where         | Required?                                                                                                     | Catches                                                             |
+| ----------------------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| lint + typecheck                                | local + CI    | required (already wired — see `.github/workflows/ci.yml`)                                                       | syntactic / type drift                                              |
+| unit + integration                              | local + CI    | runs on every push/PR to `main` (wired in `ci.yml`, `quality-gates-wiring` Phase 1) — informational only, no branch protection | authorization-boundary and immutability-window regressions (#1, #2) |
+| integration (form-integrity & ordering)         | local + CI    | required after §3 Phase 2                                                                                        | silent data loss and mis-ordered side effects (#4, #5)              |
+| e2e on north-star flow (cross-group witnessing) | CI on PR      | runs on every push/PR to `main` (wired in `ci.yml`, `quality-gates-wiring` Phase 1) — informational only, no branch protection | broken critical user path end-to-end                                |
+| automated Supabase migration deploy             | CI deploy job | landed — `deploy.yml` pushes pending migrations via `supabase db push --linked` before every Worker deploy (roadmap `F-03`, `quality-gates-wiring` Phase 2) | local-vs-prod schema/config drift (#3)                              |
 
 ## 6. Cookbook Patterns
 
@@ -180,6 +180,15 @@ contributors should respect these unless the underlying assumption changes.
   today. Flagged 2026-09-13 during E2E lever setup; consider as a candidate risk
   (and its own E2E test, driving the real email via Mailpit/Inbucket, with no
   auth bypass) on the next `/10x-test-plan --refresh`.
+- 2026-09-13: §3 Phase 5 ("Quality-gates wiring", scoped by change
+  `quality-gates-wiring`) shipped: `ci.yml` now runs unit, integration, and
+  north-star e2e on every push/PR to `main` (informational only — no branch
+  protection), and `deploy.yml` now pushes pending Supabase migrations via
+  `supabase db push --linked` before every Worker deploy, landing roadmap
+  `F-03`. §3 Phases 2 and 3 (side-effect ordering, abuse-surface hardening)
+  remain not started; when they land, `npm run test:integration`'s directory
+  glob already picks up their new test files with no further CI changes
+  needed.
 
 Refresh (`/10x-test-plan --refresh`) when:
 

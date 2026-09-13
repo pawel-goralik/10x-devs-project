@@ -3,7 +3,7 @@ project: "Resolution Circle"
 version: 1
 status: draft
 created: 2026-08-02
-updated: 2026-09-10
+updated: 2026-09-13
 prd_version: 1
 main_goal: speed
 top_blocker: capacity
@@ -31,7 +31,7 @@ People who set yearly goals routinely abandon them because no one is watching. R
 | ---- | ------------------------------- | -------------------------------------------------------------------------------- | -------------- | ---------------------------------- | -------- |
 | F-01 | magic-link-auth                 | (foundation) passwordless magic-link auth replaces the current password flow    | —              | FR-001, FR-002, FR-003, Access Control | done |
 | F-02 | email-sending-infrastructure    | (foundation) a Brevo REST API key + a reusable send-email service other slices call (SMTP/magic-link already done in deployment) | —              | FR-010, NFR ("Quarterly digest deliverability") | done |
-| F-03 | automated-migration-deploy      | (foundation) Supabase migrations are applied to production automatically as part of the CI deploy job, so a migration merged to `main` can never silently fail to reach prod | —              | — (not PRD-derived; surfaced by a production incident — see below) | proposed |
+| F-03 | quality-gates-wiring             | (foundation) Supabase migrations are applied to production automatically as part of the CI deploy job, so a migration merged to `main` can never silently fail to reach prod | —              | — (not PRD-derived; surfaced by a production incident — see below) | done |
 | S-01 | commit-a-goal                   | create a goal (one-line + numeric or yes/no measure) and view it on their personal page; edit/delete within 24h | F-01           | US-01, FR-004, FR-005, FR-006     | done |
 | S-02 | form-and-manage-a-group         | create a group, invite others, accept an invite, and leave a group they belong to | F-01, F-02     | US-01, FR-008, FR-009, FR-010, FR-011 | done |
 | S-03 | witness-the-circles-goals       | see every group member's committed goals and current progress on a shared view  | S-01, S-02     | US-01, FR-012                      | done |
@@ -98,7 +98,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 ### F-03: Automated Supabase migration deploy in CI
 
 - **Outcome:** (foundation) Supabase migrations are applied to the linked production project automatically as part of the CI deploy job (alongside the existing `wrangler-action` Worker deploy), so a migration merged to `main` can never silently stop short of production the way it did before.
-- **Change ID:** automated-migration-deploy
+- **Change ID:** quality-gates-wiring (bundled as Phase 2 of this change's plan, alongside test-plan.md §3 Phase 5's CI test-suite wiring — see `context/changes/quality-gates-wiring/plan.md`)
 - **PRD refs:** — (not PRD-derived; surfaced by a production incident during `/10x-test-plan` discovery, 2026-09-10 — a migration verified working in local dev did not reach production, and the gap wasn't noticed until the app broke the next day)
 - **Unlocks:** general reliability net for every future schema-touching slice — most directly `S-05` (digest send-state schema) and `S-06` (anonymization fields), both still `proposed` and both would otherwise repeat the same drift risk
 - **Prerequisites:** — (CI + `wrangler-action` deploy pipeline already exists per Baseline)
@@ -107,7 +107,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Does `supabase db push --linked` (or equivalent) in CI need additional secrets (project ref, DB password / access token) beyond what's already configured for the Worker deploy? — Owner: user. Block: no.
 - **Risk:** a pure reliability/process fix triggered by a real incident, not a PRD requirement — low technical risk (the deploy pipeline already exists and just needs one more step), but worth prioritizing soon since the drift it prevents is silent by nature — it isn't caught until something breaks.
-- **Status:** proposed
+- **Status:** done
 
 ## Slices
 
@@ -230,7 +230,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | ---------- | ------------------------------ | -------------------------------------------------------------------- | ---------------------- | ----- |
 | F-01       | magic-link-auth               | Replace password auth with passwordless magic-link auth              | yes                    | Run `/10x-plan magic-link-auth` |
 | F-02       | email-sending-infrastructure   | Provision Brevo and add a reusable send-email service                | yes                    | Run `/10x-plan email-sending-infrastructure` |
-| F-03       | automated-migration-deploy    | Apply Supabase migrations to production automatically in CI          | yes                    | Run `/10x-plan automated-migration-deploy`; surfaced by a production incident, not the PRD |
+| F-03       | quality-gates-wiring          | Apply Supabase migrations to production automatically in CI          | yes                    | Bundled as Phase 2 of `quality-gates-wiring` (alongside CI test-suite wiring) — plan already written, see `context/changes/quality-gates-wiring/plan.md` |
 | S-01       | commit-a-goal                 | User can commit a goal with a 24h edit/delete window                 | no                     | Needs F-01 first |
 | S-02       | form-and-manage-a-group       | User can create, invite to, join, and leave a group                  | no                     | Needs F-01 and F-02 first |
 | S-03       | witness-the-circles-goals     | Group member can see every member's committed goals and progress     | no                     | Needs S-01 and S-02 first (north star) |
