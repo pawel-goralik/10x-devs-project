@@ -56,6 +56,10 @@ test("a group member sees another member's committed goal and its current progre
   browser,
   baseURL,
 }) => {
+  // Two real Supabase sign-ups/sign-ins plus group+goal seeding and two full page navigations
+  // push this well past the default 30s test timeout under CI's parallel workers — triple it.
+  test.slow();
+
   if (!baseURL) throw new Error("playwright.config.ts must set use.baseURL");
   const serviceClient = createServiceRoleClient();
 
