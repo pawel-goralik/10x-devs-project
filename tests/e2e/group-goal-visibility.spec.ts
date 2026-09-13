@@ -56,8 +56,8 @@ test("a group member sees another member's committed goal and its current progre
   browser,
   baseURL,
 }) => {
-  // Two real Supabase sign-ups/sign-ins plus group+goal seeding and two full page navigations
-  // push this well past the default 30s test timeout under CI's parallel workers — triple it.
+  // Heavier setup than the other specs here (two real Supabase sign-ups/sign-ins, group+goal
+  // seeding, two full page navigations) — give it a bit more margin than the 30s default.
   test.slow();
 
   if (!baseURL) throw new Error("playwright.config.ts must set use.baseURL");
@@ -85,10 +85,17 @@ test("a group member sees another member's committed goal and its current progre
   // pointer events for elements near the bottom of the viewport; hide it before interacting.
   await authorPage.addStyleTag({ content: "astro-dev-toolbar { display: none !important; }" });
   const authorGoalCard = getGoalCard(authorPage, goalDescription);
-  await authorGoalCard.getByRole("button", { name: "Dodaj postęp" }).click();
   // The dialog's content portals outside the goal card's DOM subtree, so these locators are
   // scoped to the page, not the card.
-  await authorPage.getByLabel("Wartość do dodania").fill(String(PROGRESS_AMOUNT));
+  const progressInput = authorPage.getByLabel("Wartość do dodania");
+  // "Dodaj postęp" mounts a client-side React island; if the click lands before it hydrates,
+  // it's a dead DOM click (no listener attached yet) and the dialog never opens. Retry the
+  // click until the dialog is actually up, rather than waiting on a field that may never appear.
+  await expect(async () => {
+    await authorGoalCard.getByRole("button", { name: "Dodaj postęp" }).click();
+    await expect(progressInput).toBeVisible({ timeout: 2000 });
+  }).toPass();
+  await progressInput.fill(String(PROGRESS_AMOUNT));
   await authorPage.getByRole("button", { name: "Potwierdź" }).click();
   await expect(authorPage.getByText("Postęp zapisany.")).toBeVisible();
 
