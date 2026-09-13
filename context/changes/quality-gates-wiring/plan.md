@@ -79,6 +79,12 @@ Add unit, integration, and e2e test execution to the existing `ci` job in `.gith
 
 **Contract**: Append these steps to the existing job, in order: `npm run test` → `npx supabase start` → derive-and-export env vars (per Critical Implementation Details) → `npm run test:integration` → `npx playwright install --with-deps chromium` → `npm run test:e2e`. No changes to the job's existing `push`/`pull_request` triggers (both already fire on `main`) and no new secrets — this job needs none.
 
+#### 2. `.github/workflows/deploy.yml` — gate deploy on CI success
+
+**Intent**: Before this addition, `deploy.yml` triggered independently on `push: [main]`, with zero dependency on `ci.yml`'s outcome — a failing lint/build/unit/integration/e2e run would not stop a deploy. Once `ci.yml` carries real test gates, that gap becomes a live risk rather than a theoretical one, so this change closes it as part of Phase 1's scope (spotted during manual verification, not in the original research/plan).
+
+**Contract**: Change `deploy.yml`'s trigger from `on: push: branches: [main]` to `on: workflow_run: { workflows: ["CI"], types: [completed], branches: [main] }`, add `if: github.event.workflow_run.conclusion == 'success'` on the `deploy` job (so it's skipped, not failed, when CI didn't succeed), and pin `actions/checkout@v4`'s `ref` to `${{ github.event.workflow_run.head_sha }}` so deploy always builds the exact commit CI validated rather than whatever `main` happens to be at trigger time. `workflow_run`'s `branches` filter matches the branch the *triggering* workflow ran on — for a push-triggered CI run that's `main`; for a PR-triggered CI run it's the PR's head branch — so this preserves the existing behavior of never deploying from a PR run, only from a push to `main`.
+
 ### Success Criteria:
 
 #### Automated Verification:
@@ -92,6 +98,7 @@ Add unit, integration, and e2e test execution to the existing `ci` job in `.gith
 - Open a PR with a trivial change and confirm all five CI steps (lint, build, unit, integration, e2e) show green in the GitHub Actions UI
 - Confirm total job wall-clock time is reasonable (a first run may be slower due to cold Docker image pulls for the Supabase stack) and note the actual duration for future reference
 - Confirm no orphaned Supabase rows/containers linger after the job completes (spot-check by re-running the job twice in a row and watching for cumulative slowdown or `db reset` failures)
+- Confirm a push to `main` triggers `deploy.yml` via `workflow_run` only after `ci.yml` completes (not immediately on push), and only when `ci.yml`'s conclusion is `success`
 
 ---
 
@@ -198,15 +205,16 @@ Update `test-plan.md` to reflect that the unit/integration/e2e gates are now act
 
 #### Automated
 
-- [ ] 1.1 `npm run test` passes in CI
-- [ ] 1.2 `npm run test:integration` passes in CI
-- [ ] 1.3 `npm run test:e2e` passes in CI
+- [x] 1.1 `npm run test` passes in CI
+- [x] 1.2 `npm run test:integration` passes in CI
+- [x] 1.3 `npm run test:e2e` passes in CI
 
 #### Manual
 
 - [ ] 1.4 PR shows all five CI steps green
 - [ ] 1.5 Job wall-clock time confirmed reasonable, duration noted
 - [ ] 1.6 No orphaned Supabase rows/containers after repeated runs
+- [ ] 1.7 Deploy triggers via `workflow_run` only after CI completes, only on success
 
 ### Phase 2: F-03 — automated Supabase migration deploy
 
